@@ -1,7 +1,7 @@
-const { query } = require('../db.js');
+const db = require('../db.js');
 
 const create = async (username, password, email) => {
-  const [result] = await query(
+  const [result] = await db.query(
     'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
     [username, password, email]
   );
@@ -9,7 +9,7 @@ const create = async (username, password, email) => {
 };
 
 const findByCredentials = async (email, password) => {
-  const [rows] = await query(
+  const [rows] = await db.query(
     'SELECT * FROM usersdetails WHERE email = ? AND passwordHash = ?',
     [email, password]
   );

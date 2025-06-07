@@ -15,7 +15,6 @@ const { create, findByCredentials } = require('../models/User');
   const { email, password } = req.body;
   try {
     const user = await findByCredentials(email, password);
-    console.log(user);
     if (user) {
       res.json({ message: 'Login exitoso', user });
     } else {

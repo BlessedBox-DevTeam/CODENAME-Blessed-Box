@@ -4,6 +4,7 @@ import { colors } from "./baseStyles/colors";
 import { CircularProgress } from "./components/circularProgress";
 import { useState } from "react";
 import axios from 'axios';
+import { io } from 'socket.io-client';
 
 export default function Index() {
   const [email, setEmail] = useState('');
@@ -12,16 +13,41 @@ export default function Index() {
  const handleLogin = async () => {
     try {
       const response = await axios.post('http://localhost:4000/api/auth/login', {
-      // const response = await axios.post('http://192.168.11.189:3000/api/auth/login', {
         email: email,
         password: password,
       });
 
-      Alert.alert('Éxito', response.data.message);
-      console.log('Usuario:', response.data.user);
+    const user = response.data.user;
+    console.log(user);
+    if (!user) {
+      throw new Error('Credenciales incorrectas');
+    }
+
+    // 2. Guardar usuario si quieres (opcional)
+    localStorage.setItem('user', JSON.stringify(user));
+
+    // 3. Conectarse al socket con datos del usuario
+    const socket = io('http://localhost:4000', {
+      auth: {
+        userId: user.userId,
+        email: user.email,
+      }
+    });
+
+    // 4. Escuchar eventos del socket
+    socket.on('connect', () => {
+      console.log(`Conectado como ${user.email}`);
+    });
+
+    socket.on('chatMessage', (msg) => {
+      console.log('Mensaje recibido:', msg);
+    });
+
+    // También podrías devolver el socket
+    return socket;
+
     } catch (error) {
       console.error(error);
-      Alert.alert( error + 'Fallo al iniciar sesión');
     }
   };
 

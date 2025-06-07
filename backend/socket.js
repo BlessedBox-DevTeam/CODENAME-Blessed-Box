@@ -8,16 +8,27 @@ module.exports = function(server) {
   });
 
   io.on('connection', (socket) => {
-    console.log(`Nuevo cliente conectado: ${socket.id}`);
+    const { userId, email } = socket.handshake.auth;
+    console.log(`Usuario conectado: ${email} (ID: ${userId})`);
+
+    // Puedes guardar el usuario en el socket para usarlo más tarde
+    socket.userId = userId;
+    socket.email = email;
 
     socket.on('chatMessage', (data) => {
-      io.emit('chatMessage', data);
+      // Añadir automáticamente el nombre del usuario al mensaje
+      const messageWithUser = {
+        email: socket.email,
+        message: data.message
+      };
+      io.emit('chatMessage', messageWithUser);
     });
 
     socket.on('disconnect', () => {
-      console.log(`Cliente desconectado: ${socket.id}`);
+      console.log(`Desconectado: ${socket.email}`);
     });
   });
 
   return io;
 };
+
