@@ -1,0 +1,21 @@
+# 📦 Node.js
+node_modules/
+.env
+
+# ⚛️ React Native / Expo
+.expo/
+.expo-shared/
+dist/
+web-build/
+*.log
+*.tsbuildinfo
+app.json
+expo-env.d.ts
+
+# 💻 Editor & sistema operativo
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ⚙️ Otros
+eslint.config.*
