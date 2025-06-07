@@ -1,9 +1,13 @@
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
-const socketSetup = require('./socket');
-const db = require('./db');
-require('dotenv').config();
+const socketSetup = require('./socket.js');
+const db = require('./db.js');
+const path = require('path');
+require('dotenv').config({
+  path: path.resolve(__dirname, '.env'),
+});
+
 
 const app = express();
 const server = http.createServer(app);
@@ -18,7 +22,7 @@ app.use('/api/auth', require('./routes/auth'));
 // app.use('/api/users', require('./routes/users'));
 
 // Servidor escuchando
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 server.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
 });

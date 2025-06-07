@@ -16,9 +16,8 @@
   "devDependencies": {
     "nodemon": "^3.1.10"
   },
-  "scripts": {
-  "start": "node app.js",
-  "dev": "nodemon app.js"
+"scripts": {
+  "dev": "nodemon backend/app.js"
 }
 
 }
