@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
-import { colors } from './colors';
+import  colors from './colors';
 
-export const commonStyles = StyleSheet.create({
+const commonStyles = StyleSheet.create({
     card: {
         width: 'auto',
         height: 'auto',
@@ -77,11 +77,25 @@ export const commonStyles = StyleSheet.create({
         alignItems: 'center'
 },
 button:{
+    width:'100%',
     paddingVertical: 15,
     paddingHorizontal: 10,
     borderRadius:10,
-    backgroundColor:colors.dark_blue,
+    backgroundColor:colors.dark_green,
     justifyContent: 'center',
     alignItems: 'center'
+},
+input:{
+    width:'100%',
+    flexDirection:'row',
+    alignItems:'center',
+    backgroundColor:colors.light_gray,
+    color:colors.dark_blue,
+    padding:10,
+    borderWidth:0,
+    borderRadius:10,
+    borderColor:colors.light_gray,
 }
 });
+
+export default commonStyles;

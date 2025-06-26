@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { commonStyles } from '../baseStyles/baseStyles';
+import  commonStyles from '../baseStyles/baseStyles';
 
-export const CircularProgress = ({ percentage }) => {
+ const CircularProgress = ({ percentage }) => {
   const radius = 40;
   const strokeWidth = 10;
   const normalizedRadius = radius - strokeWidth / 2;
@@ -44,3 +44,5 @@ export const CircularProgress = ({ percentage }) => {
     </View>
   );
 };
+
+export default CircularProgress;

@@ -1,5 +1,5 @@
 // This file contains the color definitions used throughout the application.
-export const colors = {
+ const colors = {
     gray:'#777777',
     dark_gray:'#5D5D5D',
     green:'#00B300',
@@ -12,3 +12,5 @@ export const colors = {
     backgroundColor:'#F0F1F8',
     white:'#FFFFFF'
 };
+
+export default colors;
