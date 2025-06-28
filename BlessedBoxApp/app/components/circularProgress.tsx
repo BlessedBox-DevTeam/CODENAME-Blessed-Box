@@ -1,10 +1,11 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
-import  commonStyles from '../baseStyles/baseStyles';
+import React from "react";
+import { View, Text } from "react-native";
+import Svg, { Circle } from "react-native-svg";
+import commonStyles from "../baseStyles/baseStyles";
+import colors from "../baseStyles/colors";
 
- const CircularProgress = ({ percentage }) => {
-  const radius = 40;
+const CircularProgress = ({ percentage }) => {
+  const radius = 50;
   const strokeWidth = 10;
   const normalizedRadius = radius - strokeWidth / 2;
   const circumference = 2 * Math.PI * normalizedRadius;
@@ -15,7 +16,7 @@ import  commonStyles from '../baseStyles/baseStyles';
       <Svg height="100" width="100">
         {/* Fondo gris */}
         <Circle
-          stroke="#e6e6e6"
+          stroke={colors.light_gray}
           fill="transparent"
           strokeWidth={strokeWidth}
           cx="50"
@@ -24,7 +25,7 @@ import  commonStyles from '../baseStyles/baseStyles';
         />
         {/* Progreso verde */}
         <Circle
-          stroke="#009639"
+          stroke={colors.dark_green}
           fill="transparent"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
