@@ -27,7 +27,7 @@ const commonStyles = StyleSheet.create({
   header: {
     color: colors.dark_blue,
     fontFamily: "OpenSans-Bold",
-    fontSize: 28,
+    fontSize: 16,
     fontStyle: "normal",
     fontWeight: 700
     // lineHeight: 16 * 1.4
@@ -35,7 +35,7 @@ const commonStyles = StyleSheet.create({
   paragraph: {
     color: colors.dark_gray,
     fontFamily: "OpenSans-SemiBold",
-    fontSize: 26,
+    fontSize: 14,
     fontStyle: "normal",
     fontWeight: 600
     // lineHeight: 16 * 1.4
@@ -43,7 +43,7 @@ const commonStyles = StyleSheet.create({
   paragraphBold: {
     color: colors.dark_gray,
     fontFamily: "OpenSans-Bold",
-    fontSize: 26,
+    fontSize: 14,
     fontStyle: "normal",
     fontWeight: 700
     // lineHeight: 16 * 1.4
@@ -51,7 +51,7 @@ const commonStyles = StyleSheet.create({
   paragraphExtraBold: {
     color: colors.dark_green,
     fontFamily: "OpenSans-ExtraBold",
-    fontSize: 26,
+    fontSize: 14,
     fontStyle: "normal",
     fontWeight: 700
     // lineHeight: 16 * 1.4
@@ -85,7 +85,7 @@ const commonStyles = StyleSheet.create({
   },
   button: {
     width: "100%",
-    paddingVertical: 15,
+    paddingVertical: 10,
     paddingHorizontal: 10,
     borderRadius: 10,
     backgroundColor: colors.dark_green,
@@ -118,7 +118,7 @@ const commonStyles = StyleSheet.create({
     borderWidth: 0,
     borderRadius: 10,
     fontFamily: "OpenSans-Bold",
-    fontSize: 15,
+    fontSize: 12,
     fontStyle: "normal",
     fontWeight: 700
     // lineHeight: 16 * 1.4

@@ -1,4 +1,5 @@
 const { create, findByCredentials } = require("../models/User");
+const argon2 = require("argon2");
 
 async function register(req, res) {
   const { username, password, email } = req.body;
@@ -13,9 +14,10 @@ async function register(req, res) {
 async function login(req, res) {
   const { email, password } = req.body;
   try {
-    const user = await findByCredentials(email, password);
-    if (user) {
-      res.json({ message: "Login exitoso", user });
+    const { passwordHash } = await findByCredentials(email);
+    const isValid = await argon2.verify(passwordHash, password);
+    if (isValid) {
+      res.json({ message: "Login exitoso" });
     } else {
       res.json({ message: "Credenciales incorrectas" });
     }
@@ -26,5 +28,5 @@ async function login(req, res) {
 
 module.exports = {
   register,
-  login,
+  login
 };

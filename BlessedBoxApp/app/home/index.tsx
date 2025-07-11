@@ -4,9 +4,13 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import CircularProgress from "../components/circularProgress";
 import commonStyles from "../baseStyles/baseStyles";
 import colors from "../baseStyles/colors";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 
 export default function Index() {
+  const router = useRouter();
+  const handleQrCodePress = () => {
+    return router.replace("./qrCode");
+  };
   return (
     <SafeAreaProvider>
       <SafeAreaView
@@ -121,9 +125,9 @@ export default function Index() {
           </View>
           <View style={[commonStyles.card, { marginTop: 20, rowGap: 16 }]}>
             <Text style={commonStyles.header}>Your Church</Text>
-            <Text style={[commonStyles.paragraph, { fontSize: 22 }]}>
+            <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>
               Rejoice in the Lord always: and again I say, Rejoice.{" "}
-              <Text style={[commonStyles.paragraph, { fontSize: 18 }]}>
+              <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>
                 (Philippians 4:4){" "}
               </Text>
             </Text>
@@ -159,6 +163,7 @@ export default function Index() {
           </Text>
           <Text
             style={[commonStyles.paragraph, { flex: 1, textAlign: "center" }]}
+            onPress={handleQrCodePress}
           >
             QR
           </Text>

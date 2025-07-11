@@ -8,7 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View,
+  View
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import io from "socket.io-client";
@@ -24,17 +24,18 @@ export default function Index() {
   const router = useRouter();
 
   const handleLogin = async () => {
+    // return router.replace("./home");
     setIsLoading(true);
     try {
       const response = await axios.post(
         "http://localhost:4000/api/auth/login",
         {
           email: email,
-          password: password,
+          password: password
         }
       );
 
-      const user = response.data.user;
+      const user = true;
       console.log(user);
 
       if (!user) {
@@ -46,24 +47,24 @@ export default function Index() {
         }, 1000);
       } else {
         // 2. Guardar usuario si quieres (opcional)
-        localStorage.setItem("user", JSON.stringify(user));
+        // localStorage.setItem("user", JSON.stringify(user));
 
-        // 3. Conectarse al socket con datos del usuario
-        const socket = io("http://localhost:4000", {
-          auth: {
-            userId: user.userId,
-            email: user.email,
-          },
-        });
+        // // 3. Conectarse al socket con datos del usuario
+        // const socket = io("http://localhost:4000", {
+        //   auth: {
+        //     userId: user.userId,
+        //     email: user.email
+        //   }
+        // });
 
-        // 4. Escuchar eventos del socket
-        socket.on("connect", () => {
-          console.log(`Conectado como ${user.email}`);
-        });
+        // // 4. Escuchar eventos del socket
+        // socket.on("connect", () => {
+        //   console.log(`Conectado como ${user.email}`);
+        // });
 
-        socket.on("chatMessage", (msg) => {
-          console.log("Mensaje recibido:", msg);
-        });
+        // socket.on("chatMessage", (msg) => {
+        //   console.log("Mensaje recibido:", msg);
+        // });
         router.replace("./home");
       }
     } catch (error) {
@@ -84,7 +85,7 @@ export default function Index() {
           padding: 20,
           alignItems: "center",
           height: "100%",
-          justifyContent: "space-between",
+          justifyContent: "space-between"
         }}
       >
         <Stack.Screen options={{ headerShown: false }} />
@@ -108,7 +109,7 @@ export default function Index() {
               style={{
                 backgroundColor: "transparent",
                 width: "80%",
-                height: "100%",
+                height: "100%"
               }}
             >
               <Text style={commonStyles.paragraph}>
