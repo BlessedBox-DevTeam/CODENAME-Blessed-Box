@@ -27,13 +27,12 @@ export default function Index() {
     // return router.replace("./home");
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        "http://BlessedBox-LoadBalancer-187715699.us-east-2.elb.amazonaws.com:3000/api/auth/login",
-        {
-          email: email,
-          password: password
-        }
-      );
+      const port = process.env.PORT;
+      const url = process.env.URL;
+      const response = await axios.post(`${url}:${port}/api/auth/login`, {
+        email: email,
+        password: password
+      });
 
       const user = true;
       console.log(user);
