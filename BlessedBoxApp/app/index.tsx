@@ -28,7 +28,7 @@ export default function Index() {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/auth/login",
+        "http://BlessedBox-LoadBalancer-187715699.us-east-2.elb.amazonaws.com:3000/api/auth/login",
         {
           email: email,
           password: password
