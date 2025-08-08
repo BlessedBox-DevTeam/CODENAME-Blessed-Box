@@ -17,6 +17,5 @@ Aplicación móvil con backend en tiempo real diseñada con **React Native (Expo
 
 ```bash
 cd BlessedBoxApp
-npm install
-npx expo start
+npm run start-T
 ```
