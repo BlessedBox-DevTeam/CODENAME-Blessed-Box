@@ -197,7 +197,12 @@ export default function Index() {
                 </View>
               </View>
             </TouchableWithoutFeedback>
-            <TouchableOpacity style={[commonStyles.button]} onPress={() => {}}>
+            <TouchableOpacity
+              style={[commonStyles.button]}
+              onPress={() => {
+                router.replace("./order");
+              }}
+            >
               <Text style={[commonStyles.header, { color: colors.white }]}>
                 Confirm
               </Text>
