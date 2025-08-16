@@ -1,42 +1,39 @@
-import { router, Stack } from "expo-router";
-import React, { useRef, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import commonStyles from "../baseStyles/baseStyles";
-import colors from "../baseStyles/colors";
-import BoxLabel from "../components/boxLabel";
+import { router, Stack } from 'expo-router';
+import React, { useRef, useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import commonStyles from '../baseStyles/baseStyles';
+import colors from '../baseStyles/colors';
+import BoxLabel from '../components/boxLabel';
 
 export default function Index() {
   const [maxManualWidth, setManualWidth] = useState<number | `${number}%`>(0);
   const handleBackPress = () => {
-    return router.replace("./qrCode");
+    return router.replace('./qrCode');
   };
   return (
     <SafeAreaProvider>
       <Stack.Screen options={{ headerShown: false }} />
       <SafeAreaView
-        style={{ backgroundColor: colors.backgroundColor, flex: 1 }}
-      >
+        style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
         <View
           style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "row",
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'row',
             padding: 20,
             paddingBottom: 0,
-            position: "relative"
-          }}
-        >
+            position: 'relative',
+          }}>
           <Text
             style={{
-              position: "absolute",
+              position: 'absolute',
               left: 0,
               top: 0,
-              padding: 20
+              padding: 20,
             }}
-            onPress={handleBackPress}
-          >{`${"Back"}`}</Text>
+            onPress={handleBackPress}>{`${'Back'}`}</Text>
           <Text style={commonStyles.header}>Enter Order</Text>
         </View>
 
@@ -44,18 +41,16 @@ export default function Index() {
           style={[
             commonStyles.card,
             {
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
               padding: 20,
-              alignItems: "center",
-              margin: 16
-            }
-          ]}
-        >
+              alignItems: 'center',
+              margin: 16,
+            },
+          ]}>
           <Text
-            style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}
-          >
+            style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
             Total Boxes
           </Text>
           <View
@@ -65,16 +60,14 @@ export default function Index() {
               paddingVertical: 3,
               paddingHorizontal: 10,
               borderRadius: 5,
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 5
-            }}
-          >
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 5,
+            }}>
             <Text
-              style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}
-            >
+              style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
               10
             </Text>
             <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>★</Text>
@@ -83,15 +76,13 @@ export default function Index() {
         <View
           style={{
             paddingHorizontal: 20,
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center"
-          }}
-        >
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
           <Text
-            style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}
-          >
+            style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
             Enable Shoebox Label
           </Text>
           {/* <Slider></Slider> */}
