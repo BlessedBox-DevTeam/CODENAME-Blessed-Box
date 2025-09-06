@@ -6,6 +6,8 @@ import commonStyles from "../baseStyles/baseStyles";
 import colors from "../baseStyles/colors";
 import { Stack, useRouter } from "expo-router";
 
+// FGM 
+
 export default function Index() {
   const router = useRouter();
   const handleQrCodePress = () => {

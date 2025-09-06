@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { loadFonts } from '../lib/loadFonts';
 import commonStyles from './baseStyles/baseStyles';
 import { View, Text } from 'react-native';
+import React from 'react';
 
 export default function RootLayout() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
