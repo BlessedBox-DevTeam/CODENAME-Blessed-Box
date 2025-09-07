@@ -8,6 +8,7 @@ import { Stack, useRouter } from 'expo-router';
 
 // FGM
 //KWG probando
+// KWG probando 2 commit y merge con alias
 
 export default function Index() {
   const router = useRouter();
