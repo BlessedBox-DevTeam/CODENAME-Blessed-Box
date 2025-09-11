@@ -4,7 +4,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
-import BoxLabel from '../components/boxLabel';
+import BoxLabel from '../components/BoxLabel';
 
 export default function Index() {
   const [maxManualWidth, setManualWidth] = useState<number | `${number}%`>(0);

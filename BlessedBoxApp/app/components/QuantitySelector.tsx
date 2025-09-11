@@ -144,19 +144,26 @@ const styles = StyleSheet.create({
     borderColor: colors.light_gray,
     borderRadius: 5,
     overflow: 'hidden',
-    flex: 1,
     display: 'flex',
     justifyContent: 'space-between',
+    minHeight: 40,
   },
   button: {
+    alignSelf: 'stretch',
+    justifyContent: 'center',
     paddingVertical: 5,
     paddingHorizontal: 10,
     backgroundColor: colors.light_gray,
+    height: 'auto',
+    minHeight: 32,
   },
   input: {
     borderBottomWidth: 1,
     textAlign: 'center',
-    padding: 0,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    minWidth: 40,
+    minHeight: 32,
   },
 });
 

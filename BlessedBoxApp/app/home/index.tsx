@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import CircularProgress from '../components/circularProgress';
+import CircularProgress from '../components/CircularProgress';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import { Stack, useRouter } from 'expo-router';

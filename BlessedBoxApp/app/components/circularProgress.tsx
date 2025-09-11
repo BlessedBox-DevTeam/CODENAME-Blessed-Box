@@ -1,8 +1,8 @@
-import React from "react";
-import { View, Text } from "react-native";
-import Svg, { Circle } from "react-native-svg";
-import commonStyles from "../baseStyles/baseStyles";
-import colors from "../baseStyles/colors";
+import React from 'react';
+import { View, Text } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
+import commonStyles from '../baseStyles/baseStyles';
+import colors from '../baseStyles/colors';
 
 const CircularProgress = ({ percentage }) => {
   const radius = 50;

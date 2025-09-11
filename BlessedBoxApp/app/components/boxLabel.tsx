@@ -38,6 +38,8 @@ const BoxLabel = () => {
     quantitySelectorRef.current?.reset();
   };
 
+  const handleDelete = () => {};
+
   // Render the component
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -92,29 +94,12 @@ const BoxLabel = () => {
         <Text style={[commonStyles.paragraphBold, styles.labelText]}>
           Quantity
         </Text>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: 10,
-          }}>
-          {/* Quantity Selector */}
-          <View style={{ flex: 1 }}>
-            <QuantitySelector ref={quantitySelectorRef} />
-          </View>
+        {/* Quantity Selector */}
+        <QuantitySelector ref={quantitySelectorRef} />
 
-          {/* Quantity buttons */}
-          <View style={styles.quantityContainer}>
-            {['5', '10', '20'].map((qty) => (
-              <View key={qty} style={styles.quantityBox}>
-                <Text style={commonStyles.paragraph}>{qty}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
+        <Text style={[styles.instructionText]}>
+          Write a number or use the buttons
+        </Text>
         {/* Action Buttons */}
         <View style={styles.actionContainer}>
           <TouchableOpacity
@@ -127,7 +112,8 @@ const BoxLabel = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.actionButton, { borderColor: colors.red }]}>
+            style={[styles.actionButton, { borderColor: colors.red }]}
+            onPress={handleDelete}>
             <Text style={[commonStyles.paragraphBold, { color: colors.red }]}>
               Delete
             </Text>
@@ -199,6 +185,13 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  instructionText: {
+    fontSize: 11,
+    color: colors.dark_gray,
+    fontFamily: 'OpenSans-SemiBold',
+    fontStyle: 'normal',
+    fontWeight: 600,
   },
 });
 
