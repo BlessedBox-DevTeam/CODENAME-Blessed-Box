@@ -5,16 +5,19 @@ import colors from '../baseStyles/colors';
 
 const GenderTile = () => {
   return (
-    <View style={[commonStyles.card, { gap: 10 }]}>
-      {/* Category Label */}
-      <View style={styles.categoryContainer}>
-        <Text style={[commonStyles.paragraphExtraBold]}>Girl</Text>
-      </View>
+    <View style={genderTileStyles.categoryContainer}>
+      <Text
+        style={[
+          commonStyles.paragraphExtraBold,
+          genderTileStyles.categoryText,
+        ]}>
+        Girl
+      </Text>
     </View>
   );
 };
 // Stylesheet for reusable styles
-const styles = StyleSheet.create({
+const genderTileStyles = StyleSheet.create({
   title: {
     color: colors.red,
     textTransform: 'uppercase',
