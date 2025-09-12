@@ -10,6 +10,7 @@ import {
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import QuantitySelector from './QuantitySelector';
+import GenderTile from './GenderTile';
 
 type AgeRange = '2-4' | '5-9' | '10-14';
 
@@ -48,11 +49,7 @@ const BoxLabel = () => {
         <Text style={[commonStyles.header, styles.title]}>Shoebox Label</Text>
 
         {/* Category Label */}
-        <View style={styles.categoryContainer}>
-          <Text style={[commonStyles.paragraphExtraBold, styles.categoryText]}>
-            Girl
-          </Text>
-        </View>
+        <GenderTile></GenderTile>
 
         {/* Select Age Label */}
         <Text style={[commonStyles.paragraphBold, styles.labelText]}>
