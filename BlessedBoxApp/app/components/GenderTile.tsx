@@ -1,18 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
+import Slider from './Slider';
 
 const GenderTile = () => {
+  // 0 = Girl, 1 = Boy
+  const [gender, setGender] = useState(0);
+
+  // Cambia el texto y color según el sexo seleccionado
+  const isGirl = gender === 0;
+  const backgroundColor = isGirl ? colors.red_label : colors.green_label;
+  const text = isGirl ? 'Girl' : 'Boy';
+
   return (
-    <View style={genderTileStyles.categoryContainer}>
+    <View style={[genderTileStyles.categoryContainer, { backgroundColor }]}>
       <Text
         style={[
           commonStyles.paragraphExtraBold,
           genderTileStyles.categoryText,
         ]}>
-        Girl
+        {text}
       </Text>
+      <Slider onValueChange={setGender}></Slider>
     </View>
   );
 };
@@ -23,14 +33,21 @@ const genderTileStyles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   categoryContainer: {
+    display: 'flex',
+    flexDirection: 'row',
     backgroundColor: colors.red_label,
     width: '100%',
     borderRadius: 10,
     padding: 10,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 50,
   },
   categoryText: {
     color: colors.white,
     textTransform: 'uppercase',
+    fontSize: 16,
   },
 });
 export default GenderTile;
