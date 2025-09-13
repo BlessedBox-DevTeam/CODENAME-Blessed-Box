@@ -17,6 +17,7 @@ type AgeRange = '2-4' | '5-9' | '10-14';
 const BoxLabel = () => {
   const [selected, setSelected] = useState<AgeRange>('2-4');
   const quantitySelectorRef = useRef<{ reset: () => void }>(null);
+  const genderTileRef = useRef<{ reset: () => void }>(null);
 
   // Reusable style for age range buttons
   const getAgeButtonStyle = (range: AgeRange) => ({
@@ -37,6 +38,7 @@ const BoxLabel = () => {
   const handleReset = () => {
     setSelected('2-4');
     quantitySelectorRef.current?.reset();
+    genderTileRef.current?.reset();
   };
 
   const handleDelete = () => {};
@@ -49,7 +51,7 @@ const BoxLabel = () => {
         <Text style={[commonStyles.header, styles.title]}>Shoebox Label</Text>
 
         {/* Category Label */}
-        <GenderTile></GenderTile>
+        <GenderTile ref={genderTileRef}></GenderTile>
 
         {/* Select Age Label */}
         <Text style={[commonStyles.paragraphBold, styles.labelText]}>

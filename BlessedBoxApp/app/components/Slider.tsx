@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { View, StyleSheet, Pressable, Animated, Easing } from 'react-native';
 import colors from '../baseStyles/colors';
 
@@ -8,7 +14,7 @@ interface SliderProps {
 
 const THUMB_SIZE = 24;
 
-const Slider: React.FC<SliderProps> = ({ onValueChange }) => {
+const Slider = forwardRef<any, SliderProps>(({ onValueChange }, ref) => {
   const [selected, setSelected] = useState(0);
   const thumbAnim = useRef(new Animated.Value(0)).current;
   const [trackWidth, setTrackWidth] = useState(0);
@@ -21,6 +27,11 @@ const Slider: React.FC<SliderProps> = ({ onValueChange }) => {
       easing: Easing.ease,
     }).start();
   }, [selected, thumbAnim]);
+
+  // Expose reset function to parent
+  useImperativeHandle(ref, () => ({
+    reset: () => setSelected(0),
+  }));
 
   const backgroundColor =
     selected === 0 ? colors.dark_red : colors.darker_green;
@@ -48,7 +59,7 @@ const Slider: React.FC<SliderProps> = ({ onValueChange }) => {
       </View>
     </Pressable>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
