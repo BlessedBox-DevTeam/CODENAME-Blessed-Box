@@ -13,7 +13,18 @@ import colors from '../baseStyles/colors';
 import BoxLabel from '../components/BoxLabel';
 
 export default function Index() {
-  const [maxManualWidth, setManualWidth] = useState<number | `${number}%`>(0);
+  // Just an array of BoxLabel placeholders
+  const [boxLabels, setBoxLabels] = useState<number[]>([0]);
+
+  // Add a new BoxLabel
+  const handleAddBoxLabel = () => {
+    setBoxLabels((prev) => [...prev, prev.length]);
+  };
+
+  // Remove a BoxLabel by its index
+  const handleDeleteBoxLabel = (index: number) => {
+    setBoxLabels((prev) => prev.filter((i) => i !== index));
+  };
   const handleBackPress = () => {
     return router.replace('./qrCode');
   };
@@ -97,7 +108,9 @@ export default function Index() {
             </Text>
             {/* <Slider></Slider> */}
           </View>
-          <BoxLabel></BoxLabel>
+          {boxLabels.map((idx) => (
+            <BoxLabel key={idx} onDelete={() => handleDeleteBoxLabel(idx)} />
+          ))}
           <View>
             <TouchableOpacity style={[commonStyles.button]} onPress={() => {}}>
               <Text style={[commonStyles.header, { color: colors.white }]}>

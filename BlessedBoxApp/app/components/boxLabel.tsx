@@ -12,9 +12,13 @@ import colors from '../baseStyles/colors';
 import QuantitySelector from './QuantitySelector';
 import GenderTile from './GenderTile';
 
+// ...existing imports...
+interface BoxLabelProps {
+  onDelete?: () => void;
+}
 type AgeRange = '2-4' | '5-9' | '10-14';
 
-const BoxLabel = () => {
+const BoxLabel = ({ onDelete }: BoxLabelProps) => {
   const [selected, setSelected] = useState<AgeRange>('2-4');
   const quantitySelectorRef = useRef<{ reset: () => void }>(null);
   const genderTileRef = useRef<{ reset: () => void }>(null);
@@ -40,9 +44,6 @@ const BoxLabel = () => {
     quantitySelectorRef.current?.reset();
     genderTileRef.current?.reset();
   };
-
-  const handleDelete = () => {};
-
   // Render the component
   return (
     <View style={[commonStyles.card, { gap: 10 }]}>
@@ -120,7 +121,7 @@ const BoxLabel = () => {
 
         <TouchableOpacity
           style={[styles.actionButton, { borderColor: colors.red }]}
-          onPress={handleDelete}>
+          onPress={onDelete}>
           <Text style={[commonStyles.paragraphBold, { color: colors.red }]}>
             Delete
           </Text>
