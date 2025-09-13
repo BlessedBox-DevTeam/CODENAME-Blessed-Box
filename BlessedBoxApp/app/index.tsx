@@ -15,8 +15,8 @@ export default function Index() {
   const router = useRouter();
 
   const handleLogin = async () => {
-    return router.replace('./home');
     setIsLoading(true);
+    return router.replace('./home');
     try {
       const port = process.env.PORT;
       const url = process.env.URL;
