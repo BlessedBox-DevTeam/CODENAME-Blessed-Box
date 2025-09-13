@@ -1,9 +1,4 @@
-import React, {
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
@@ -31,13 +26,7 @@ const GenderTile = forwardRef<any, GenderTileProps>((props, ref) => {
 
   return (
     <View style={[genderTileStyles.categoryContainer, { backgroundColor }]}>
-      <Text
-        style={[
-          commonStyles.paragraphExtraBold,
-          genderTileStyles.categoryText,
-        ]}>
-        {text}
-      </Text>
+      <Text style={[commonStyles.paragraphExtraBold, genderTileStyles.categoryText]}>{text}</Text>
       <Slider ref={sliderRef} onValueChange={setGender}></Slider>
     </View>
   );

@@ -1,11 +1,7 @@
-import React, { useEffect, useRef } from "react";
-import { Animated, View, StyleSheet } from "react-native";
+import React, { useEffect, useRef } from 'react';
+import { Animated, StyleSheet } from 'react-native';
 
-export default function LoadingOverlay({
-  visible = false,
-  size = 50,
-  color = "#000",
-}) {
+export default function LoadingOverlay({ visible = false, size = 50, color = '#000' }) {
   const opacity = useRef(new Animated.Value(0)).current;
   const rotate = useRef(new Animated.Value(0)).current;
   const spinning = useRef(null);
@@ -41,7 +37,7 @@ export default function LoadingOverlay({
 
   const spin = rotate.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
+    outputRange: ['0deg', '360deg'],
   });
 
   if (!visible) return null;
@@ -55,7 +51,7 @@ export default function LoadingOverlay({
             width: size,
             height: size,
             borderColor: color,
-            borderTopColor: "transparent",
+            borderTopColor: 'transparent',
             transform: [{ rotate: spin }],
           },
         ]}
@@ -67,9 +63,9 @@ export default function LoadingOverlay({
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 999,
   },
   spinner: {

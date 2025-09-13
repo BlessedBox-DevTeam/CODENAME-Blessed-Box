@@ -1,18 +1,5 @@
-import React, {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
-import {
-  View,
-  StyleSheet,
-  Pressable,
-  Animated,
-  Easing,
-  Keyboard,
-} from 'react-native';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { View, StyleSheet, Pressable, Animated, Easing, Keyboard } from 'react-native';
 import colors from '../baseStyles/colors';
 
 interface SliderProps {
@@ -40,8 +27,7 @@ const Slider = forwardRef<any, SliderProps>(({ onValueChange }, ref) => {
     reset: () => setSelected(0),
   }));
 
-  const backgroundColor =
-    selected === 0 ? colors.dark_red : colors.darker_green;
+  const backgroundColor = selected === 0 ? colors.dark_red : colors.darker_green;
 
   const handleToggle = () => {
     Keyboard.dismiss();
@@ -57,12 +43,8 @@ const Slider = forwardRef<any, SliderProps>(({ onValueChange }, ref) => {
   });
 
   return (
-    <Pressable
-      style={[styles.container, { backgroundColor }]}
-      onPress={handleToggle}>
-      <View
-        style={styles.track}
-        onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}>
+    <Pressable style={[styles.container, { backgroundColor }]} onPress={handleToggle}>
+      <View style={styles.track} onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}>
         <Animated.View style={[styles.thumb, { left: thumbPosition }]} />
       </View>
     </Pressable>

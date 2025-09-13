@@ -1,12 +1,6 @@
 import { router, Stack } from 'expo-router';
-import React, { useRef, useState } from 'react';
-import {
-  Keyboard,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import React, { useState } from 'react';
+import { Keyboard, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
@@ -32,8 +26,7 @@ export default function Index() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaProvider>
         <Stack.Screen options={{ headerShown: false }} />
-        <SafeAreaView
-          style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
+        <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
           <View
             style={{
               display: 'flex',
@@ -67,10 +60,7 @@ export default function Index() {
                 margin: 16,
               },
             ]}>
-            <Text
-              style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
-              Total Boxes
-            </Text>
+            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Total Boxes</Text>
             <View
               style={{
                 borderWidth: 1,
@@ -84,13 +74,7 @@ export default function Index() {
                 justifyContent: 'center',
                 gap: 5,
               }}>
-              <Text
-                style={[
-                  commonStyles.paragraphBold,
-                  { color: colors.dark_blue },
-                ]}>
-                10
-              </Text>
+              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>10</Text>
               <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>★</Text>
             </View>
           </View>
@@ -102,10 +86,7 @@ export default function Index() {
               justifyContent: 'space-between',
               alignItems: 'center',
             }}>
-            <Text
-              style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
-              Enable Shoebox Label
-            </Text>
+            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Enable Shoebox Label</Text>
             {/* <Slider></Slider> */}
           </View>
           {boxLabels.map((idx) => (
@@ -113,9 +94,7 @@ export default function Index() {
           ))}
           <View>
             <TouchableOpacity style={[commonStyles.button]} onPress={() => {}}>
-              <Text style={[commonStyles.header, { color: colors.white }]}>
-                Continue
-              </Text>
+              <Text style={[commonStyles.header, { color: colors.white }]}>Continue</Text>
             </TouchableOpacity>
           </View>
         </SafeAreaView>

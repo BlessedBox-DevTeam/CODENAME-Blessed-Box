@@ -1,37 +1,28 @@
-import axios from "axios";
-import { Stack, useRouter } from "expo-router"; // likely named export
-import React, { useState } from "react";
-import {
-  Alert,
-  Modal,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
-} from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import io from "socket.io-client";
-import commonStyles from "./baseStyles/baseStyles"; // default export
-import colors from "./baseStyles/colors"; // default export
-import LoadingOverlay from "./components/LoadingSpinner";
+import axios from 'axios';
+import { Stack, useRouter } from 'expo-router'; // likely named export
+import React, { useState } from 'react';
+import { Alert, Modal, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import commonStyles from './baseStyles/baseStyles'; // default export
+import colors from './baseStyles/colors'; // default export
+import LoadingOverlay from './components/LoadingSpinner';
 
 export default function Index() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = async () => {
-    return router.replace("./home");
+    return router.replace('./home');
     setIsLoading(true);
     try {
       const port = process.env.PORT;
       const url = process.env.URL;
       const response = await axios.post(`${url}:${port}/api/auth/login`, {
         email: email,
-        password: password
+        password: password,
       });
 
       const user = true;
@@ -64,10 +55,10 @@ export default function Index() {
         // socket.on("chatMessage", (msg) => {
         //   console.log("Mensaje recibido:", msg);
         // });
-        router.replace("./home");
+        router.replace('./home');
       }
     } catch (error) {
-      console.error("Error de login:", error);
+      console.error('Error de login:', error);
     } finally {
       setTimeout(() => {
         setIsLoading(false);
@@ -79,14 +70,13 @@ export default function Index() {
     <SafeAreaProvider>
       <SafeAreaView
         style={{
-          flexDirection: "column",
+          flexDirection: 'column',
           gap: 16,
           padding: 20,
-          alignItems: "center",
-          height: "100%",
-          justifyContent: "space-between"
-        }}
-      >
+          alignItems: 'center',
+          height: '100%',
+          justifyContent: 'space-between',
+        }}>
         <Stack.Screen options={{ headerShown: false }} />
         <LoadingOverlay visible={isLoading} />
 
@@ -95,33 +85,26 @@ export default function Index() {
           transparent={true}
           visible={modalVisible}
           onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
+            Alert.alert('Modal has been closed.');
             setModalVisible(!modalVisible);
-          }}
-        >
+          }}>
           <TouchableWithoutFeedback
             onPress={() => {
               setModalVisible(false);
-            }}
-          >
+            }}>
             <View
               style={{
-                backgroundColor: "transparent",
-                width: "80%",
-                height: "100%"
-              }}
-            >
-              <Text style={commonStyles.paragraph}>
-                Your email or password is incorrect
-              </Text>
+                backgroundColor: 'transparent',
+                width: '80%',
+                height: '100%',
+              }}>
+              <Text style={commonStyles.paragraph}>Your email or password is incorrect</Text>
             </View>
           </TouchableWithoutFeedback>
         </Modal>
 
-        <Text style={[commonStyles.title, { paddingTop: 15 }]}>
-          Blessed Box
-        </Text>
-        <View style={{ flexDirection: "column", gap: 16, width: "100%" }}>
+        <Text style={[commonStyles.title, { paddingTop: 15 }]}>Blessed Box</Text>
+        <View style={{ flexDirection: 'column', gap: 16, width: '100%' }}>
           <TextInput
             style={commonStyles.input}
             placeholder="Correo electrónico"
@@ -139,9 +122,7 @@ export default function Index() {
           />
         </View>
         <TouchableOpacity style={[commonStyles.button]} onPress={handleLogin}>
-          <Text style={[commonStyles.header, { color: colors.white }]}>
-            Login
-          </Text>
+          <Text style={[commonStyles.header, { color: colors.white }]}>Login</Text>
         </TouchableOpacity>
       </SafeAreaView>
     </SafeAreaProvider>

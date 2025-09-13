@@ -1,18 +1,10 @@
 import React, { useRef, useState } from 'react';
-import {
-  Text,
-  TouchableOpacity,
-  View,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Keyboard,
-} from 'react-native';
+import { Keyboard, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
-import QuantitySelector from './QuantitySelector';
 import GenderTile from './GenderTile';
+import QuantitySelector from './QuantitySelector';
 
-// ...existing imports...
 interface BoxLabelProps {
   onDelete?: () => void;
 }
@@ -30,10 +22,7 @@ const BoxLabel = ({ onDelete }: BoxLabelProps) => {
   });
 
   // Reusable style for age range text
-  const getAgeTextStyle = (
-    range: AgeRange,
-    isTenthToFourteen: boolean = false
-  ) => ({
+  const getAgeTextStyle = (range: AgeRange, isTenthToFourteen: boolean = false) => ({
     ...commonStyles.paragraph,
     color: selected === range ? colors.dark_blue : colors.dark_gray,
     ...(isTenthToFourteen ? {} : styles.ageText),
@@ -54,9 +43,7 @@ const BoxLabel = ({ onDelete }: BoxLabelProps) => {
       <GenderTile ref={genderTileRef}></GenderTile>
 
       {/* Select Age Label */}
-      <Text style={[commonStyles.paragraphBold, styles.labelText]}>
-        Select Age
-      </Text>
+      <Text style={[commonStyles.paragraphBold, styles.labelText]}>Select Age</Text>
 
       {/* Age range selection */}
       <View style={styles.ageContainer}>
@@ -99,32 +86,19 @@ const BoxLabel = ({ onDelete }: BoxLabelProps) => {
       </View>
 
       {/* Quantity Label */}
-      <Text style={[commonStyles.paragraphBold, styles.labelText]}>
-        Quantity
-      </Text>
+      <Text style={[commonStyles.paragraphBold, styles.labelText]}>Quantity</Text>
       {/* Quantity Selector */}
       <QuantitySelector ref={quantitySelectorRef} />
 
-      <Text style={[styles.instructionText]}>
-        Write a number or use the buttons
-      </Text>
+      <Text style={[styles.instructionText]}>Write a number or use the buttons</Text>
       {/* Action Buttons */}
       <View style={styles.actionContainer}>
-        <TouchableOpacity
-          style={[styles.actionButton, { borderColor: colors.dark_blue }]}
-          onPress={handleReset}>
-          <Text
-            style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
-            Reset
-          </Text>
+        <TouchableOpacity style={[styles.actionButton, { borderColor: colors.dark_blue }]} onPress={handleReset}>
+          <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Reset</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.actionButton, { borderColor: colors.red }]}
-          onPress={onDelete}>
-          <Text style={[commonStyles.paragraphBold, { color: colors.red }]}>
-            Delete
-          </Text>
+        <TouchableOpacity style={[styles.actionButton, { borderColor: colors.red }]} onPress={onDelete}>
+          <Text style={[commonStyles.paragraphBold, { color: colors.red }]}>Delete</Text>
         </TouchableOpacity>
       </View>
     </View>
