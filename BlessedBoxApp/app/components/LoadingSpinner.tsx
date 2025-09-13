@@ -4,7 +4,7 @@ import { Animated, StyleSheet } from 'react-native';
 export default function LoadingOverlay({ visible = false, size = 50, color = '#000' }) {
   const opacity = useRef(new Animated.Value(0)).current;
   const rotate = useRef(new Animated.Value(0)).current;
-  const spinning = useRef(null);
+  const spinning = useRef<Animated.CompositeAnimation | null>(null);
 
   // Fade in/out effect
   useEffect(() => {

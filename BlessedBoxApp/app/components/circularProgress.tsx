@@ -4,7 +4,11 @@ import Svg, { Circle } from 'react-native-svg';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 
-const CircularProgress = ({ percentage }) => {
+interface CircularProgressProps {
+  percentage: number;
+}
+
+const CircularProgress: React.FC<CircularProgressProps> = ({ percentage }) => {
   const radius = 50;
   const strokeWidth = 10;
   const normalizedRadius = radius - strokeWidth / 2;
