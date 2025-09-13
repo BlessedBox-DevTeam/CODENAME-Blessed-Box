@@ -5,7 +5,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { View, StyleSheet, Pressable, Animated, Easing } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Pressable,
+  Animated,
+  Easing,
+  Keyboard,
+} from 'react-native';
 import colors from '../baseStyles/colors';
 
 interface SliderProps {
@@ -37,6 +44,7 @@ const Slider = forwardRef<any, SliderProps>(({ onValueChange }, ref) => {
     selected === 0 ? colors.dark_red : colors.darker_green;
 
   const handleToggle = () => {
+    Keyboard.dismiss();
     const newValue = selected === 0 ? 1 : 0;
     setSelected(newValue);
     if (onValueChange) onValueChange(newValue);

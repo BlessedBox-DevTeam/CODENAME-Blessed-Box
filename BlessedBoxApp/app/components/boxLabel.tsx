@@ -45,81 +45,88 @@ const BoxLabel = () => {
 
   // Render the component
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={[commonStyles.card, { gap: 10 }]}>
-        {/* Title */}
-        <Text style={[commonStyles.header, styles.title]}>Shoebox Label</Text>
+    <View style={[commonStyles.card, { gap: 10 }]}>
+      {/* Title */}
+      <Text style={[commonStyles.header, styles.title]}>Shoebox Label</Text>
 
-        {/* Category Label */}
-        <GenderTile ref={genderTileRef}></GenderTile>
+      {/* Category Label */}
+      <GenderTile ref={genderTileRef}></GenderTile>
 
-        {/* Select Age Label */}
-        <Text style={[commonStyles.paragraphBold, styles.labelText]}>
-          Select Age
-        </Text>
+      {/* Select Age Label */}
+      <Text style={[commonStyles.paragraphBold, styles.labelText]}>
+        Select Age
+      </Text>
 
-        {/* Age range selection */}
-        <View style={styles.ageContainer}>
-          <TouchableOpacity
-            style={getAgeButtonStyle('2-4')}
-            onPress={() => setSelected('2-4')}>
-            <Text style={getAgeTextStyle('2-4')}>2-4</Text>
-          </TouchableOpacity>
+      {/* Age range selection */}
+      <View style={styles.ageContainer}>
+        <TouchableOpacity
+          style={getAgeButtonStyle('2-4')}
+          onPress={() => {
+            Keyboard.dismiss();
+            setSelected('2-4');
+          }}>
+          <Text style={getAgeTextStyle('2-4')}>2-4</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={getAgeButtonStyle('5-9')}
-            onPress={() => setSelected('5-9')}>
-            <Text style={getAgeTextStyle('5-9')}>5-9</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={getAgeButtonStyle('5-9')}
+          onPress={() => {
+            Keyboard.dismiss();
+            setSelected('5-9');
+          }}>
+          <Text style={getAgeTextStyle('5-9')}>5-9</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={getAgeButtonStyle('10-14')}
-            onPress={() => setSelected('10-14')}>
-            <Text style={getAgeTextStyle('10-14', true)}>
-              10
-              <Text
-                style={{
-                  letterSpacing: 2,
-                  color: getAgeTextStyle('10-14').color,
-                }}>
-                -
-              </Text>
-              14
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Quantity Label */}
-        <Text style={[commonStyles.paragraphBold, styles.labelText]}>
-          Quantity
-        </Text>
-        {/* Quantity Selector */}
-        <QuantitySelector ref={quantitySelectorRef} />
-
-        <Text style={[styles.instructionText]}>
-          Write a number or use the buttons
-        </Text>
-        {/* Action Buttons */}
-        <View style={styles.actionContainer}>
-          <TouchableOpacity
-            style={[styles.actionButton, { borderColor: colors.dark_blue }]}
-            onPress={handleReset}>
+        <TouchableOpacity
+          style={getAgeButtonStyle('10-14')}
+          onPress={() => {
+            Keyboard.dismiss();
+            setSelected('10-14');
+          }}>
+          <Text style={getAgeTextStyle('10-14', true)}>
+            10
             <Text
-              style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
-              Reset
+              style={{
+                letterSpacing: 2,
+                color: getAgeTextStyle('10-14').color,
+              }}>
+              -
             </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.actionButton, { borderColor: colors.red }]}
-            onPress={handleDelete}>
-            <Text style={[commonStyles.paragraphBold, { color: colors.red }]}>
-              Delete
-            </Text>
-          </TouchableOpacity>
-        </View>
+            14
+          </Text>
+        </TouchableOpacity>
       </View>
-    </TouchableWithoutFeedback>
+
+      {/* Quantity Label */}
+      <Text style={[commonStyles.paragraphBold, styles.labelText]}>
+        Quantity
+      </Text>
+      {/* Quantity Selector */}
+      <QuantitySelector ref={quantitySelectorRef} />
+
+      <Text style={[styles.instructionText]}>
+        Write a number or use the buttons
+      </Text>
+      {/* Action Buttons */}
+      <View style={styles.actionContainer}>
+        <TouchableOpacity
+          style={[styles.actionButton, { borderColor: colors.dark_blue }]}
+          onPress={handleReset}>
+          <Text
+            style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
+            Reset
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.actionButton, { borderColor: colors.red }]}
+          onPress={handleDelete}>
+          <Text style={[commonStyles.paragraphBold, { color: colors.red }]}>
+            Delete
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
