@@ -4,21 +4,52 @@ import Svg, { Circle } from 'react-native-svg';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 
+/**
+ * Props for the CircularProgress component.
+ */
 interface CircularProgressProps {
+  /**
+   * Progress percentage to display (0–100).
+   */
   percentage: number;
 }
 
+/**
+ * Circular progress indicator component.
+ *
+ * Renders a circular progress bar with a percentage
+ * value displayed at the center.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <CircularProgress percentage={75} />
+ * ```
+ *
+ * @param {CircularProgressProps} props - The component props.
+ * @param {number} props.percentage - Progress percentage (0–100).
+ * @returns {JSX.Element} React component.
+ */
 const CircularProgress: React.FC<CircularProgressProps> = ({ percentage }) => {
+  /** Radius of the circle */
   const radius = 50;
+
+  /** Width of the circle stroke */
   const strokeWidth = 10;
+
+  /** Normalized radius to keep stroke inside the circle */
   const normalizedRadius = radius - strokeWidth / 2;
+
+  /** Circumference of the circle (used for dasharray) */
   const circumference = 2 * Math.PI * normalizedRadius;
+
+  /** Offset of the stroke to represent the percentage filled */
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
     <View style={commonStyles.container}>
       <Svg height="100" width="100">
-        {/* Fondo gris */}
+        {/* Gray background circle */}
         <Circle
           stroke={colors.light_gray}
           fill="transparent"
@@ -27,7 +58,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({ percentage }) => {
           cy="50"
           r={normalizedRadius}
         />
-        {/* Progreso verde */}
+        {/* Progress circle */}
         <Circle
           stroke={colors.dark_green}
           fill="transparent"
@@ -42,7 +73,8 @@ const CircularProgress: React.FC<CircularProgressProps> = ({ percentage }) => {
           origin="50, 50"
         />
       </Svg>
-      {/* Texto al centro */}
+
+      {/* Center text */}
       <View style={commonStyles.textContainer}>
         <Text style={commonStyles.header}>{`${percentage}%`}</Text>
       </View>

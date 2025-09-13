@@ -5,44 +5,83 @@ import colors from '../baseStyles/colors';
 import GenderTile from './GenderTile';
 import QuantitySelector from './QuantitySelector';
 
+/**
+ * Props for the BoxLabel component.
+ */
 interface BoxLabelProps {
+  /**
+   * Optional callback fired when the "Delete" button is pressed.
+   */
   onDelete?: () => void;
 }
+
+/**
+ * Valid age ranges available in the component.
+ */
 type AgeRange = '2-4' | '5-9' | '10-14';
 
+/**
+ * Shoebox Label component.
+ *
+ * Displays gender selection, age range selection,
+ * quantity input, and reset/delete actions.
+ *
+ * @param {BoxLabelProps} props - The component props.
+ * @returns {JSX.Element} React component.
+ */
 const BoxLabel = ({ onDelete }: BoxLabelProps) => {
+  /** Current selected age range */
   const [selected, setSelected] = useState<AgeRange>('2-4');
+
+  /** Ref to control the QuantitySelector child component */
   const quantitySelectorRef = useRef<{ reset: () => void }>(null);
+
+  /** Ref to control the GenderTile child component */
   const genderTileRef = useRef<{ reset: () => void }>(null);
 
-  // Reusable style for age range buttons
+  /**
+   * Get the button style for a given age range.
+   *
+   * @param {AgeRange} range - The age range.
+   * @returns {object} Style object for the button.
+   */
   const getAgeButtonStyle = (range: AgeRange) => ({
     ...styles.ageButton,
     backgroundColor: selected === range ? colors.white : 'transparent',
   });
 
-  // Reusable style for age range text
+  /**
+   * Get the text style for a given age range.
+   *
+   * @param {AgeRange} range - The age range.
+   * @param {boolean} [isTenthToFourteen=false] - Special flag for the "10-14" case.
+   * @returns {object} Style object for the text.
+   */
   const getAgeTextStyle = (range: AgeRange, isTenthToFourteen: boolean = false) => ({
     ...commonStyles.paragraph,
     color: selected === range ? colors.dark_blue : colors.dark_gray,
     ...(isTenthToFourteen ? {} : styles.ageText),
   });
 
+  /**
+   * Reset the component state and children to defaults.
+   */
   const handleReset = () => {
     setSelected('2-4');
     quantitySelectorRef.current?.reset();
     genderTileRef.current?.reset();
   };
-  // Render the component
+
+  // Render
   return (
     <View style={[commonStyles.card, { gap: 10 }]}>
       {/* Title */}
       <Text style={[commonStyles.header, styles.title]}>Shoebox Label</Text>
 
-      {/* Category Label */}
+      {/* Gender Selector */}
       <GenderTile ref={genderTileRef}></GenderTile>
 
-      {/* Select Age Label */}
+      {/* Age Label */}
       <Text style={[commonStyles.paragraphBold, styles.labelText]}>Select Age</Text>
 
       {/* Age range selection */}
@@ -87,10 +126,12 @@ const BoxLabel = ({ onDelete }: BoxLabelProps) => {
 
       {/* Quantity Label */}
       <Text style={[commonStyles.paragraphBold, styles.labelText]}>Quantity</Text>
+
       {/* Quantity Selector */}
       <QuantitySelector ref={quantitySelectorRef} />
 
       <Text style={[styles.instructionText]}>Write a number or use the buttons</Text>
+
       {/* Action Buttons */}
       <View style={styles.actionContainer}>
         <TouchableOpacity style={[styles.actionButton, { borderColor: colors.dark_blue }]} onPress={handleReset}>
@@ -105,7 +146,7 @@ const BoxLabel = ({ onDelete }: BoxLabelProps) => {
   );
 };
 
-// Stylesheet for reusable styles
+// Stylesheet
 const styles = StyleSheet.create({
   title: {
     color: colors.red,
