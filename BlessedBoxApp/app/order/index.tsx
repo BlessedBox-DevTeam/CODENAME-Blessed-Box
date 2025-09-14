@@ -93,7 +93,11 @@ export default function Index() {
             <BoxLabel key={idx} onDelete={() => handleDeleteBoxLabel(idx)} />
           ))}
           <View>
-            <TouchableOpacity style={[commonStyles.button]} onPress={() => {}}>
+            <TouchableOpacity
+              style={[commonStyles.button]}
+              onPress={() => {
+                router.replace('./completedOrder');
+              }}>
               <Text style={[commonStyles.header, { color: colors.white }]}>Continue</Text>
             </TouchableOpacity>
           </View>
