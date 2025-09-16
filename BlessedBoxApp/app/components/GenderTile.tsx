@@ -9,7 +9,10 @@ import Slider from './Slider';
  *
  * (Currently no props are required, but this type can be extended.)
  */
-interface GenderTileProps {}
+interface GenderTileProps {
+  getGender: () => string;
+  reset: () => void;
+}
 
 /**
  * GenderTile component.
@@ -52,6 +55,7 @@ const GenderTile = forwardRef<any, GenderTileProps>((props, ref) => {
       setGender(0);
       sliderRef.current?.reset?.();
     },
+    getGender: () => gender,
   }));
 
   /** Whether current gender is "Girl" */
