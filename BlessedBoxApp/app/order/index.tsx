@@ -1,23 +1,29 @@
 import { router, Stack } from 'expo-router';
-import React, { useState } from 'react';
-import { Keyboard, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Keyboard, KeyboardAvoidingView, LayoutAnimation, Platform, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, UIManager, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import BoxLabel from '../components/BoxLabel';
 
 export default function Index() {
-  // Just an array of BoxLabel placeholders
   const [boxLabels, setBoxLabels] = useState<number[]>([0]);
+  const nextId = useRef(1);
+  const [totalBoxes, setTotalBoxes] = useState('1');
+  const scrollRef = useRef<ScrollView>(null);
 
-  // Add a new BoxLabel
   const handleAddBoxLabel = () => {
-    setBoxLabels((prev) => [...prev, prev.length]);
+    setBoxLabels((prev) => [...prev, nextId.current++]);
+    setTimeout(() => {
+      scrollRef.current?.scrollToEnd({ animated: true });
+    }, 100);
   };
-
-  // Remove a BoxLabel by its index
-  const handleDeleteBoxLabel = (index: number) => {
-    setBoxLabels((prev) => prev.filter((i) => i !== index));
+  const handleDeleteBoxLabel = (id: number) => {
+    if (Platform.OS === 'android') {
+      UIManager.setLayoutAnimationEnabledExperimental?.(true);
+    }
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setBoxLabels((prev) => prev.filter((boxId) => boxId !== id));
   };
   const handleBackPress = () => {
     return router.replace('./qrCode');
@@ -27,6 +33,7 @@ export default function Index() {
       <SafeAreaProvider>
         <Stack.Screen options={{ headerShown: false }} />
         <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
+          {/* Header */}
           <View
             style={{
               display: 'flex',
@@ -36,6 +43,7 @@ export default function Index() {
               padding: 20,
               paddingBottom: 0,
               position: 'relative',
+              marginBottom: 20,
             }}>
             <Text
               style={{
@@ -47,55 +55,103 @@ export default function Index() {
               onPress={handleBackPress}>{`${'Back'}`}</Text>
             <Text style={commonStyles.header}>Enter Order</Text>
           </View>
-
-          <View
-            style={[
-              commonStyles.card,
-              {
+          {/* Main Section Container */}
+          <View style={{ display: 'flex', flex: 1, gap: 16 }}>
+            {/* Total Boxes Card */}
+            <View
+              style={[
+                commonStyles.card,
+                {
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingVertical: 12,
+                  paddingHorizontal: 24,
+                  marginHorizontal: 16,
+                },
+              ]}>
+              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Total Boxes</Text>
+              {/* Text Input Container */}
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: colors.light_gray,
+                  // paddingLeft: 12,
+                  // paddingRight: 12,
+                  padding: 5,
+                  borderRadius: 10,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 1,
+                }}>
+                <TextInput
+                  value={totalBoxes}
+                  keyboardType="numeric"
+                  style={[commonStyles.paragraph, { color: colors.dark_blue }]}
+                  selectTextOnFocus={true}
+                  autoFocus={false}
+                  maxLength={3}
+                  onChangeText={(text) => {
+                    // Only allow numbers
+                    const filtered = text.replace(/[^0-9]/g, '');
+                    setTotalBoxes(filtered);
+                  }}
+                  onBlur={() => {
+                    let num = Number(totalBoxes);
+                    if (!totalBoxes || isNaN(num)) {
+                      setTotalBoxes('1');
+                    } else if (num < 1) {
+                      setTotalBoxes('1');
+                    } else if (num > 100) {
+                      setTotalBoxes('100');
+                    } else {
+                      setTotalBoxes(String(num));
+                    }
+                  }}
+                />
+                <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>★</Text>
+              </View>
+            </View>
+            {/* Enable Shoebox Controller */}
+            <View
+              style={{
                 display: 'flex',
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                padding: 20,
                 alignItems: 'center',
-                margin: 16,
-              },
-            ]}>
-            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Total Boxes</Text>
-            <View
-              style={{
-                borderWidth: 1,
-                borderColor: colors.light_gray,
-                paddingVertical: 3,
-                paddingHorizontal: 10,
-                borderRadius: 5,
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 5,
+                paddingHorizontal: 20,
               }}>
-              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>10</Text>
-              <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>★</Text>
+              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Enable Shoebox Label</Text>
+              {/* <Slider></Slider> */}
             </View>
-          </View>
-          <View
-            style={{
-              paddingHorizontal: 20,
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Enable Shoebox Label</Text>
-            {/* <Slider></Slider> */}
-          </View>
-          {boxLabels.map((idx) => (
-            <BoxLabel key={idx} onDelete={() => handleDeleteBoxLabel(idx)} />
-          ))}
-          <View>
-            <TouchableOpacity style={[commonStyles.button]} onPress={() => {}}>
-              <Text style={[commonStyles.header, { color: colors.white }]}>Continue</Text>
-            </TouchableOpacity>
+            {/* Scroll View Container */}
+            <ScrollView ref={scrollRef} style={{ flex: 1, paddingHorizontal: 16 }} contentContainerStyle={{ gap: 12 }} keyboardShouldPersistTaps="handled">
+              {/* Render */}
+              {boxLabels.map((id) => (
+                <BoxLabel key={id} onDelete={() => handleDeleteBoxLabel(id)} />
+              ))}
+            </ScrollView>
+            {/* Add button */}
+            <View>
+              <View style={{ alignItems: 'center' }}>
+                <Text
+                  style={{
+                    fontSize: 32,
+                    color: colors.dark_blue,
+                    fontWeight: 'bold',
+                    padding: 8,
+                  }}
+                  onPress={handleAddBoxLabel}>
+                  +
+                </Text>
+              </View>
+              <TouchableOpacity style={[commonStyles.button]} onPress={() => {}}>
+                <Text style={[commonStyles.header, { color: colors.white }]}>Continue</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </SafeAreaView>
       </SafeAreaProvider>

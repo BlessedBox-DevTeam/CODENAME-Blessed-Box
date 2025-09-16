@@ -144,7 +144,7 @@ export default function Index() {
                     opacity: 0,
                     width: '100%',
                   }}
-                  autoFocus={true}
+                  autoFocus={false}
                 />
                 <View
                   style={{
