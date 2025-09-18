@@ -65,7 +65,7 @@ export default function Index() {
         {activeTab === 'information' ? (
           <Text>Contenido de Información del Depósito</Text>
         ) : (
-          <Text>Contenido de Resumen de la Caja</Text>
+          <Text>Contenido de Resumen de la Caja jjjjj</Text>
         )}
       </View>
     </SafeAreaView>
