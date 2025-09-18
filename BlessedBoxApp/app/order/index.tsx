@@ -96,7 +96,7 @@ export default function Index() {
             <TouchableOpacity
               style={[commonStyles.button]}
               onPress={() => {
-                router.replace('./completedOrder');
+                router.replace('./depositDetails');
               }}>
               <Text style={[commonStyles.header, { color: colors.white }]}>Continue</Text>
             </TouchableOpacity>
