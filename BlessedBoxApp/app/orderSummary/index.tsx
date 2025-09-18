@@ -6,12 +6,14 @@ import colors from '../baseStyles/colors';
 import commonStyles from '../baseStyles/baseStyles';
 import { useLocalSearchParams } from 'expo-router';
 import { BoxLabelInfo } from '../types/BoxLabelInfo';
+import GenderInitial from '../components/GenderInitial';
 
 export default function Index() {
   const { boxLabels } = useLocalSearchParams<{ boxLabels: string }>();
   let parsedBoxLabels: BoxLabelInfo[] = [];
   if (boxLabels) {
     parsedBoxLabels = JSON.parse(boxLabels) as BoxLabelInfo[];
+    console.log('Parsed Box Labels:', parsedBoxLabels);
   }
   const handleBackPress = () => {
     return router.replace('./order');
@@ -29,12 +31,17 @@ export default function Index() {
           borderColor: colors.light_gray,
           borderBottomWidth: index === parsedBoxLabels.length - 1 ? 0 : 1,
         }}>
+        {/* Amount Container */}
         <View style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center' }}>
           <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{`${boxLabel.quantity}x`}</Text>
           <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Blessed Box</Text>
         </View>
-        <View style={{ borderRadius: 5, width: 60, backgroundColor: colors.light_gray, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={[commonStyles.paragraph, { letterSpacing: 2 }]}>{boxLabel.selectedAge}</Text>
+        {/* Details Container */}
+        <View>
+          <GenderInitial genderCode={boxLabel.gender} />
+          <View style={{ borderRadius: 5, width: 60, backgroundColor: colors.light_gray, alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={[commonStyles.paragraph, { letterSpacing: 2 }]}>{boxLabel.selectedAge}</Text>
+          </View>
         </View>
       </View>
     ));

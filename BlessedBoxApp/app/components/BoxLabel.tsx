@@ -78,7 +78,7 @@ const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete }, ref) => 
     getData: (): BoxLabelInfo => ({
       selectedAge: selected,
       quantity: quantitySelectorRef.current?.getQuantity() ?? 0,
-      gender: genderTileRef.current?.getGender?.() ?? undefined,
+      gender: genderTileRef.current?.getGender?.() ?? 1,
     }),
   }));
   // Render
