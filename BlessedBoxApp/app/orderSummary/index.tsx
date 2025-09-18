@@ -30,6 +30,7 @@ export default function Index() {
           paddingVertical: 10,
           borderColor: colors.light_gray,
           borderBottomWidth: index === parsedBoxLabels.length - 1 ? 0 : 1,
+          overflow: 'hidden',
         }}>
         {/* Amount Container */}
         <View style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center' }}>
@@ -37,9 +38,9 @@ export default function Index() {
           <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Blessed Box</Text>
         </View>
         {/* Details Container */}
-        <View>
+        <View style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center' }}>
           <GenderInitial genderCode={boxLabel.gender} />
-          <View style={{ borderRadius: 5, width: 60, backgroundColor: colors.light_gray, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ borderRadius: 5, width: 'auto', maxWidth: 60, backgroundColor: colors.light_gray, alignItems: 'center', justifyContent: 'center', flex: 1, padding: 2 }}>
             <Text style={[commonStyles.paragraph, { letterSpacing: 2 }]}>{boxLabel.selectedAge}</Text>
           </View>
         </View>
