@@ -1,22 +1,22 @@
 import { router, Stack } from 'expo-router';
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import colors from '../baseStyles/colors';
 import commonStyles from '../baseStyles/baseStyles';
 import { useLocalSearchParams } from 'expo-router';
 import { BoxLabelInfo } from '../types/BoxLabelInfo';
 import GenderInitial from '../components/GenderInitial';
+import BackArrow from '../components/icons/BackArrow';
 
 export default function Index() {
   const { boxLabels } = useLocalSearchParams<{ boxLabels: string }>();
   let parsedBoxLabels: BoxLabelInfo[] = [];
   if (boxLabels) {
     parsedBoxLabels = JSON.parse(boxLabels) as BoxLabelInfo[];
-    console.log('Parsed Box Labels:', parsedBoxLabels);
   }
   const handleBackPress = () => {
-    return router.replace('./order');
+    return router.back();
   };
   const appendOrderSummary = () => {
     return parsedBoxLabels.map((boxLabel, index) => (
@@ -55,25 +55,20 @@ export default function Index() {
         {/* Header */}
         <View
           style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
             flexDirection: 'row',
+            alignItems: 'center',
             padding: 20,
             paddingBottom: 0,
-            position: 'relative',
             marginBottom: 20,
           }}>
-          <Text
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              padding: 20,
-            }}
-            onPress={handleBackPress}>{`${'Back'}`}</Text>
-          <Text style={commonStyles.header}>Order Summary</Text>
+          <BackArrow onPress={handleBackPress} />
+          <View style={{ flex: 1, alignItems: 'center' }}>
+            <Text style={commonStyles.header}>Order Summary</Text>
+          </View>
+          {/* Empty Container */}
+          <View style={{ width: 25 }}></View>
         </View>
+
         {/* Content */}
         <View style={[commonStyles.card, {}]}>
           {/* Church Container */}
@@ -86,6 +81,12 @@ export default function Index() {
           </View>
           {/* Order Summary */}
           {appendOrderSummary()}
+        </View>
+        {/* Continue Button */}
+        <View style={{ marginTop: 'auto' }}>
+          <TouchableOpacity style={[commonStyles.button]} onPress={() => {}}>
+            <Text style={[commonStyles.header, { color: colors.white }]}>Confirm Order</Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

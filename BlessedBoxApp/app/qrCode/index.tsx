@@ -6,6 +6,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import SwitchSelector from 'react-native-switch-selector';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
+import BackArrow from '../components/icons/BackArrow';
 
 export default function Index() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -39,26 +40,22 @@ export default function Index() {
     <SafeAreaProvider>
       <Stack.Screen options={{ headerShown: false }} />
       <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
+        {/* Header */}
         <View
           style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
             flexDirection: 'row',
+            alignItems: 'center',
             padding: 20,
             paddingBottom: 0,
-            position: 'relative',
           }}>
-          <Text
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              padding: 20,
-            }}
-            onPress={handleBackPress}>{`${'Back'}`}</Text>
-          <Text style={commonStyles.header}>Qr Code</Text>
+          <BackArrow onPress={handleBackPress} />
+          <View style={{ flex: 1, alignItems: 'center' }}>
+            <Text style={commonStyles.header}>Order Summary</Text>
+          </View>
+          {/* Empty Container */}
+          <View style={{ width: 25 }}></View>
         </View>
+        {/* SwitchSelector */}
         <View>
           <SwitchSelector
             options={[
@@ -73,6 +70,7 @@ export default function Index() {
             selectedColor={colors.white}
             buttonColor={colors.dark_blue}
             borderColor={colors.dark_blue}
+            buttonMargin={4}
             style={{
               width: '100%',
               height: 50,

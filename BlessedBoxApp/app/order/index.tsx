@@ -5,6 +5,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import BoxLabel, { BoxLabelType } from '../components/BoxLabel';
+import Arrow from '../components/icons/BackArrow';
 
 export default function Index() {
   const [boxLabels, setBoxLabels] = useState<number[]>([0]);
@@ -44,24 +45,18 @@ export default function Index() {
         {/* Header */}
         <View
           style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
             flexDirection: 'row',
+            alignItems: 'center',
             padding: 20,
             paddingBottom: 0,
-            position: 'relative',
             marginBottom: 20,
           }}>
-          <Text
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              padding: 20,
-            }}
-            onPress={handleBackPress}>{`${'Back'}`}</Text>
-          <Text style={commonStyles.header}>Enter Order</Text>
+          <Arrow onPress={handleBackPress} />
+          <View style={{ flex: 1, alignItems: 'center' }}>
+            <Text style={commonStyles.header}>Enter Order</Text>
+          </View>
+          {/* Empty Container */}
+          <View style={{ width: 25 }}></View>
         </View>
 
         {/* Main Section Container */}
