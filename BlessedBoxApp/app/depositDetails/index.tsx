@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
 import SwitchSelector from 'react-native-switch-selector';
 import colors from '../baseStyles/colors';
+import { Modal } from 'react-native';
 
 export default function Index() {
   const router = useRouter();
@@ -23,8 +24,20 @@ export default function Index() {
     churchText: 'Church',
     churchName: 'Iglesia Cristiana Bethlehem',
   };
+  const [showWarning, setShowWarning] = useState(false);
 
-  const appendDepositDetails = () => {
+  const secondDummyData = {
+    BlessedBox1: '2x Blessed Box',
+    BlessedBox1Info: 'M 10-14',
+    BlessedBox2: '1x Blessed Box',
+    BlessedBox2Info: 'F 2-4',
+    BlessedBox3: '3x Blessed Box',
+    BlessedBox3Info: 'M 5-9',
+    BlessedBox4: '4x Blessed Box',
+    BlessedBox4Info: 'Unlabeled',
+  };
+
+  const appendDepositInfo = () => {
     return (
       <View
         style={{
@@ -106,8 +119,52 @@ export default function Index() {
     );
   };
 
+  const appendBoxSummary = () => {
+    // Divide items into two columns
+    const leftColumn = [
+      secondDummyData.BlessedBox1,
+      secondDummyData.BlessedBox2,
+      secondDummyData.BlessedBox3,
+      secondDummyData.BlessedBox4,
+    ];
+    const rightColumn = [
+      secondDummyData.BlessedBox1Info,
+      secondDummyData.BlessedBox2Info,
+      secondDummyData.BlessedBox3Info,
+      secondDummyData.BlessedBox4Info,
+    ];
+
+    return (
+      <View style={{ flexDirection: 'column', paddingVertical: 10 }}>
+        {leftColumn.map((item, idx) => (
+          <View
+            key={idx}
+            style={{
+              flexDirection: 'row',
+              borderBottomColor: colors.light_gray,
+              borderBottomWidth: idx === leftColumn.length - 1 ? 0 : 2,
+              paddingBottom: 10,
+              marginBottom: 10,
+              gap: 16,
+            }}>
+            {/* First Column */}
+            <View style={{ flex: 1 }}>
+              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{item}</Text>
+            </View>
+            {/* Second Column: Text is a placeholder for now*/}
+            <View style={{ flex: 1, alignItems: 'flex-end' }}>
+              <Text style={[commonStyles.paragraph, { color: colors.dark_blue, fontStyle: 'italic' }]}>
+                {rightColumn[idx]}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    );
+  };
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, paddingHorizontal: 20 }}>
       <Stack.Screen options={{ headerShown: false }} />
       <View
         style={{
@@ -148,10 +205,9 @@ export default function Index() {
         borderColor={colors.white}
         buttonMargin={4}
         style={{
-          width: '100%',
           height: 50,
           marginBottom: 20,
-          padding: 20,
+          marginTop: 10,
         }}
         textStyle={{
           fontFamily: commonStyles.paragraph.fontFamily,
@@ -159,13 +215,61 @@ export default function Index() {
         selectedTextStyle={{
           fontFamily: commonStyles.paragraphBold.fontFamily,
         }}></SwitchSelector>
-      <View style={commonStyles.card}>
-        {activeTab === 'information' ? appendDepositDetails() : <Text>Contenido de Resumen de la Caja jjjjj</Text>}
-      </View>
 
-      <View style={{ marginTop: 'auto', padding: 20, width: '100%' }}>
+      <View style={commonStyles.card}>{activeTab === 'information' ? appendDepositInfo() : appendBoxSummary()}</View>
+
+      {/* Warning Modal */}
+      <Modal visible={showWarning} transparent animationType="fade" onRequestClose={() => setShowWarning(false)}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <View
+            style={{
+              width: '90%',
+              maxWidth: 400,
+              borderRadius: 10,
+              backgroundColor: colors.white,
+              padding: 32,
+              flexDirection: 'column',
+              alignSelf: 'center',
+            }}>
+            <Text style={[commonStyles.paragraph, { marginBottom: 32, textAlign: 'center' }]}>
+              Are you sure you want to decline this deposit?
+            </Text>
+            <View style={{ flexDirection: 'row', gap: 32 }}>
+              <TouchableOpacity
+                style={[
+                  commonStyles.buttonNoShadow,
+                  {
+                    backgroundColor: colors.white,
+                    borderColor: colors.dark_gray,
+                    borderWidth: 2,
+                    flex: 1,
+                  },
+                ]}
+                onPress={() => setShowWarning(false)}>
+                <Text style={[commonStyles.header, { color: colors.dark_gray }]}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[commonStyles.buttonNoShadow, { backgroundColor: colors.red_label, flex: 1 }]}
+                onPress={() => {
+                  setShowWarning(false);
+                  router.replace('./order');
+                }}>
+                <Text style={[commonStyles.header, { color: colors.white }]}>Decline</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <View style={{ marginTop: 'auto', paddingBottom: 20 }}>
         <TouchableOpacity
-          style={[commonStyles.buttonNoShadow, { width: '100%' }]}
+          style={commonStyles.buttonNoShadow}
           onPress={() => {
             router.replace('./');
           }}>
@@ -180,12 +284,9 @@ export default function Index() {
               borderColor: colors.red_label,
               borderWidth: 2,
               marginTop: 10,
-              width: '100%',
             },
           ]}
-          onPress={() => {
-            router.replace('./');
-          }}>
+          onPress={() => setShowWarning(true)}>
           <Text style={[commonStyles.header, { color: colors.red_label }]}>Decline</Text>
         </TouchableOpacity>
       </View>
