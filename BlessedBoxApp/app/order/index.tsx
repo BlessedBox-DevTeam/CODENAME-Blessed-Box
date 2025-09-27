@@ -1,6 +1,6 @@
 import { router, Stack } from 'expo-router';
 import React, { useRef, useState } from 'react';
-import { LayoutAnimation, Platform, ScrollView, Text, TextInput, TouchableOpacity, UIManager, View } from 'react-native';
+import { Alert, LayoutAnimation, Platform, ScrollView, Text, TextInput, TouchableOpacity, UIManager, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
@@ -9,16 +9,46 @@ import Arrow from '../components/icons/BackArrow';
 import PlusSign from '../components/icons/PlusSign';
 import { BoxLabelInfo } from '../types/BoxLabelInfo';
 
+/**
+ * Order Entry Screen
+ *
+ * Allows users to input the total number of shoeboxes,
+ * create individual Box Labels, and navigate to the Order Summary.
+ *
+ * @returns {JSX.Element} React component for entering orders
+ */
 export default function Index() {
+  /** Array of box label IDs */
   const [boxLabels, setBoxLabels] = useState<number[]>([0]);
+
+  /** Counter to assign unique IDs to new box labels */
   const nextId = useRef(1);
+
+  /** Total number of boxes input by the user */
   const [totalBoxes, setTotalBoxes] = useState('1');
+
+  /** Ref to scroll view for auto-scrolling when adding labels */
   const scrollRef = useRef<ScrollView>(null);
+
+  /** Refs to each BoxLabel component */
   const boxRefs = useRef<{ [key: number]: BoxLabelType | null }>({});
 
+  /** Error state for totalBoxes input */
+  const [totalBoxesError, setTotalBoxesError] = useState('');
+
+  /** Error state for individual box labels */
+  const [boxErrors, setBoxErrors] = useState<{ [key: number]: string }>({});
+
+  /** Error state for total boxes border */
+  const [inputBorderColor, setInputBorderColor] = useState(colors.light_gray);
+
+  /**
+   * Add a new BoxLabel
+   * Limits the number of labels to 6
+   */
   const handleAddBoxLabel = () => {
     setBoxLabels((prev) => {
-      if (prev.length >= 6) return prev; // no agregamos más de 6
+      if (prev.length >= 6) return prev;
       return [...prev, nextId.current++];
     });
     setTimeout(() => {
@@ -27,6 +57,13 @@ export default function Index() {
       }
     }, 100);
   };
+
+  /**
+   * Delete a BoxLabel by ID
+   * Animates the removal on Android and iOS
+   *
+   * @param {number} id - ID of the box label to remove
+   */
   const handleDeleteBoxLabel = (id: number) => {
     if (Platform.OS === 'android') {
       UIManager.setLayoutAnimationEnabledExperimental?.(true);
@@ -34,23 +71,75 @@ export default function Index() {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setBoxLabels((prev) => prev.filter((boxId) => boxId !== id));
   };
-  const handleBackPress = () => {
-    return router.replace('./qrCode');
-  };
+
+  /** Navigate back to the QR Code screen */
+  const handleBackPress = () => router.replace('./qrCode');
+
+  /**
+   * Continue button handler
+   *
+   * Validates total boxes and individual label quantities,
+   * merges duplicate labels by age/gender, and navigates to Order Summary
+   */
   const handleContinue = () => {
+    const total = Number(totalBoxes);
+    let newErrors: { [key: number]: string } = {};
+
+    // Validate total boxes input
+    if (!total || total < 1 || total > 100) {
+      Alert.alert('Error', 'The total number of boxes must be between 1 and 100.');
+      return;
+    }
+
     const allData = boxLabels.map((id) => boxRefs.current[id]?.getData());
+    let sumQuantity = 0;
+
+    allData.forEach((item, idx) => {
+      if (!item) return;
+      sumQuantity += item.quantity;
+
+      if (item.quantity > total) {
+        newErrors[boxLabels[idx]] = 'Exceeds total';
+      }
+    });
+
+    // Global error if sum exceeds total
+    if (sumQuantity > total) {
+      boxLabels.forEach((id) => {
+        if (allData.find((item) => item && item.quantity > 0)) {
+          newErrors[id] = 'Sum exceeds total';
+        }
+      });
+    }
+
+    setBoxErrors(newErrors);
+    setInputBorderColor(Object.keys(newErrors).length > 0 ? colors.red : colors.light_gray);
+    if (Object.keys(newErrors).length > 0) return;
+
+    // Merge duplicates by age and gender
     const mergedData: BoxLabelInfo[] = Array.from(
       allData.reduce((map, item) => {
-        if (!item) return map; // por si hay undefined
-        const key = `${item.selectedAge}-${item.gender ?? 'any'}`; // agrupamos por edad y género
+        if (!item) return map;
+        const key = `${item.selectedAge}-${item.gender ?? 'any'}`;
         if (!map.has(key)) {
-          map.set(key, { ...item }); // guardamos copia del objeto
+          map.set(key, { ...item });
         } else {
-          map.get(key)!.quantity += item.quantity; // sumamos la cantidad
+          map.get(key)!.quantity += item.quantity;
         }
         return map;
       }, new Map<string, BoxLabelInfo>())
     ).map(([_, value]) => value);
+
+    // Add remaining boxes as unlabeled if sum < total
+    const remaining = total - sumQuantity;
+    if (remaining > 0) {
+      mergedData.push({
+        selectedAge: false as any,
+        gender: false as any,
+        quantity: remaining,
+      });
+    }
+
     router.push({
       pathname: './orderSummary',
       params: { boxLabels: JSON.stringify(mergedData) },
@@ -62,30 +151,21 @@ export default function Index() {
       <Stack.Screen options={{ headerShown: false }} />
       <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
         {/* Header */}
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            padding: 20,
-            paddingBottom: 0,
-            marginBottom: 20,
-          }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', padding: 20, paddingBottom: 0, marginBottom: 20 }}>
           <Arrow onPress={handleBackPress} />
           <View style={{ flex: 1, alignItems: 'center' }}>
             <Text style={commonStyles.header}>Enter Order</Text>
           </View>
-          {/* Empty Container */}
-          <View style={{ width: 25 }}></View>
+          <View style={{ width: 25 }} />
         </View>
 
-        {/* Main Section Container */}
+        {/* Main Section */}
         <View style={{ display: 'flex', flex: 1, gap: 16 }}>
           {/* Total Boxes Card */}
           <View
             style={[
               commonStyles.card,
               {
-                display: 'flex',
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -95,16 +175,12 @@ export default function Index() {
               },
             ]}>
             <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Total Boxes</Text>
-            {/* Text Input Container */}
             <View
               style={{
                 borderWidth: 1,
-                borderColor: colors.light_gray,
-                // paddingLeft: 12,
-                // paddingRight: 12,
+                borderColor: inputBorderColor,
                 padding: 5,
                 borderRadius: 10,
-                display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -114,24 +190,27 @@ export default function Index() {
                 value={totalBoxes}
                 keyboardType="numeric"
                 style={[commonStyles.paragraph, { color: colors.dark_blue }]}
-                selectTextOnFocus={true}
-                autoFocus={false}
+                selectTextOnFocus
                 maxLength={3}
                 onChangeText={(text) => {
-                  // Only allow numbers
                   const filtered = text.replace(/[^0-9]/g, '');
                   setTotalBoxes(filtered);
+                  if (totalBoxesError) setTotalBoxesError('');
                 }}
                 onBlur={() => {
                   let num = Number(totalBoxes);
                   if (!totalBoxes || isNaN(num)) {
                     setTotalBoxes('1');
+                    setTotalBoxesError('Must enter a number between 1 and 100');
                   } else if (num < 1) {
                     setTotalBoxes('1');
+                    setTotalBoxesError('Minimum value is 1');
                   } else if (num > 100) {
                     setTotalBoxes('100');
+                    setTotalBoxesError('Maximum value is 100');
                   } else {
                     setTotalBoxes(String(num));
+                    setTotalBoxesError('');
                   }
                 }}
               />
@@ -140,26 +219,17 @@ export default function Index() {
           </View>
 
           {/* Enable Shoebox Controller */}
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingHorizontal: 20,
-            }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20 }}>
             <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Enable Shoebox Label</Text>
-            {/* <Slider></Slider> */}
           </View>
 
-          {/* Scroll View Container */}
+          {/* ScrollView of Box Labels */}
           <ScrollView
             ref={scrollRef}
             style={{ paddingHorizontal: 16, flexGrow: 0 }}
             contentContainerStyle={{ gap: 16 }}
             keyboardShouldPersistTaps="always"
             keyboardDismissMode="on-drag">
-            {/* Render */}
             {boxLabels.map((id) => (
               <BoxLabel
                 key={id}
@@ -167,11 +237,12 @@ export default function Index() {
                   boxRefs.current[id] = r;
                 }}
                 onDelete={() => handleDeleteBoxLabel(id)}
+                error={boxErrors[id]}
               />
             ))}
           </ScrollView>
 
-          {/* Add button */}
+          {/* Add BoxLabel Button */}
           <View
             style={{
               alignSelf: 'center',
@@ -181,20 +252,14 @@ export default function Index() {
               borderRadius: 18,
               justifyContent: 'center',
               alignItems: 'center',
-              opacity: boxLabels.length >= 6 ? 0.4 : 1, // menos visible si llega a 6
-              // sombra iOS
+              opacity: boxLabels.length >= 6 ? 0.4 : 1,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 3 },
               shadowOpacity: 0.22,
               shadowRadius: 3,
-              // sombra Android
               elevation: 3,
             }}>
-            <PlusSign
-              width={28}
-              height={28}
-              onPress={boxLabels.length >= 6 ? undefined : handleAddBoxLabel} // deshabilitado si llega a 6
-            />
+            <PlusSign width={28} height={28} onPress={boxLabels.length >= 6 ? undefined : handleAddBoxLabel} />
           </View>
 
           {/* Continue Button */}

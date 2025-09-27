@@ -14,6 +14,7 @@ interface BoxLabelProps {
    * Optional callback fired when the "Delete" button is pressed.
    */
   onDelete?: () => void;
+  error?: string;
 }
 export type BoxLabelType = {
   getData: () => BoxLabelInfo;
@@ -32,7 +33,7 @@ type AgeRange = '2-4' | '5-9' | '10-14';
  * @param {BoxLabelProps} props - The component props.
  * @returns {JSX.Element} React component.
  */
-const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete }, ref) => {
+const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete, error }, ref) => {
   /** Current selected age range */
   const [selected, setSelected] = useState<AgeRange>('2-4');
   /** Ref to control the QuantitySelector child component */
@@ -81,7 +82,6 @@ const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete }, ref) => 
       gender: genderTileRef.current?.getGender?.() ?? 1,
     }),
   }));
-  // Render
   return (
     <View style={[commonStyles.card, { gap: 10 }]}>
       {/* Title */}
@@ -134,11 +134,13 @@ const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete }, ref) => 
       </View>
 
       {/* Quantity Label */}
-      <Text style={[commonStyles.paragraphBold, styles.labelText]}>Quantity</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+        <Text style={[commonStyles.paragraphBold, styles.labelText]}>Quantity</Text>
+        {error ? <Text style={{ color: 'red', fontSize: 12 }}>{error}</Text> : null}
+      </View>
 
       {/* Quantity Selector */}
       <QuantitySelector ref={quantitySelectorRef} />
-
       <Text style={[styles.instructionText]}>Write a number or use the buttons</Text>
 
       {/* Action Buttons */}
