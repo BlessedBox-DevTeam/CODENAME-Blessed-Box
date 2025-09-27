@@ -6,6 +6,8 @@ import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import BoxLabel, { BoxLabelType } from '../components/BoxLabel';
 import Arrow from '../components/icons/BackArrow';
+import PlusSign from '../components/icons/PlusSign';
+import { BoxLabelInfo } from '../types/BoxLabelInfo';
 
 export default function Index() {
   const [boxLabels, setBoxLabels] = useState<number[]>([0]);
@@ -15,9 +17,14 @@ export default function Index() {
   const boxRefs = useRef<{ [key: number]: BoxLabelType | null }>({});
 
   const handleAddBoxLabel = () => {
-    setBoxLabels((prev) => [...prev, nextId.current++]);
+    setBoxLabels((prev) => {
+      if (prev.length >= 6) return prev; // no agregamos más de 6
+      return [...prev, nextId.current++];
+    });
     setTimeout(() => {
-      scrollRef.current?.scrollToEnd({ animated: true });
+      if (boxLabels.length < 6) {
+        scrollRef.current?.scrollToEnd({ animated: true });
+      }
     }, 100);
   };
   const handleDeleteBoxLabel = (id: number) => {
@@ -32,9 +39,21 @@ export default function Index() {
   };
   const handleContinue = () => {
     const allData = boxLabels.map((id) => boxRefs.current[id]?.getData());
+    const mergedData: BoxLabelInfo[] = Array.from(
+      allData.reduce((map, item) => {
+        if (!item) return map; // por si hay undefined
+        const key = `${item.selectedAge}-${item.gender ?? 'any'}`; // agrupamos por edad y género
+        if (!map.has(key)) {
+          map.set(key, { ...item }); // guardamos copia del objeto
+        } else {
+          map.get(key)!.quantity += item.quantity; // sumamos la cantidad
+        }
+        return map;
+      }, new Map<string, BoxLabelInfo>())
+    ).map(([_, value]) => value);
     router.push({
       pathname: './orderSummary',
-      params: { boxLabels: JSON.stringify(allData) },
+      params: { boxLabels: JSON.stringify(mergedData) },
     });
   };
 
@@ -153,25 +172,33 @@ export default function Index() {
           </ScrollView>
 
           {/* Add button */}
-          <Text
-            style={[
-              commonStyles.paragraphBold,
-              {
-                alignSelf: 'center',
-                backgroundColor: colors.white,
-                width: 'auto',
-                borderRadius: 80,
-                color: colors.dark_gray,
-                fontSize: 32,
-                paddingHorizontal: 10,
-              },
-            ]}
-            onPress={handleAddBoxLabel}>
-            +
-          </Text>
+          <View
+            style={{
+              alignSelf: 'center',
+              width: 36,
+              height: 36,
+              backgroundColor: colors.white,
+              borderRadius: 18,
+              justifyContent: 'center',
+              alignItems: 'center',
+              opacity: boxLabels.length >= 6 ? 0.4 : 1, // menos visible si llega a 6
+              // sombra iOS
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 3 },
+              shadowOpacity: 0.22,
+              shadowRadius: 3,
+              // sombra Android
+              elevation: 3,
+            }}>
+            <PlusSign
+              width={28}
+              height={28}
+              onPress={boxLabels.length >= 6 ? undefined : handleAddBoxLabel} // deshabilitado si llega a 6
+            />
+          </View>
 
           {/* Continue Button */}
-          <View style={{ marginTop: 'auto' }}>
+          <View style={{ marginTop: 'auto', paddingHorizontal: 16, paddingBottom: 16 }}>
             <TouchableOpacity style={[commonStyles.button]} onPress={handleContinue}>
               <Text style={[commonStyles.header, { color: colors.white }]}>Continue</Text>
             </TouchableOpacity>

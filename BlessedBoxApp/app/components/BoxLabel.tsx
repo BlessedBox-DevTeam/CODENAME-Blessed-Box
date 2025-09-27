@@ -38,7 +38,7 @@ const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete }, ref) => 
   /** Ref to control the QuantitySelector child component */
   const quantitySelectorRef = useRef<{ getQuantity: () => number; reset: () => void }>(null);
   /** Ref to control the GenderTile child component */
-  const genderTileRef = useRef<{ getGender: () => string; reset: () => void }>(null);
+  const genderTileRef = useRef<{ getGender: () => number; reset: () => void }>(null);
 
   /**
    * Get the button style for a given age range.
@@ -77,7 +77,7 @@ const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete }, ref) => 
   useImperativeHandle(ref, () => ({
     getData: (): BoxLabelInfo => ({
       selectedAge: selected,
-      quantity: quantitySelectorRef.current?.getQuantity() ?? 0,
+      quantity: Number(quantitySelectorRef.current?.getQuantity() ?? 0),
       gender: genderTileRef.current?.getGender?.() ?? 1,
     }),
   }));
