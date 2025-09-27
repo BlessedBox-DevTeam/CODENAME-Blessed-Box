@@ -40,6 +40,14 @@ const commonStyles = StyleSheet.create({
     fontWeight: 600,
     // lineHeight: 16 * 1.4
   },
+  paragraphItalic: {
+    color: colors.dark_gray,
+    fontFamily: 'OpenSans-SemiBoldItalic',
+    fontSize: 14,
+    fontStyle: 'normal',
+    fontWeight: 600,
+    // lineHeight: 16 * 1.4
+  },
   paragraphBold: {
     color: colors.dark_gray,
     fontFamily: 'OpenSans-Bold',
