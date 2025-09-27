@@ -11,6 +11,7 @@ interface QuantitySelectorProps {
    * Optional value that, when changed, triggers a reset of the quantity.
    * Can be any type, commonly a unique key from the parent.
    */
+  getQuantity: () => number;
   resetKey?: any;
 }
 
@@ -52,6 +53,7 @@ const QuantitySelector = forwardRef<unknown, QuantitySelectorProps>((props, ref)
   // Expose reset method to parent via ref
   useImperativeHandle(ref, () => ({
     reset: () => setQuantity('1'),
+    getQuantity: () => quantity,
   }));
 
   // Automatically reset quantity when resetKey changes

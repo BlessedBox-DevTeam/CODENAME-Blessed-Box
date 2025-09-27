@@ -1,9 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { Keyboard, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import GenderTile from './GenderTile';
 import QuantitySelector from './QuantitySelector';
+import { BoxLabelInfo } from '../types/BoxLabelInfo';
 
 /**
  * Props for the BoxLabel component.
@@ -13,8 +14,11 @@ interface BoxLabelProps {
    * Optional callback fired when the "Delete" button is pressed.
    */
   onDelete?: () => void;
+  error?: string;
 }
-
+export type BoxLabelType = {
+  getData: () => BoxLabelInfo;
+};
 /**
  * Valid age ranges available in the component.
  */
@@ -29,15 +33,13 @@ type AgeRange = '2-4' | '5-9' | '10-14';
  * @param {BoxLabelProps} props - The component props.
  * @returns {JSX.Element} React component.
  */
-const BoxLabel = ({ onDelete }: BoxLabelProps) => {
+const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete, error }, ref) => {
   /** Current selected age range */
   const [selected, setSelected] = useState<AgeRange>('2-4');
-
   /** Ref to control the QuantitySelector child component */
-  const quantitySelectorRef = useRef<{ reset: () => void }>(null);
-
+  const quantitySelectorRef = useRef<{ getQuantity: () => number; reset: () => void }>(null);
   /** Ref to control the GenderTile child component */
-  const genderTileRef = useRef<{ reset: () => void }>(null);
+  const genderTileRef = useRef<{ getGender: () => number; reset: () => void }>(null);
 
   /**
    * Get the button style for a given age range.
@@ -72,7 +74,14 @@ const BoxLabel = ({ onDelete }: BoxLabelProps) => {
     genderTileRef.current?.reset();
   };
 
-  // Render
+  // Exponer getData al padre
+  useImperativeHandle(ref, () => ({
+    getData: (): BoxLabelInfo => ({
+      selectedAge: selected,
+      quantity: Number(quantitySelectorRef.current?.getQuantity() ?? 0),
+      gender: genderTileRef.current?.getGender?.() ?? 1,
+    }),
+  }));
   return (
     <View style={[commonStyles.card, { gap: 10 }]}>
       {/* Title */}
@@ -125,11 +134,13 @@ const BoxLabel = ({ onDelete }: BoxLabelProps) => {
       </View>
 
       {/* Quantity Label */}
-      <Text style={[commonStyles.paragraphBold, styles.labelText]}>Quantity</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+        <Text style={[commonStyles.paragraphBold, styles.labelText]}>Quantity</Text>
+        {error ? <Text style={{ color: 'red', fontSize: 12 }}>{error}</Text> : null}
+      </View>
 
       {/* Quantity Selector */}
       <QuantitySelector ref={quantitySelectorRef} />
-
       <Text style={[styles.instructionText]}>Write a number or use the buttons</Text>
 
       {/* Action Buttons */}
@@ -144,7 +155,7 @@ const BoxLabel = ({ onDelete }: BoxLabelProps) => {
       </View>
     </View>
   );
-};
+});
 
 // Stylesheet
 const styles = StyleSheet.create({
