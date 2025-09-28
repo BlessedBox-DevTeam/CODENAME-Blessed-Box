@@ -6,13 +6,26 @@ import commonStyles from '../baseStyles/baseStyles';
 import SwitchSelector from 'react-native-switch-selector';
 import colors from '../baseStyles/colors';
 import { Modal } from 'react-native';
+import GenderInitial from '../components/GenderInitial';
 
+/**
+ * Deposit Details Screen
+ * Displays deposit information and box summary with tab switching.
+ * Shows a warning modal when declining the deposit.
+ */
 export default function Index() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'information' | 'summary'>('information');
+  /**
+   * Navigates back to the order screen.
+   */
   const handleReturn = () => {
     return router.push('./order');
   };
+  /**
+   * Handles tab switching between deposit info and box summary.
+   * @param value - The selected tab value.
+   */
   const handleTab = (value: string) => {
     setActiveTab(value === 'information' ? 'information' : 'summary');
   };
@@ -26,17 +39,10 @@ export default function Index() {
   };
   const [showWarning, setShowWarning] = useState(false);
 
-  const secondDummyData = {
-    BlessedBox1: '2x Blessed Box',
-    BlessedBox1Info: 'M 10-14',
-    BlessedBox2: '1x Blessed Box',
-    BlessedBox2Info: 'F 2-4',
-    BlessedBox3: '3x Blessed Box',
-    BlessedBox3Info: 'M 5-9',
-    BlessedBox4: '4x Blessed Box',
-    BlessedBox4Info: 'Unlabeled',
-  };
-
+  /**
+   * Renders the deposit information section.
+   * @returns {JSX.Element}
+   */
   const appendDepositInfo = () => {
     return (
       <View
@@ -119,21 +125,33 @@ export default function Index() {
     );
   };
 
+  /**
+   * Renders the box summary section in two columns.
+   * @returns {JSX.Element}
+   */
   const appendBoxSummary = () => {
-    // Divide items into two columns
     const leftColumn = [
-      secondDummyData.BlessedBox1,
-      secondDummyData.BlessedBox2,
-      secondDummyData.BlessedBox3,
-      secondDummyData.BlessedBox4,
+      {
+        gender: 1,
+        quantity: 10,
+        age: '2-4',
+      },
+      {
+        gender: 0,
+        quantity: 2,
+        age: '5-9',
+      },
+      {
+        gender: 0,
+        quantity: 3,
+        age: '10-14',
+      },
+      {
+        gender: false,
+        quantity: 3,
+        age: false,
+      },
     ];
-    const rightColumn = [
-      secondDummyData.BlessedBox1Info,
-      secondDummyData.BlessedBox2Info,
-      secondDummyData.BlessedBox3Info,
-      secondDummyData.BlessedBox4Info,
-    ];
-
     return (
       <View style={{ flexDirection: 'column', paddingVertical: 10 }}>
         {leftColumn.map((item, idx) => (
@@ -143,19 +161,40 @@ export default function Index() {
               flexDirection: 'row',
               borderBottomColor: colors.light_gray,
               borderBottomWidth: idx === leftColumn.length - 1 ? 0 : 2,
+              justifyContent: 'space-between',
+              overflow: 'hidden',
               paddingBottom: 10,
               marginBottom: 10,
               gap: 16,
+              alignItems: 'center',
             }}>
             {/* First Column */}
-            <View style={{ flex: 1 }}>
-              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{item}</Text>
+            <View style={{ flex: 1, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{`${item.quantity}x`}</Text>
+              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{'Blessed Box'}</Text>
             </View>
-            {/* Second Column: Text is a placeholder for now*/}
-            <View style={{ flex: 1, alignItems: 'flex-end' }}>
-              <Text style={[commonStyles.paragraph, { color: colors.dark_blue, fontStyle: 'italic' }]}>
-                {rightColumn[idx]}
-              </Text>
+            {/* Second Column */}
+            <View style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+              {item.gender === false || item.age === false ? (
+                <Text style={[commonStyles.paragraphItalic, { color: colors.dark_gray }]}>Unlabeled</Text>
+              ) : (
+                <>
+                  <GenderInitial genderCode={item.gender} />
+                  <View
+                    style={{
+                      borderRadius: 5,
+                      width: 'auto',
+                      maxWidth: 60,
+                      backgroundColor: colors.light_gray,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flex: 1,
+                      padding: 2,
+                    }}>
+                    <Text style={[commonStyles.paragraph, { letterSpacing: 2 }]}>{item.age}</Text>
+                  </View>
+                </>
+              )}
             </View>
           </View>
         ))}
@@ -189,9 +228,7 @@ export default function Index() {
       <View style={[commonStyles.card, { marginVertical: 50, marginHorizontal: 100, alignItems: 'center' }]}>
         <Text style={commonStyles.paragraph}>Logo</Text>
       </View>
-      <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue, alignSelf: 'center' }]}>
-        Requires Information
-      </Text>
+      <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue, alignSelf: 'center' }]}>Requires Information</Text>
       <SwitchSelector
         options={[
           { label: 'Deposit Information', value: 'information' },
@@ -237,9 +274,7 @@ export default function Index() {
               flexDirection: 'column',
               alignSelf: 'center',
             }}>
-            <Text style={[commonStyles.paragraph, { marginBottom: 32, textAlign: 'center' }]}>
-              Are you sure you want to decline this deposit?
-            </Text>
+            <Text style={[commonStyles.paragraph, { marginBottom: 32, textAlign: 'center' }]}>Are you sure you want to decline this deposit?</Text>
             <View style={{ flexDirection: 'row', gap: 32 }}>
               <TouchableOpacity
                 style={[
