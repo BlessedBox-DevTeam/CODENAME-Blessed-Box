@@ -19,7 +19,7 @@ export default function Index() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
-        <ScrollView style={{ flex: 1, paddingVertical: 0, paddingHorizontal: 20 }}>
+        <ScrollView style={{ flex: 1, height: '100%', padding: 20 }}>
           <View style={[commonStyles.card, commonStyles.gridContainer]}>
             <View style={commonStyles.leftColumn}>
               <Text style={[commonStyles.paragraphExtraBold, { color: colors.green_label, gap: 0.5 }]}>
@@ -95,45 +95,43 @@ export default function Index() {
             <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue, alignSelf: 'flex-end' }]}>See details</Text>
           </View>
         </ScrollView>
-        <View style={{ position: 'relative' }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-around',
-              paddingVertical: 8,
-              backgroundColor: colors.white,
-            }}>
-            {/* Home */}
-            <Pressable onPress={() => router.replace('./home')} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <Home width={24} height={24} />
-              <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>Home</Text>
-            </Pressable>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-around',
+            paddingVertical: 8,
+            backgroundColor: colors.white,
+          }}>
+          {/* Home */}
+          <Pressable onPress={() => router.replace('./home')} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Home width={24} height={24} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>Home</Text>
+          </Pressable>
 
-            {/* News */}
-            <Pressable onPress={() => router.replace('./news')} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <Newspaper width={24} height={24} />
-              <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>News</Text>
-            </Pressable>
+          {/* News */}
+          <Pressable onPress={() => router.replace('./news')} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Newspaper width={24} height={24} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>News</Text>
+          </Pressable>
 
-            {/* QRCode */}
-            <Pressable onPress={handleQrCodePress} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <QRCode width={24} height={24} />
-              <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>QR</Text>
-            </Pressable>
+          {/* QRCode */}
+          <Pressable onPress={handleQrCodePress} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <QRCode width={24} height={24} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>QR</Text>
+          </Pressable>
 
-            {/* DepositHistory */}
-            <Pressable onPress={() => router.replace('./history')} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <DepositHistory width={24} height={24} />
-              <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>History</Text>
-            </Pressable>
+          {/* DepositHistory */}
+          <Pressable onPress={() => router.replace('./history')} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <DepositHistory width={24} height={24} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>History</Text>
+          </Pressable>
 
-            {/* Centers */}
-            <Pressable onPress={() => router.replace('./centers')} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <Church width={24} height={24} />
-              <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>Centers</Text>
-            </Pressable>
-          </View>
+          {/* Centers */}
+          <Pressable onPress={() => router.replace('./centers')} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Church width={24} height={24} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>Centers</Text>
+          </Pressable>
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

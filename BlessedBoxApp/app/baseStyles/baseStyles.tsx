@@ -79,7 +79,6 @@ const commonStyles = StyleSheet.create({
   gridContainer: {
     flexDirection: 'row',
     columnGap: 16,
-    marginTop: 20,
     alignItems: 'center',
   },
   leftColumn: {

@@ -226,7 +226,7 @@ export default function Index() {
           {/* ScrollView of Box Labels */}
           <ScrollView
             ref={scrollRef}
-            style={{ paddingHorizontal: 16, flexGrow: 0 }}
+            style={{ paddingHorizontal: 16, paddingBottom: 16, flexGrow: 0 }}
             contentContainerStyle={{ gap: 16 }}
             keyboardShouldPersistTaps="always"
             keyboardDismissMode="on-drag">
