@@ -8,6 +8,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { BoxLabelInfo } from '../types/BoxLabelInfo';
 import GenderInitial from '../components/GenderInitial';
 import BackArrow from '../components/icons/BackArrow';
+import Church from '../components/icons/Church';
 
 /**
  * Order Summary Screen
@@ -98,8 +99,6 @@ export default function Index() {
             flexDirection: 'row',
             alignItems: 'center',
             padding: 20,
-            paddingBottom: 0,
-            marginBottom: 20,
           }}>
           <BackArrow onPress={handleBackPress} />
           <View style={{ flex: 1, alignItems: 'center' }}>
@@ -108,34 +107,42 @@ export default function Index() {
           {/* Empty Spacer */}
           <View style={{ width: 25 }}></View>
         </View>
-
-        {/* Order Details Card */}
-        <View style={[commonStyles.card, {}]}>
-          {/* Church Info Container */}
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              gap: 10,
-              borderBottomWidth: 1,
-              borderColor: colors.light_gray,
-            }}>
-            <Text>{`${'Image'}`}</Text>
-            <View style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <Text style={commonStyles.header}>Church</Text>
-              <Text style={[commonStyles.paragraph, { color: colors.dark_blue }]}>Iglesia Cristiana Bethlehem</Text>
+        {/* Main Content */}
+        <View style={{ flex: 1, paddingHorizontal: 16, paddingBottom: 16 }}>
+          {/* Order Details Card */}
+          <View style={[commonStyles.card, {}]}>
+            {/* Church Info Container */}
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 10,
+                borderBottomWidth: 1,
+                paddingBottom: 10,
+                borderColor: colors.light_gray,
+              }}>
+              <Church width={30} height={30}></Church>
+              <View style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                <Text style={commonStyles.header}>Church</Text>
+                <Text style={[commonStyles.paragraph, { color: colors.dark_blue }]}>Iglesia Cristiana Bethlehem</Text>
+              </View>
             </View>
+
+            {/* Box Labels Summary */}
+            {appendOrderSummary()}
           </View>
 
-          {/* Box Labels Summary */}
-          {appendOrderSummary()}
-        </View>
-
-        {/* Confirm Order Button */}
-        <View style={{ marginTop: 'auto' }}>
-          <TouchableOpacity style={[commonStyles.button]} onPress={() => {}}>
-            <Text style={[commonStyles.header, { color: colors.white }]}>Confirm Order</Text>
-          </TouchableOpacity>
+          {/* Confirm Order Button */}
+          <View style={{ marginTop: 'auto' }}>
+            <TouchableOpacity
+              style={[commonStyles.button]}
+              onPress={() => {
+                router.push('/depositDetails');
+              }}>
+              <Text style={[commonStyles.header, { color: colors.white }]}>Confirm Order</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

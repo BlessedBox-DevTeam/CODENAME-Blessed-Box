@@ -5,7 +5,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import BoxLabel, { BoxLabelType } from '../components/BoxLabel';
-import Arrow from '../components/icons/BackArrow';
+import BackArrow from '../components/icons/BackArrow';
 import PlusSign from '../components/icons/PlusSign';
 import { BoxLabelInfo } from '../types/BoxLabelInfo';
 
@@ -151,8 +151,8 @@ export default function Index() {
       <Stack.Screen options={{ headerShown: false }} />
       <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
         {/* Header */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', padding: 20, paddingBottom: 0, marginBottom: 20 }}>
-          <Arrow onPress={handleBackPress} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', padding: 20 }}>
+          <BackArrow onPress={handleBackPress} />
           <View style={{ flex: 1, alignItems: 'center' }}>
             <Text style={commonStyles.header}>Enter Order</Text>
           </View>
