@@ -6,6 +6,13 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from './baseStyles/baseStyles'; // default export
 import colors from './baseStyles/colors'; // default export
 import LoadingOverlay from './components/LoadingSpinner';
+import Constants from 'expo-constants';
+
+const extra = Constants.expoConfig?.extra;
+const API_URL = extra?.URL;
+const API_PORT = extra?.PORT;
+console.log(extra);
+// TODO: removed when finished
 
 export default function Index() {
   const [email, setEmail] = useState('');
@@ -16,18 +23,13 @@ export default function Index() {
 
   const handleLogin = async () => {
     setIsLoading(true);
-    return router.replace('./home');
+    // return router.replace('./home');
     try {
-      const port = process.env.PORT;
-      const url = process.env.URL;
-      const response = await axios.post(`${url}:${port}/api/auth/login`, {
+      const response = await axios.post(`${API_URL}:${API_PORT}/api/auth/login`, {
         email: email,
         password: password,
       });
-
-      const user = true;
-      console.log(user);
-
+      const user = response;
       if (!user) {
         setTimeout(() => {
           setIsLoading(false);
@@ -105,21 +107,8 @@ export default function Index() {
 
         <Text style={[commonStyles.title, { paddingTop: 15 }]}>Blessed Box</Text>
         <View style={{ flexDirection: 'column', gap: 16, width: '100%' }}>
-          <TextInput
-            style={commonStyles.input}
-            placeholder="Correo electrónico"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            onChangeText={setEmail}
-            value={email}
-          />
-          <TextInput
-            style={commonStyles.input}
-            placeholder="Contraseña"
-            secureTextEntry
-            onChangeText={setPassword}
-            value={password}
-          />
+          <TextInput style={commonStyles.input} placeholder="Correo electrónico" keyboardType="email-address" autoCapitalize="none" onChangeText={setEmail} value={email} />
+          <TextInput style={commonStyles.input} placeholder="Contraseña" secureTextEntry onChangeText={setPassword} value={password} />
         </View>
         <TouchableOpacity style={[commonStyles.button]} onPress={handleLogin}>
           <Text style={[commonStyles.header, { color: colors.white }]}>Login</Text>

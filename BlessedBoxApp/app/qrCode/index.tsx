@@ -1,4 +1,4 @@
-import { CameraType, CameraView } from 'expo-camera';
+import { CameraView } from 'expo-camera';
 import { router, Stack } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
@@ -7,35 +7,55 @@ import SwitchSelector from 'react-native-switch-selector';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import BackArrow from '../components/icons/BackArrow';
+import axios from 'axios';
+import Constants from 'expo-constants';
+
+const extra = Constants.expoConfig?.extra;
+const API_URL = extra?.URL;
+const API_PORT = extra?.PORT;
 
 export default function Index() {
-  const [facing, setFacing] = useState<CameraType>('back');
+  const [facing, setFacing] = useState<'front' | 'back'>('back');
   const [maxCameraWidth, setMaxCameraWidth] = useState<number | `${number}%`>('100%');
   const [maxManualWidth, setManualWidth] = useState<number | `${number}%`>(0);
   const [code, setCode] = useState('');
-  const inputRef = useRef(null);
-
-  // const [permission, requestPermission] = useCameraPermissions();
-
-  const CustomCodeInput = () => {};
-  const handleChangeText = (text: string) => {
-    // Limit to 8 characters and only alphanumerics if needed
-    const formatted = text.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8);
-    setCode(formatted);
-  };
+  const [scanned, setScanned] = useState(false);
+  const inputRef = useRef<TextInput>(null);
 
   const handleQRCodeMethod = (value: string) => {
     if (value === 'scan') {
       setMaxCameraWidth('100%');
       setManualWidth(0);
+      setScanned(false);
     } else {
       setMaxCameraWidth(0);
       setManualWidth('100%');
     }
   };
+
+  const handleBarCodeScanned = async ({ data }: { data: string }) => {
+    if (!scanned) {
+      setScanned(true);
+      console.log(data);
+      setCode(data);
+      console.log(`Connecting to ${API_URL}:${API_PORT}`);
+      const response = await axios.post(`${API_URL}:${API_PORT}/api/qrCodes/isQRCode`, { qrCodeValue: data });
+      console.log(response);
+      if (response) {
+        router.replace('./order');
+      }
+    }
+  };
+
+  const handleChangeText = (text: string) => {
+    const formatted = text.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8);
+    setCode(formatted);
+  };
+
   const handleBackPress = () => {
     return router.replace('./home');
   };
+
   return (
     <SafeAreaProvider>
       <Stack.Screen options={{ headerShown: false }} />
@@ -52,9 +72,9 @@ export default function Index() {
           <View style={{ flex: 1, alignItems: 'center' }}>
             <Text style={commonStyles.header}>Order Summary</Text>
           </View>
-          {/* Empty Container */}
-          <View style={{ width: 25 }}></View>
+          <View style={{ width: 25 }} />
         </View>
+
         {/* SwitchSelector */}
         <View>
           <SwitchSelector
@@ -63,9 +83,7 @@ export default function Index() {
               { label: 'Manual Code', value: 'show' },
             ]}
             initial={0}
-            onPress={(value = '') => {
-              handleQRCodeMethod(value === 'scan' ? 'scan' : 'show');
-            }}
+            onPress={handleQRCodeMethod}
             textColor={colors.dark_gray}
             selectedColor={colors.white}
             buttonColor={colors.dark_blue}
@@ -82,8 +100,11 @@ export default function Index() {
             }}
             selectedTextStyle={{
               fontFamily: commonStyles.paragraphBold.fontFamily,
-            }}></SwitchSelector>
+            }}
+          />
         </View>
+
+        {/* Body */}
         <View
           style={{
             display: 'flex',
@@ -92,13 +113,21 @@ export default function Index() {
             flexDirection: 'row',
             flex: 1,
           }}>
+          {/* QR Scanner */}
           <CameraView
             style={{
               width: '100%',
               height: '100%',
               maxWidth: maxCameraWidth,
             }}
-            facing={facing}></CameraView>
+            facing={facing}
+            onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+            barcodeScannerSettings={{
+              barcodeTypes: ['qr'],
+            }}
+          />
+
+          {/* Manual Input */}
           <View
             style={[
               commonStyles.card,
@@ -119,9 +148,11 @@ export default function Index() {
               }}>
               <Text style={{ height: 50 }}>Placeholder Image</Text>
             </View>
+
             <Text style={[commonStyles.header, { alignSelf: 'center' }]}>Trouble Scanning the QR Code?</Text>
             <Text style={commonStyles.paragraph}>Enter the #id of the Recollection Center</Text>
-            <TouchableWithoutFeedback onPress={() => {}}>
+
+            <TouchableWithoutFeedback onPress={() => inputRef.current?.focus()}>
               <View
                 style={{
                   backgroundColor: colors.white,
@@ -171,10 +202,12 @@ export default function Index() {
                 </View>
               </View>
             </TouchableWithoutFeedback>
+
             <TouchableOpacity
               style={[commonStyles.button]}
-              onPress={() => {
-                router.replace('./order');
+              onPress={async () => {
+                const response = await axios.post(`${API_URL}:${API_PORT}/api/backupKeys/isKey`, { keyValue: code });
+                if (response) router.replace('./order');
               }}>
               <Text style={[commonStyles.header, { color: colors.white }]}>Confirm</Text>
             </TouchableOpacity>
