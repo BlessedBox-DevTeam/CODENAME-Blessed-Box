@@ -122,7 +122,7 @@ export default function Index() {
           </Pressable>
 
           {/* DepositHistory */}
-          <Pressable onPress={() => router.replace('./history')} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Pressable onPress={() => router.replace('./transactions')} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <DepositHistory width={24} height={24} />
             <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>History</Text>
           </Pressable>
