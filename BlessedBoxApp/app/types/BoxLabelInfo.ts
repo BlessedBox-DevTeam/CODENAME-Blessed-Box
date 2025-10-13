@@ -1,7 +1,7 @@
 export type BoxLabelInfo = {
-  selectedAge: '2-4' | '5-9' | '10-14' | false;
+  genderId: number | false;
   quantity: number;
-  gender: number | false;
+  boxAgeId: number | false;
 };
 
 export type BoxLabelType = {

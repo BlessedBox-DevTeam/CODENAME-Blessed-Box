@@ -120,7 +120,7 @@ export default function Index() {
     const mergedData: BoxLabelInfo[] = Array.from(
       allData.reduce((map, item) => {
         if (!item) return map;
-        const key = `${item.selectedAge}-${item.gender ?? 'any'}`;
+        const key = `${item.boxAgeId}-${item.genderId ?? 'any'}`;
         if (!map.has(key)) {
           map.set(key, { ...item });
         } else {
@@ -134,8 +134,8 @@ export default function Index() {
     const remaining = total - sumQuantity;
     if (remaining > 0) {
       mergedData.push({
-        selectedAge: false as any,
-        gender: false as any,
+        boxAgeId: false as any,
+        genderId: false as any,
         quantity: remaining,
       });
     }

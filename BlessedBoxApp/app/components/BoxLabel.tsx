@@ -5,6 +5,7 @@ import colors from '../baseStyles/colors';
 import GenderTile from './GenderTile';
 import QuantitySelector from './QuantitySelector';
 import { BoxLabelInfo } from '../types/BoxLabelInfo';
+import { TWO_TO_FOUR_YEARS_ID, FIVE_TO_NINE_YEARS_ID, TEN_TO_FOURTEEN_YEARS_ID } from '../helpers/constants';
 
 /**
  * Props for the BoxLabel component.
@@ -22,7 +23,7 @@ export type BoxLabelType = {
 /**
  * Valid age ranges available in the component.
  */
-type AgeRange = '2-4' | '5-9' | '10-14';
+type AgeRange = typeof TWO_TO_FOUR_YEARS_ID | typeof FIVE_TO_NINE_YEARS_ID | typeof TEN_TO_FOURTEEN_YEARS_ID;
 
 /**
  * Shoebox Label component.
@@ -35,7 +36,7 @@ type AgeRange = '2-4' | '5-9' | '10-14';
  */
 const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete, error }, ref) => {
   /** Current selected age range */
-  const [selected, setSelected] = useState<AgeRange>('2-4');
+  const [selected, setSelected] = useState<number>(TWO_TO_FOUR_YEARS_ID);
   /** Ref to control the QuantitySelector child component */
   const quantitySelectorRef = useRef<{ getQuantity: () => number; reset: () => void }>(null);
   /** Ref to control the GenderTile child component */
@@ -69,7 +70,7 @@ const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete, error }, r
    * Reset the component state and children to defaults.
    */
   const handleReset = () => {
-    setSelected('2-4');
+    setSelected(TWO_TO_FOUR_YEARS_ID);
     quantitySelectorRef.current?.reset();
     genderTileRef.current?.reset();
   };
@@ -77,9 +78,9 @@ const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete, error }, r
   // Exponer getData al padre
   useImperativeHandle(ref, () => ({
     getData: (): BoxLabelInfo => ({
-      selectedAge: selected,
+      boxAgeId: selected,
       quantity: Number(quantitySelectorRef.current?.getQuantity() ?? 0),
-      gender: genderTileRef.current?.getGender?.() ?? 1,
+      genderId: genderTileRef.current?.getGender?.() ?? false,
     }),
   }));
   return (
@@ -96,35 +97,35 @@ const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete, error }, r
       {/* Age range selection */}
       <View style={styles.ageContainer}>
         <TouchableOpacity
-          style={getAgeButtonStyle('2-4')}
+          style={getAgeButtonStyle(TWO_TO_FOUR_YEARS_ID)}
           onPress={() => {
             Keyboard.dismiss();
-            setSelected('2-4');
+            setSelected(TWO_TO_FOUR_YEARS_ID);
           }}>
-          <Text style={getAgeTextStyle('2-4')}>2-4</Text>
+          <Text style={getAgeTextStyle(TWO_TO_FOUR_YEARS_ID)}>2-4</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={getAgeButtonStyle('5-9')}
+          style={getAgeButtonStyle(FIVE_TO_NINE_YEARS_ID)}
           onPress={() => {
             Keyboard.dismiss();
-            setSelected('5-9');
+            setSelected(FIVE_TO_NINE_YEARS_ID);
           }}>
-          <Text style={getAgeTextStyle('5-9')}>5-9</Text>
+          <Text style={getAgeTextStyle(FIVE_TO_NINE_YEARS_ID)}>5-9</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={getAgeButtonStyle('10-14')}
+          style={getAgeButtonStyle(TEN_TO_FOURTEEN_YEARS_ID)}
           onPress={() => {
             Keyboard.dismiss();
-            setSelected('10-14');
+            setSelected(TEN_TO_FOURTEEN_YEARS_ID);
           }}>
-          <Text style={getAgeTextStyle('10-14', true)}>
+          <Text style={getAgeTextStyle(TEN_TO_FOURTEEN_YEARS_ID, true)}>
             10
             <Text
               style={{
                 letterSpacing: 2,
-                color: getAgeTextStyle('10-14').color,
+                color: getAgeTextStyle(TEN_TO_FOURTEEN_YEARS_ID).color,
               }}>
               -
             </Text>

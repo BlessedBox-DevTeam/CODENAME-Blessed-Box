@@ -9,6 +9,7 @@ import colors from '../baseStyles/colors';
 import BackArrow from '../components/icons/BackArrow';
 import axios from 'axios';
 import Constants from 'expo-constants';
+import LoadingOverlay from '../components/LoadingSpinner';
 
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL;
@@ -21,6 +22,7 @@ export default function Index() {
   const [code, setCode] = useState('');
   const [scanned, setScanned] = useState(false);
   const inputRef = useRef<TextInput>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleQRCodeMethod = (value: string) => {
     if (value === 'scan') {
@@ -35,14 +37,15 @@ export default function Index() {
 
   const handleBarCodeScanned = async ({ data }: { data: string }) => {
     if (!scanned) {
+      setIsLoading(true);
       setScanned(true);
-      console.log(data);
-      setCode(data);
-      console.log(`Connecting to ${API_URL}:${API_PORT}`);
-      const response = await axios.post(`${API_URL}:${API_PORT}/api/qrCodes/isQRCode`, { qrCodeValue: data });
-      console.log(response);
-      if (response) {
+      const codeValue = data;
+      const { success, message, data: responseData, error } = (await axios.post(`${API_URL}:${API_PORT}/api/qrCodes/isQRCode`, { qrCodeValue: codeValue })).data;
+      setIsLoading(false);
+      if (responseData && success) {
         router.replace('./order');
+      } else {
+        alert(message);
       }
     }
   };
@@ -60,6 +63,7 @@ export default function Index() {
     <SafeAreaProvider>
       <Stack.Screen options={{ headerShown: false }} />
       <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
+        <LoadingOverlay visible={isLoading} />
         {/* Header */}
         <View
           style={{
@@ -206,8 +210,14 @@ export default function Index() {
             <TouchableOpacity
               style={[commonStyles.button]}
               onPress={async () => {
-                const response = await axios.post(`${API_URL}:${API_PORT}/api/backupKeys/isKey`, { keyValue: code });
-                if (response) router.replace('./order');
+                setIsLoading(true);
+                const { success, message, data, error } = (await axios.post(`${API_URL}:${API_PORT}/api/backupKeys/isKey`, { keyValue: code })).data;
+                setIsLoading(false);
+                if (data && success) {
+                  router.replace('./order');
+                } else {
+                  alert(message);
+                }
               }}>
               <Text style={[commonStyles.header, { color: colors.white }]}>Confirm</Text>
             </TouchableOpacity>

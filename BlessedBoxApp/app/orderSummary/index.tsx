@@ -1,5 +1,5 @@
 import { router, Stack } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import colors from '../baseStyles/colors';
@@ -9,6 +9,14 @@ import { BoxLabelInfo } from '../types/BoxLabelInfo';
 import GenderInitial from '../components/GenderInitial';
 import BackArrow from '../components/icons/BackArrow';
 import Church from '../components/icons/Church';
+import Constants from 'expo-constants';
+import axios from 'axios';
+import LoadingOverlay from '../components/LoadingSpinner';
+import { BOX_AGE_MAP } from '../helpers/constants';
+
+const extra = Constants.expoConfig?.extra;
+const API_URL = extra?.URL;
+const API_PORT = extra?.PORT;
 
 /**
  * Order Summary Screen
@@ -20,6 +28,8 @@ import Church from '../components/icons/Church';
  * @returns {JSX.Element} Order Summary screen component
  */
 export default function Index() {
+  const [isLoading, setIsLoading] = useState(false);
+
   /** Extract serialized boxLabels from query params */
   const { boxLabels } = useLocalSearchParams<{ boxLabels: string }>();
 
@@ -64,11 +74,11 @@ export default function Index() {
 
         {/* Details Container */}
         <View style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-          {boxLabel.gender === false || boxLabel.selectedAge === false ? (
+          {boxLabel.genderId === false || boxLabel.boxAgeId === false ? (
             <Text style={[commonStyles.paragraphItalic, { color: colors.dark_gray }]}>Unlabeled</Text>
           ) : (
             <>
-              <GenderInitial genderCode={boxLabel.gender} />
+              <GenderInitial genderCode={boxLabel.genderId} />
               <View
                 style={{
                   borderRadius: 5,
@@ -80,7 +90,7 @@ export default function Index() {
                   flex: 1,
                   padding: 2,
                 }}>
-                <Text style={[commonStyles.paragraph, { letterSpacing: 2 }]}>{boxLabel.selectedAge}</Text>
+                <Text style={[commonStyles.paragraph, { letterSpacing: 2 }]}>{BOX_AGE_MAP[boxLabel.boxAgeId]}</Text>
               </View>
             </>
           )}
@@ -93,6 +103,7 @@ export default function Index() {
     <SafeAreaProvider>
       <Stack.Screen options={{ headerShown: false }} />
       <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
+        <LoadingOverlay visible={isLoading} />
         {/* Header */}
         <View
           style={{
@@ -137,8 +148,15 @@ export default function Index() {
           <View style={{ marginTop: 'auto' }}>
             <TouchableOpacity
               style={[commonStyles.button]}
-              onPress={() => {
-                router.push('/depositDetails');
+              onPress={async () => {
+                setIsLoading(true);
+                const { success, message, data, error } = (await axios.post(`${API_URL}:${API_PORT}/api/transactions/newTransaction`, { boxLabels: parsedBoxLabels })).data;
+                setIsLoading(false);
+                if (success) {
+                  router.push('/completedOrder');
+                } else {
+                  alert(message);
+                }
               }}>
               <Text style={[commonStyles.header, { color: colors.white }]}>Confirm Order</Text>
             </TouchableOpacity>

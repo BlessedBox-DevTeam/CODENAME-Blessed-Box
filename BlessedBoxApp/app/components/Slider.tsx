@@ -56,7 +56,7 @@ const Slider = forwardRef<any, SliderProps>(({ onValueChange }, ref) => {
     reset: () => setSelected(0),
   }));
 
-  const backgroundColor = selected === 0 ? colors.dark_red : colors.darker_green;
+  const backgroundColor = selected === 0 ? colors.darker_green : colors.dark_red;
 
   /** Toggle between 0 and 1, updating state and firing callback. */
   const handleToggle = () => {
