@@ -29,19 +29,40 @@ export default function Index() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'information' | 'summary'>('information');
   const [isLoading, setIsLoading] = useState(true);
+  const [transactionDetails, setTransactionDetails] = useState(null);
+  const [boxes, setBoxes] = useState(null);
 
   // Obtain transactionId from query parameters
   let { transactionId } = useLocalSearchParams<{ transactionId: string }>();
   transactionId = JSON.parse(transactionId);
-  console.log(transactionId);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const {
           data: { response },
-        } = await axios.get(`${API_URL}:${API_PORT}/api/transactions/transactionDetails`, { params: { transactionId: 1 } });
-        console.log(response);
+        } = await axios.get(`${API_URL}:${API_PORT}/api/transactions/transactionDetails`, { params: { transactionId: transactionId } });
+        setTransactionDetails(response.transactionDetails);
+        setBoxes(response.boxes);
+
+        const mergedData = Array.from(
+          response.boxes.reduce((map, item) => {
+            if (!item) return map;
+
+            const age = item.age ?? false;
+            const genderId = item.genderId ?? false;
+            const key = `${age}-${genderId}`;
+
+            if (!map.has(key)) {
+              map.set(key, { age, genderId, quantity: 1 });
+            } else {
+              map.get(key)!.quantity += 1;
+            }
+
+            return map;
+          }, new Map<string, { age: string | false; genderId: number | false; quantity: number }>())
+        ).map(([_, value]) => value);
+        setBoxes(mergedData);
       } catch (err) {
         console.error(err);
       } finally {
@@ -50,7 +71,6 @@ export default function Index() {
     };
     fetchData();
   }, []);
-
   /**
    * Navigates back to the order screen.
    */
@@ -64,14 +84,6 @@ export default function Index() {
   const handleTab = (value: string) => {
     setActiveTab(value === 'information' ? 'information' : 'summary');
   };
-  const dummyData = {
-    fullName: 'John Doe',
-    email: 'john.doe@example.com',
-    transactionDate: 'November 10, 2025 - 3:00pm',
-    orderNumber: 'Order #12345',
-    churchText: 'Church',
-    churchName: 'Iglesia Cristiana Bethlehem',
-  };
   const [showWarning, setShowWarning] = useState(false);
 
   /**
@@ -79,6 +91,7 @@ export default function Index() {
    * @returns {JSX.Element}
    */
   const appendDepositInfo = () => {
+    console.log(boxes);
     return (
       <View
         style={{
@@ -100,7 +113,11 @@ export default function Index() {
           }}>
           {/* SVG */}
           <UserAvatar width={30} height={30}></UserAvatar>
-          <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{dummyData.fullName}</Text>
+          <Text
+            style={[
+              commonStyles.paragraphBold,
+              { color: colors.dark_blue },
+            ]}>{`${transactionDetails.name} ${transactionDetails.lastName} ${transactionDetails.secondLastName}`}</Text>
         </View>
 
         {/* Email Container */}
@@ -116,7 +133,7 @@ export default function Index() {
           }}>
           {/* SVG */}
           <Mail width={30} height={30}></Mail>
-          <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{dummyData.email}</Text>
+          <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{transactionDetails.email}</Text>
         </View>
 
         {/* DateContainer */}
@@ -133,8 +150,8 @@ export default function Index() {
           {/* SVG */}
           <Clock height={30} width={30}></Clock>
           <View>
-            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{dummyData.transactionDate}</Text>
-            <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>{dummyData.orderNumber}</Text>
+            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{transactionDetails.transactionDate}</Text>
+            <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>{transactionDetails.transactionId}</Text>
           </View>
         </View>
 
@@ -150,8 +167,8 @@ export default function Index() {
           {/* SVG */}
           <Church width={30} height={30}></Church>
           <View>
-            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{dummyData.churchText}</Text>
-            <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>{dummyData.churchName}</Text>
+            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Church</Text>
+            <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>{transactionDetails.recollectionCenterName}</Text>
           </View>
         </View>
       </View>
@@ -163,45 +180,15 @@ export default function Index() {
    * @returns {JSX.Element}
    */
   const appendBoxSummary = () => {
-    const leftColumn = [
-      {
-        gender: 1,
-        quantity: 10,
-        age: '2-4',
-      },
-      {
-        gender: 0,
-        quantity: 10,
-        age: '2-4',
-      },
-      {
-        gender: 0,
-        quantity: 2,
-        age: '5-9',
-      },
-      {
-        gender: 0,
-        quantity: 3,
-        age: '10-14',
-      },
-      {
-        gender: false,
-        quantity: 3,
-        age: false,
-      },
-    ];
-    if (isLoading) {
-      return <LoadingOverlay />;
-    }
     return (
       <View style={{ flexDirection: 'column' }}>
-        {leftColumn.map((item, idx) => (
+        {boxes.map((box, idx) => (
           <View
             key={idx}
             style={{
               flexDirection: 'row',
               borderBottomColor: colors.light_gray,
-              borderBottomWidth: idx === leftColumn.length - 1 ? 0 : 2,
+              borderBottomWidth: idx === boxes.length - 1 ? 0 : 2,
               justifyContent: 'space-between',
               overflow: 'hidden',
               paddingVertical: 10,
@@ -210,17 +197,17 @@ export default function Index() {
             {/* First Column */}
             <View style={{ flex: 1, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
               <View style={{ width: 30 }}>
-                <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{`${item.quantity}x`}</Text>
+                <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{`${box?.quantity || 2}x`}</Text>
               </View>
               <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{'Blessed Box'}</Text>
             </View>
             {/* Second Column */}
             <View style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-              {item.gender === false || item.age === false ? (
+              {box.genderId === false || box.ageId === false ? (
                 <Text style={[commonStyles.paragraphItalic, { color: colors.dark_gray }]}>Unlabeled</Text>
               ) : (
                 <>
-                  <GenderInitial genderCode={item.gender} />
+                  <GenderInitial genderCode={box.genderId} />
                   <View
                     style={{
                       borderRadius: 5,
@@ -232,7 +219,7 @@ export default function Index() {
                       flex: 1,
                       padding: 2,
                     }}>
-                    <Text style={[commonStyles.paragraph, { letterSpacing: 2 }]}>{item.age}</Text>
+                    <Text style={[commonStyles.paragraph, { letterSpacing: 2 }]}>{box.age}</Text>
                   </View>
                 </>
               )}
@@ -243,6 +230,9 @@ export default function Index() {
     );
   };
 
+  if (isLoading) {
+    return <LoadingOverlay />;
+  }
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.backgroundColor }}>

@@ -13,7 +13,7 @@ interface Transaction {
 }
 interface TransactionTileProps {
   transaction: Transaction;
-  pressCallback?: () => void;
+  pressCallback?: (transactionId: number) => void;
 }
 
 const MAP_STATUS_CODE_COLOR: Record<number, string> = {
@@ -25,7 +25,11 @@ const MAP_STATUS_CODE_COLOR: Record<number, string> = {
 const TransactionTile = ({ transaction, pressCallback }: TransactionTileProps): JSX.Element => {
   const { transactionId, recollectionCenterName, statusCode, statusDescription, boxCount } = transaction;
   return (
-    <Pressable onPress={pressCallback} style={[styles.tileContainer]}>
+    <Pressable
+      onPress={() => {
+        pressCallback?.(transactionId);
+      }}
+      style={[styles.tileContainer]}>
       <BlessedBox width={40} height={70} />
       <View style={styles.informationContainer}>
         <Text style={[styles.recollectionCenterTitle, { textAlign: 'center' }]}>{recollectionCenterName}</Text>

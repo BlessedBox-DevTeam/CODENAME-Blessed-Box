@@ -150,10 +150,11 @@ export default function Index() {
               style={[commonStyles.button]}
               onPress={async () => {
                 setIsLoading(true);
-                const { success, message, data, error } = (await axios.post(`${API_URL}:${API_PORT}/api/transactions/newTransaction`, { boxLabels: parsedBoxLabels })).data;
+                const { response, message } = (await axios.post(`${API_URL}:${API_PORT}/api/transactions/newTransaction`, { boxLabels: parsedBoxLabels })).data;
+                console.log(response.transactionId);
                 setIsLoading(false);
-                if (success) {
-                  router.replace('/completedOrder');
+                if (response) {
+                  router.replace('/completedOrder', { transactionId: response.transactionId });
                 } else {
                   alert(message);
                 }

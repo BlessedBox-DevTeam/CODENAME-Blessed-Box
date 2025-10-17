@@ -53,12 +53,12 @@ export default function Index() {
           {transactions.map((transaction) => (
             <TransactionTile
               key={transaction.transactionId}
-              pressCallback={() =>
+              pressCallback={(transactionId) => {
                 router.push({
                   pathname: './depositDetails',
-                  params: { transactionId: JSON.stringify(transaction.transactionId) },
-                })
-              }
+                  params: { transactionId: JSON.stringify(transactionId) },
+                });
+              }}
               transaction={transaction}
             />
           ))}

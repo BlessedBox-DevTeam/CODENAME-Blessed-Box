@@ -211,9 +211,9 @@ export default function Index() {
               style={[commonStyles.button]}
               onPress={async () => {
                 setIsLoading(true);
-                const { success, message, data, error } = (await axios.post(`${API_URL}:${API_PORT}/api/backupKeys/isKey`, { keyValue: code })).data;
+                const { response, message } = (await axios.post(`${API_URL}:${API_PORT}/api/backupKeys/isKey`, { keyValue: code })).data;
                 setIsLoading(false);
-                if (data && success) {
+                if (response) {
                   router.push('./order');
                 } else {
                   alert(message);
