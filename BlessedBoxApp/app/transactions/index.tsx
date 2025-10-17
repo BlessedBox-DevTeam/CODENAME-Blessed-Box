@@ -23,14 +23,16 @@ export default function Index() {
   const API_PORT = extra?.PORT;
 
   const handleQrCodePress = () => {
-    return router.replace('./qrCode');
+    return router.push('./qrCode');
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${API_URL}:${API_PORT}/api/transactions/recollectionCenterTransactions`, { params: { recollectionCenterId: 1 } });
-        setTransactions(response.data.data);
+        const {
+          data: { response },
+        } = await axios.get(`${API_URL}:${API_PORT}/api/transactions/recollectionCenterTransactions`, { params: { recollectionCenterId: 1 } });
+        setTransactions(response);
       } catch (err) {
         console.error(err);
       } finally {
@@ -49,7 +51,16 @@ export default function Index() {
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView style={{ flex: 1, height: '100%', padding: 16 }} contentContainerStyle={{ gap: 10 }}>
           {transactions.map((transaction) => (
-            <TransactionTile key={transaction.transactionId} transaction={transaction} />
+            <TransactionTile
+              key={transaction.transactionId}
+              pressCallback={() =>
+                router.push({
+                  pathname: './depositDetails',
+                  params: { transactionId: JSON.stringify(transaction.transactionId) },
+                })
+              }
+              transaction={transaction}
+            />
           ))}
         </ScrollView>
 

@@ -43,7 +43,7 @@ export default function Index() {
       const { success, message, data: responseData, error } = (await axios.post(`${API_URL}:${API_PORT}/api/qrCodes/isQRCode`, { qrCodeValue: codeValue })).data;
       setIsLoading(false);
       if (responseData && success) {
-        router.replace('./order');
+        router.push('./order');
       } else {
         alert(message);
       }
@@ -56,7 +56,7 @@ export default function Index() {
   };
 
   const handleBackPress = () => {
-    return router.replace('./home');
+    return router.back();
   };
 
   return (
@@ -214,7 +214,7 @@ export default function Index() {
                 const { success, message, data, error } = (await axios.post(`${API_URL}:${API_PORT}/api/backupKeys/isKey`, { keyValue: code })).data;
                 setIsLoading(false);
                 if (data && success) {
-                  router.replace('./order');
+                  router.push('./order');
                 } else {
                   alert(message);
                 }

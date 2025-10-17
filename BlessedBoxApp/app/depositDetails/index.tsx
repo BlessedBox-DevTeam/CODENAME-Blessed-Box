@@ -1,5 +1,5 @@
-import { Stack, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
@@ -13,19 +13,49 @@ import Mail from '../components/icons/Mail';
 import Alert from '../components/icons/Alert';
 import BackArrow from '../components/icons/BackArrow';
 import Clock from '../components/icons/Clock';
+import axios from 'axios';
+import Constants from 'expo-constants';
+import LoadingOverlay from '../components/LoadingSpinner';
+
 /**
  * Deposit Details Screen
  * Displays deposit information and box summary with tab switching.
  * Shows a warning modal when declining the deposit.
  */
 export default function Index() {
+  const extra = Constants.expoConfig?.extra;
+  const API_URL = extra?.URL;
+  const API_PORT = extra?.PORT;
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'information' | 'summary'>('information');
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Obtain transactionId from query parameters
+  let { transactionId } = useLocalSearchParams<{ transactionId: string }>();
+  transactionId = JSON.parse(transactionId);
+  console.log(transactionId);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const {
+          data: { response },
+        } = await axios.get(`${API_URL}:${API_PORT}/api/transactions/transactionDetails`, { params: { transactionId: 1 } });
+        console.log(response);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   /**
    * Navigates back to the order screen.
    */
   const handleReturn = () => {
-    return router.push('./order');
+    return router.back();
   };
   /**
    * Handles tab switching between deposit info and box summary.
@@ -160,6 +190,9 @@ export default function Index() {
         age: false,
       },
     ];
+    if (isLoading) {
+      return <LoadingOverlay />;
+    }
     return (
       <View style={{ flexDirection: 'column' }}>
         {leftColumn.map((item, idx) => (

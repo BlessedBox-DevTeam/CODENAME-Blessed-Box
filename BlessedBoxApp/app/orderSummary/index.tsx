@@ -153,7 +153,7 @@ export default function Index() {
                 const { success, message, data, error } = (await axios.post(`${API_URL}:${API_PORT}/api/transactions/newTransaction`, { boxLabels: parsedBoxLabels })).data;
                 setIsLoading(false);
                 if (success) {
-                  router.push('/completedOrder');
+                  router.replace('/completedOrder');
                 } else {
                   alert(message);
                 }

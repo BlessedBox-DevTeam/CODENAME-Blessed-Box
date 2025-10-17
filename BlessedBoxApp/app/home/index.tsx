@@ -14,7 +14,7 @@ import Home from '../components/icons/Home';
 export default function Index() {
   const router = useRouter();
   const handleQrCodePress = () => {
-    return router.replace('./qrCode');
+    return router.push('./qrCode');
   };
   return (
     <SafeAreaProvider>

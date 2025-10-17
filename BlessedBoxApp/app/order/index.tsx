@@ -73,7 +73,7 @@ export default function Index() {
   };
 
   /** Navigate back to the QR Code screen */
-  const handleBackPress = () => router.replace('./qrCode');
+  const handleBackPress = () => router.back();
 
   /**
    * Continue button handler

@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import colors from '../baseStyles/colors';
 import { CANCELLED_STATUS_ID, COMPLETED_STATUS_ID, PENDING_STATUS_ID } from '../helpers/constants';
 import BlessedBox from './icons/BlessedBox';
@@ -13,6 +13,7 @@ interface Transaction {
 }
 interface TransactionTileProps {
   transaction: Transaction;
+  pressCallback?: () => void;
 }
 
 const MAP_STATUS_CODE_COLOR: Record<number, string> = {
@@ -21,10 +22,10 @@ const MAP_STATUS_CODE_COLOR: Record<number, string> = {
   [CANCELLED_STATUS_ID]: colors.red_label,
 };
 
-const TransactionTile = ({ transaction }: TransactionTileProps): JSX.Element => {
+const TransactionTile = ({ transaction, pressCallback }: TransactionTileProps): JSX.Element => {
   const { transactionId, recollectionCenterName, statusCode, statusDescription, boxCount } = transaction;
   return (
-    <View style={[styles.tileContainer]}>
+    <Pressable onPress={pressCallback} style={[styles.tileContainer]}>
       <BlessedBox width={40} height={70} />
       <View style={styles.informationContainer}>
         <Text style={[styles.recollectionCenterTitle, { textAlign: 'center' }]}>{recollectionCenterName}</Text>
@@ -36,7 +37,7 @@ const TransactionTile = ({ transaction }: TransactionTileProps): JSX.Element => 
         </View>
       </View>
       <Text style={styles.amount}>{`x${boxCount}`}</Text>
-    </View>
+    </Pressable>
   );
 };
 const styles = StyleSheet.create({
