@@ -24,9 +24,15 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="home/index" options={{ title: 'Blessed Box', headerTitleStyle: commonStyles.title }} />
-      <Stack.Screen name="transactions/index" options={{ title: 'History', headerTitleStyle: commonStyles.title }} />
-    </Stack>
+    // <Stack>
+    //   <Stack.Screen name="home/index" options={{ title: 'Blessed Box', headerTitleStyle: commonStyles.title }} />
+    //   <Stack.Screen name="transactions/index" options={{ title: 'History', headerTitleStyle: commonStyles.title }} />
+    // </Stack>
+    <Stack
+      screenOptions={{
+        headerTitle: 'Blessed Box',
+        headerTitleStyle: commonStyles.title,
+      }}
+    />
   );
 }

@@ -16,6 +16,7 @@ import Clock from '../components/icons/Clock';
 import axios from 'axios';
 import Constants from 'expo-constants';
 import LoadingOverlay from '../components/LoadingSpinner';
+import { formatTransactionDate } from '../helpers/helpers';
 
 /**
  * Deposit Details Screen
@@ -150,8 +151,8 @@ export default function Index() {
           {/* SVG */}
           <Clock height={30} width={30}></Clock>
           <View>
-            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{transactionDetails.transactionDate}</Text>
-            <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>{transactionDetails.transactionId}</Text>
+            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{formatTransactionDate(transactionDetails.transactionDate).toLocaleString()}</Text>
+            <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>{`Order #${transactionDetails.transactionId}`}</Text>
           </View>
         </View>
 

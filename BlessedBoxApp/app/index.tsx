@@ -1,18 +1,18 @@
 import axios from 'axios';
+import Constants from 'expo-constants';
 import { Stack, useRouter } from 'expo-router'; // likely named export
 import React, { useState } from 'react';
 import { Alert, Modal, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import io from 'socket.io-client';
 import commonStyles from './baseStyles/baseStyles'; // default export
 import colors from './baseStyles/colors'; // default export
 import LoadingOverlay from './components/LoadingSpinner';
-import Constants from 'expo-constants';
+import { getToken, saveToken } from './helpers/helpers';
 
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL;
 const API_PORT = extra?.PORT;
-console.log(extra);
-// TODO: removed when finished
 
 export default function Index() {
   const [email, setEmail] = useState('');
@@ -23,48 +23,19 @@ export default function Index() {
 
   const handleLogin = async () => {
     setIsLoading(true);
-    // return router.replace('./home');
-    try {
-      const response = await axios.post(`${API_URL}:${API_PORT}/api/auth/login`, {
-        email: email,
-        password: password,
-      });
-      const user = response;
-      if (!user) {
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 1000);
-        setTimeout(() => {
-          setModalVisible(true);
-        }, 1000);
-      } else {
-        // 2. Guardar usuario si quieres (opcional)
-        // localStorage.setItem("user", JSON.stringify(user));
-
-        // // 3. Conectarse al socket con datos del usuario
-        // const socket = io("http://localhost:4000", {
-        //   auth: {
-        //     userId: user.userId,
-        //     email: user.email
-        //   }
-        // });
-
-        // // 4. Escuchar eventos del socket
-        // socket.on("connect", () => {
-        //   console.log(`Conectado como ${user.email}`);
-        // });
-
-        // socket.on("chatMessage", (msg) => {
-        //   console.log("Mensaje recibido:", msg);
-        // });
-        router.replace('./home');
-      }
-    } catch (error) {
-      console.error('Error de login:', error);
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1000);
+    const response = await axios.post(`${API_URL}:${API_PORT}/api/auth/login`, {
+      email: email,
+      password: password,
+    });
+    if (response.data.success) {
+      await saveToken(response.data.token);
+      const token = await getToken();
+      const socket = io(`${API_URL}:${API_PORT}`, { auth: { token } });
+      setIsLoading(false);
+      router.replace('./home');
+    } else {
+      setIsLoading(false);
+      setModalVisible(true);
     }
   };
 
