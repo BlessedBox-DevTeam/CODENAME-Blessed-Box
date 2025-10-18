@@ -16,7 +16,7 @@ import Clock from '../components/icons/Clock';
 import axios from 'axios';
 import Constants from 'expo-constants';
 import LoadingOverlay from '../components/LoadingSpinner';
-import { formatTransactionDate } from '../helpers/helpers';
+import { formatTransactionDate, getUserRoles } from '../helpers/helpers';
 
 /**
  * Deposit Details Screen
@@ -32,6 +32,7 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [transactionDetails, setTransactionDetails] = useState(null);
   const [boxes, setBoxes] = useState(null);
+  const [roles, setRoles] = useState(null);
 
   // Obtain transactionId from query parameters
   let { transactionId } = useLocalSearchParams<{ transactionId: string }>();
@@ -40,14 +41,17 @@ export default function Index() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const {
-          data: { response },
-        } = await axios.get(`${API_URL}:${API_PORT}/api/transactions/transactionDetails`, { params: { transactionId: transactionId } });
+        const [roles, { response }] = await Promise.all([
+          getUserRoles(),
+          (await axios.get(`${API_URL}:${API_PORT}/api/transactions/transactionDetails`, { params: { transactionId } })).data,
+        ]);
+        console.log(roles);
         setTransactionDetails(response.transactionDetails);
         setBoxes(response.boxes);
+        console.log(boxes);
 
         const mergedData = Array.from(
-          response.boxes.reduce((map, item) => {
+          boxes.reduce((map, item) => {
             if (!item) return map;
 
             const age = item.age ?? false;
@@ -92,7 +96,6 @@ export default function Index() {
    * @returns {JSX.Element}
    */
   const appendDepositInfo = () => {
-    console.log(boxes);
     return (
       <View
         style={{

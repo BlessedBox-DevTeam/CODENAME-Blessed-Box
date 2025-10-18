@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
+import { jwtDecode } from 'jwt-decode';
 /**
  * Formatea una fecha al estilo: "October 17, 2025 - 2:19 pm"
  * @param {string | Date} dateInput - Fecha en string ISO o Date object
@@ -25,7 +26,13 @@ export function formatTransactionDate(dateInput: string | Date): string {
 
   return `${monthName} ${day}, ${year} - ${hours}:${minuteStr} ${ampm}`;
 }
-
+// TOKEN HELPERS
+interface TokenPayload {
+  userId: number;
+  email: string;
+  roles: string[];
+  exp: number;
+}
 export async function saveToken(token: string) {
   await SecureStore.setItemAsync('userToken', token);
 }
@@ -36,4 +43,28 @@ export async function getToken(): Promise<string | null> {
 
 export async function deleteToken() {
   await SecureStore.deleteItemAsync('userToken');
+}
+
+export async function getUserFromToken(): Promise<TokenPayload | null> {
+  const token = await getToken();
+  if (!token) return null;
+  try {
+    const decoded = jwtDecode<TokenPayload>(token);
+
+    // Validate expiration
+    const currentTime = Date.now() / 1000;
+    if (decoded.exp && decoded.exp < currentTime) {
+      console.warn('Token has expired');
+      return null;
+    }
+    return decoded;
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return null;
+  }
+}
+
+export async function getUserRoles(): Promise<string[] | null> {
+  const user = await getUserFromToken();
+  return user?.roles ?? null;
 }
