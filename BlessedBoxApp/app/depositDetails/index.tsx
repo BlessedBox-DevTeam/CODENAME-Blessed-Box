@@ -17,6 +17,7 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import LoadingOverlay from '../components/LoadingSpinner';
 import { formatTransactionDate, getUserRoles } from '../helpers/helpers';
+import { ADMIN_ROLE_TYPE_ID, CANCELLED_STATUS_ID, COMPLETED_STATUS_ID, PENDING_STATUS_ID } from '../helpers/constants';
 
 /**
  * Deposit Details Screen
@@ -33,6 +34,7 @@ export default function Index() {
   const [transactionDetails, setTransactionDetails] = useState(null);
   const [boxes, setBoxes] = useState(null);
   const [roles, setRoles] = useState(null);
+  const canValidateDeposit = roles?.some((role) => role.roleId === ADMIN_ROLE_TYPE_ID && transactionDetails.statusCode === PENDING_STATUS_ID);
 
   // Obtain transactionId from query parameters
   let { transactionId } = useLocalSearchParams<{ transactionId: string }>();
@@ -45,13 +47,10 @@ export default function Index() {
           getUserRoles(),
           (await axios.get(`${API_URL}:${API_PORT}/api/transactions/transactionDetails`, { params: { transactionId } })).data,
         ]);
-        console.log(roles);
+        setRoles(roles);
         setTransactionDetails(response.transactionDetails);
-        setBoxes(response.boxes);
-        console.log(boxes);
-
         const mergedData = Array.from(
-          boxes.reduce((map, item) => {
+          response.boxes.reduce((map, item) => {
             if (!item) return map;
 
             const age = item.age ?? false;
@@ -65,7 +64,7 @@ export default function Index() {
             }
 
             return map;
-          }, new Map<string, { age: string | false; genderId: number | false; quantity: number }>())
+          }, new Map())
         ).map(([_, value]) => value);
         setBoxes(mergedData);
       } catch (err) {
@@ -257,10 +256,30 @@ export default function Index() {
         </View>
 
         {/* Deposit Status Container */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2, marginBottom: 16 }}>
-          <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue, alignSelf: 'center' }]}>Requires Confirmation</Text>
-          <Alert width={25} height={25}></Alert>
-        </View>
+        {transactionDetails.statusCode === PENDING_STATUS_ID ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 2,
+              marginBottom: 16,
+            }}>
+            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue, alignSelf: 'center' }]}>Requires Confirmation</Text>
+            <Alert width={25} height={25} />
+          </View>
+        ) : (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 2,
+              marginBottom: 16,
+            }}>
+            <Text style={[commonStyles.paragraphBold, { color: colors.green_label, alignSelf: 'center' }]}>Deposit Confirmed</Text>
+          </View>
+        )}
         {/* Main Container */}
         <View style={{ flex: 1, paddingHorizontal: 16, paddingBottom: 16 }}>
           {/* Tab Container */}
@@ -325,14 +344,19 @@ export default function Index() {
                         flex: 1,
                       },
                     ]}
-                    onPress={() => setShowWarning(false)}>
+                    onPress={async () => setShowWarning(false)}>
                     <Text style={[commonStyles.header, { color: colors.dark_gray }]}>Cancel</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[commonStyles.buttonNoShadow, { backgroundColor: colors.red_label, flex: 1 }]}
-                    onPress={() => {
+                    onPress={async () => {
                       setShowWarning(false);
-                      router.replace('./order');
+                      setIsLoading(true);
+                      await axios.post(`${API_URL}:${API_PORT}/api/transactions/editTransactionStatus`, {
+                        transactionId: transactionId,
+                        statusCode: CANCELLED_STATUS_ID,
+                      });
+                      setIsLoading(false);
                     }}>
                     <Text style={[commonStyles.header, { color: colors.white }]}>Decline</Text>
                   </TouchableOpacity>
@@ -342,30 +366,43 @@ export default function Index() {
           </Modal>
 
           {/* Buttons Container */}
-          <View style={{ marginTop: 'auto', paddingBottom: 20 }}>
-            {/* Confirm Button */}
-            <TouchableOpacity
-              style={commonStyles.buttonNoShadow}
-              onPress={() => {
-                router.replace('./');
-              }}>
-              <Text style={[commonStyles.header, { color: colors.white }]}>Confirm Deposit</Text>
-            </TouchableOpacity>
-            {/* Decline Button */}
-            <TouchableOpacity
-              style={[
-                commonStyles.buttonNoShadow,
-                {
-                  backgroundColor: colors.white,
-                  borderColor: colors.red_label,
-                  borderWidth: 2,
-                  marginTop: 10,
-                },
-              ]}
-              onPress={() => setShowWarning(true)}>
-              <Text style={[commonStyles.header, { color: colors.red_label }]}>Decline</Text>
-            </TouchableOpacity>
-          </View>
+          {canValidateDeposit ? (
+            <View style={{ marginTop: 'auto', paddingBottom: 20 }}>
+              {/* Confirm Button */}
+              <TouchableOpacity
+                style={commonStyles.buttonNoShadow}
+                onPress={async () => {
+                  setIsLoading(true);
+                  await axios.post(`${API_URL}:${API_PORT}/api/transactions/editTransactionStatus`, {
+                    transactionId: transactionId,
+                    statusCode: COMPLETED_STATUS_ID,
+                  });
+                  setIsLoading(false);
+                }}>
+                <Text style={[commonStyles.header, { color: colors.white }]}>Confirm Deposit</Text>
+              </TouchableOpacity>
+              {/* Decline Button */}
+              <TouchableOpacity
+                style={[
+                  commonStyles.buttonNoShadow,
+                  {
+                    backgroundColor: colors.white,
+                    borderColor: colors.red_label,
+                    borderWidth: 2,
+                    marginTop: 10,
+                  },
+                ]}
+                onPress={() => setShowWarning(true)}>
+                <Text style={[commonStyles.header, { color: colors.red_label }]}>Decline</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={{ marginTop: 'auto', paddingBottom: 20, alignItems: 'center' }}>
+              {transactionDetails.statusCode === PENDING_STATUS_ID && !canValidateDeposit && (
+                <Text style={[commonStyles.paragraphItalic, { color: colors.dark_gray, textAlign: 'center' }]}>You do not have permissions to validate this deposit.</Text>
+              )}
+            </View>
+          )}
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

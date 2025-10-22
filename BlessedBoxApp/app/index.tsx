@@ -7,6 +7,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import io from 'socket.io-client';
 import commonStyles from './baseStyles/baseStyles'; // default export
 import colors from './baseStyles/colors'; // default export
+import Checkbox from './components/icons/Checkbox';
 import LoadingOverlay from './components/LoadingSpinner';
 import { getToken, saveToken } from './helpers/helpers';
 
@@ -84,6 +85,7 @@ export default function Index() {
         <TouchableOpacity style={[commonStyles.button]} onPress={handleLogin}>
           <Text style={[commonStyles.header, { color: colors.white }]}>Login</Text>
         </TouchableOpacity>
+        <Checkbox label="Keep me signed in" />
       </SafeAreaView>
     </SafeAreaProvider>
   );
