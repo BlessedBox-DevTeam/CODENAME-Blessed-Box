@@ -26,6 +26,7 @@ export function formatTransactionDate(dateInput: string | Date): string {
 
   return `${monthName} ${day}, ${year} - ${hours}:${minuteStr} ${ampm}`;
 }
+
 // TOKEN HELPERS
 interface TokenPayload {
   userId: number;
@@ -33,20 +34,17 @@ interface TokenPayload {
   roles: string[];
   exp: number;
 }
-export async function saveToken(token: string) {
-  await SecureStore.setItemAsync('userToken', token);
+export async function saveAccessToken(token: string) {
+  await SecureStore.setItemAsync('accessToken', token);
 }
-
-export async function getToken(): Promise<string | null> {
-  return await SecureStore.getItemAsync('userToken');
+export async function getAccessToken(): Promise<string | null> {
+  return await SecureStore.getItemAsync('accessToken');
 }
-
-export async function deleteToken() {
-  await SecureStore.deleteItemAsync('userToken');
+export async function deleteAccessToken() {
+  await SecureStore.deleteItemAsync('accessToken');
 }
-
 export async function getUserFromToken(): Promise<TokenPayload | null> {
-  const token = await getToken();
+  const token = await getAccessToken();
   if (!token) return null;
   try {
     const decoded = jwtDecode<TokenPayload>(token);
@@ -63,8 +61,14 @@ export async function getUserFromToken(): Promise<TokenPayload | null> {
     return null;
   }
 }
-
 export async function getUserRoles(): Promise<string[] | null> {
   const user = await getUserFromToken();
   return user?.roles ?? null;
+}
+// REFRESH TOKEN
+export async function saveRefreshToken(token: string) {
+  await SecureStore.setItemAsync('refreshToken', token);
+}
+export async function getRefreshToken() {
+  return await SecureStore.getItemAsync('refreshToken');
 }

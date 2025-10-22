@@ -9,7 +9,7 @@ import commonStyles from './baseStyles/baseStyles'; // default export
 import colors from './baseStyles/colors'; // default export
 import Checkbox from './components/icons/Checkbox';
 import LoadingOverlay from './components/LoadingSpinner';
-import { getToken, saveToken } from './helpers/helpers';
+import { getAccessToken, saveAccessToken, saveRefreshToken } from './helpers/helpers';
 
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL;
@@ -20,6 +20,7 @@ export default function Index() {
   const [password, setPassword] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [keepMeSignedIn, setKeepMeSignedIn] = useState(false);
   const router = useRouter();
 
   const handleLogin = async () => {
@@ -27,10 +28,14 @@ export default function Index() {
     const response = await axios.post(`${API_URL}:${API_PORT}/api/auth/login`, {
       email: email,
       password: password,
+      keepMeSignedIn: keepMeSignedIn,
     });
     if (response.data.success) {
-      await saveToken(response.data.token);
-      const token = await getToken();
+      await saveAccessToken(response.data.accessToken);
+      if (keepMeSignedIn && response.data.refreshToken) {
+        await saveRefreshToken(response.data.refreshToken);
+      }
+      const token = await getAccessToken();
       const socket = io(`${API_URL}:${API_PORT}`, { auth: { token } });
       setIsLoading(false);
       router.replace('./home');
@@ -85,7 +90,7 @@ export default function Index() {
         <TouchableOpacity style={[commonStyles.button]} onPress={handleLogin}>
           <Text style={[commonStyles.header, { color: colors.white }]}>Login</Text>
         </TouchableOpacity>
-        <Checkbox label="Keep me signed in" />
+        <Checkbox onChange={(value) => setKeepMeSignedIn(value)} label="Keep me signed in" />
       </SafeAreaView>
     </SafeAreaProvider>
   );
