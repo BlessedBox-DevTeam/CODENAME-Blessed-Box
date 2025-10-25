@@ -4,6 +4,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import CircularProgress from '../components/CircularProgress';
+import { router } from 'expo-router';
 
 export default function Index() {
   return (
@@ -13,7 +14,7 @@ export default function Index() {
           <View style={[commonStyles.card, commonStyles.gridContainer]}>
             <View style={commonStyles.leftColumn}>
               <Text style={[commonStyles.paragraphExtraBold, { color: colors.green_label, gap: 0.5 }]}>
-                OCC <Text style={[commonStyles.paragraphExtraBold, { color: colors.red_label }]}>2025</Text>
+                ICB <Text style={[commonStyles.paragraphExtraBold, { color: colors.red_label }]}>2025</Text>
               </Text>
               <Text style={commonStyles.header}>Yearly Goal</Text>
               <Text style={commonStyles.paragraph}>
@@ -70,7 +71,7 @@ export default function Index() {
               </View>
             </View>
             <Text style={commonStyles.paragraph}>Great job! Keep it going!</Text>
-            <TouchableOpacity style={[commonStyles.buttonNoShadow, { backgroundColor: colors.dark_blue }]} onPress={() => alert('Add more boxes!')}>
+            <TouchableOpacity style={[commonStyles.buttonNoShadow, { backgroundColor: colors.dark_blue }]} onPress={() => router.replace('/transactions')}>
               <Text style={[commonStyles.paragraphBold, { color: colors.white }]}>View Activity</Text>
             </TouchableOpacity>
           </View>

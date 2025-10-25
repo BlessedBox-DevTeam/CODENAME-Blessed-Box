@@ -23,7 +23,7 @@ export default function Index({}) {
           <TouchableOpacity
             style={[commonStyles.buttonNoShadow]}
             onPress={() => {
-              router.replace('../../public/home');
+              router.replace('/(protected)/home');
             }}>
             <Text style={[commonStyles.header, { color: colors.white }]}>Return Home</Text>
           </TouchableOpacity>

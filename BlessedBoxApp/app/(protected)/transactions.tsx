@@ -44,7 +44,7 @@ export default function Index() {
               key={transaction.transactionId}
               pressCallback={(transactionId) => {
                 router.push({
-                  pathname: './depositDetails',
+                  pathname: '/depositDetails/depositDetails',
                   params: { transactionId: JSON.stringify(transactionId) },
                 });
               }}

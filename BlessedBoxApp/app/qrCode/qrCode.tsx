@@ -43,7 +43,7 @@ export default function Index() {
       const { success, message, data: responseData, error } = (await axios.post(`${API_URL}:${API_PORT}/api/qrCodes/isQRCode`, { qrCodeValue: codeValue })).data;
       setIsLoading(false);
       if (responseData && success) {
-        router.push('./order');
+        router.push('/orders/order');
       } else {
         alert(message);
       }
@@ -214,7 +214,7 @@ export default function Index() {
                 const { response, message } = (await axios.post(`${API_URL}:${API_PORT}/api/backupKeys/isKey`, { keyValue: code })).data;
                 setIsLoading(false);
                 if (response) {
-                  router.push('./order');
+                  router.push('/orders/order');
                 } else {
                   alert(message);
                 }

@@ -154,7 +154,7 @@ export default function Index() {
                 console.log(response.transactionId);
                 setIsLoading(false);
                 if (response) {
-                  router.replace('/completedOrder', { transactionId: response.transactionId });
+                  router.replace('/orders/completedOrder', { transactionId: response.transactionId });
                 } else {
                   alert(message);
                 }

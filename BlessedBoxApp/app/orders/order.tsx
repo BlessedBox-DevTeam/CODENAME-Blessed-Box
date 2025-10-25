@@ -141,7 +141,7 @@ export default function Index() {
     }
 
     router.push({
-      pathname: '/orderSummary',
+      pathname: '/orders/orderSummary',
       params: { boxLabels: JSON.stringify(mergedData) },
     });
   };
