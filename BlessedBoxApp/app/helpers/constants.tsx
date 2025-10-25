@@ -10,7 +10,7 @@ export const TEN_TO_FOURTEEN_YEARS_ID = 3;
 // TRANSACTION STATUS IDS
 export const PENDING_STATUS_ID = 1;
 export const COMPLETED_STATUS_ID = 2;
-export const CANCELLED_STATUS_ID = 3;
+export const DECLINED_STATUS_ID = 3;
 
 // ROLE TYPES IDS
 export const ADMIN_ROLE_TYPE_ID = 1;

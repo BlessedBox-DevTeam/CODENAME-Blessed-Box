@@ -17,7 +17,7 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import LoadingOverlay from '../components/LoadingSpinner';
 import { formatTransactionDate, getUserRoles } from '../helpers/helpers';
-import { ADMIN_ROLE_TYPE_ID, CANCELLED_STATUS_ID, COMPLETED_STATUS_ID, PENDING_STATUS_ID } from '../helpers/constants';
+import { ADMIN_ROLE_TYPE_ID, DECLINED_STATUS_ID, COMPLETED_STATUS_ID, PENDING_STATUS_ID } from '../helpers/constants';
 
 /**
  * Deposit Details Screen
@@ -79,7 +79,7 @@ export default function Index() {
    * Navigates back to the order screen.
    */
   const handleReturn = () => {
-    return router.back();
+    return router.replace('/(protected)/transactions');
   };
   /**
    * Handles tab switching between deposit info and box summary.
@@ -256,30 +256,29 @@ export default function Index() {
         </View>
 
         {/* Deposit Status Container */}
-        {transactionDetails.statusCode === PENDING_STATUS_ID ? (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 2,
-              marginBottom: 16,
-            }}>
-            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue, alignSelf: 'center' }]}>Requires Confirmation</Text>
-            <Alert width={25} height={25} />
-          </View>
-        ) : (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 2,
-              marginBottom: 16,
-            }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 2,
+            marginBottom: 16,
+          }}>
+          {transactionDetails.statusCode === PENDING_STATUS_ID && (
+            <>
+              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue, alignSelf: 'center' }]}>Requires Confirmation</Text>
+              <Alert width={25} height={25} />
+            </>
+          )}
+
+          {transactionDetails.statusCode === COMPLETED_STATUS_ID && (
             <Text style={[commonStyles.paragraphBold, { color: colors.green_label, alignSelf: 'center' }]}>Deposit Confirmed</Text>
-          </View>
-        )}
+          )}
+
+          {transactionDetails.statusCode === DECLINED_STATUS_ID && (
+            <Text style={[commonStyles.paragraphBold, { color: colors.red_label, alignSelf: 'center' }]}>Deposit Declined</Text>
+          )}
+        </View>
         {/* Main Container */}
         <View style={{ flex: 1, paddingHorizontal: 16, paddingBottom: 16 }}>
           {/* Tab Container */}
@@ -354,7 +353,7 @@ export default function Index() {
                       setIsLoading(true);
                       await axios.post(`${API_URL}:${API_PORT}/api/transactions/editTransactionStatus`, {
                         transactionId: transactionId,
-                        statusCode: CANCELLED_STATUS_ID,
+                        statusCode: DECLINED_STATUS_ID,
                       });
                       setIsLoading(false);
                     }}>

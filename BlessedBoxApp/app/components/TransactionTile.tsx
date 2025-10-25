@@ -1,25 +1,19 @@
 import React, { JSX } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import colors from '../baseStyles/colors';
-import { CANCELLED_STATUS_ID, COMPLETED_STATUS_ID, PENDING_STATUS_ID } from '../helpers/constants';
+import { DECLINED_STATUS_ID, COMPLETED_STATUS_ID, PENDING_STATUS_ID } from '../helpers/constants';
 import BlessedBox from './icons/BlessedBox';
+import { TransactionTileInfo } from '../types/TransactionTileInfo';
 
-interface Transaction {
-  transactionId: number;
-  recollectionCenterName: string;
-  statusCode: number;
-  statusDescription: string;
-  boxCount: number;
-}
 interface TransactionTileProps {
-  transaction: Transaction;
+  transaction: TransactionTileInfo;
   pressCallback?: (transactionId: number) => void;
 }
 
-const MAP_STATUS_CODE_COLOR: Record<number, string> = {
-  [PENDING_STATUS_ID]: colors.yellow,
-  [COMPLETED_STATUS_ID]: colors.green_label,
-  [CANCELLED_STATUS_ID]: colors.red_label,
+const MAP_STATUS_CODE_COLOR: Record<number, { color: string; statusDescription: string }> = {
+  [PENDING_STATUS_ID]: { color: colors.yellow, statusDescription: 'Pending' },
+  [COMPLETED_STATUS_ID]: { color: colors.green_label, statusDescription: 'Completed' },
+  [DECLINED_STATUS_ID]: { color: colors.red_label, statusDescription: 'Declined' },
 };
 
 const TransactionTile = ({ transaction, pressCallback }: TransactionTileProps): JSX.Element => {
@@ -35,8 +29,8 @@ const TransactionTile = ({ transaction, pressCallback }: TransactionTileProps): 
         <Text style={[styles.recollectionCenterTitle, { textAlign: 'center' }]}>{recollectionCenterName}</Text>
         <View style={styles.orderContainer}>
           <Text style={styles.orderNumber}>{`#Order: ${transactionId}`}</Text>
-          <View style={[styles.statusContainer, { backgroundColor: MAP_STATUS_CODE_COLOR[statusCode] }]}>
-            <Text style={styles.status}>{statusDescription}</Text>
+          <View style={[styles.statusContainer, { backgroundColor: MAP_STATUS_CODE_COLOR[statusCode].color }]}>
+            <Text style={styles.status}>{MAP_STATUS_CODE_COLOR[statusCode].statusDescription}</Text>
           </View>
         </View>
       </View>

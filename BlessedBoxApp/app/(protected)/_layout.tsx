@@ -28,8 +28,8 @@ export default function ProtectedLayout() {
       {/* Stack de pantallas */}
       <View style={{ flex: 1, height: '100%' }}>
         <Stack>
-          <Stack.Screen name="home" options={{ title: 'Blessed Box', headerTitleStyle: commonStyles.title }} />
-          <Stack.Screen name="transactions" options={{ title: 'History', headerTitleStyle: commonStyles.title }} />
+          <Stack.Screen name="home" options={{ title: 'Blessed Box', headerTitleStyle: commonStyles.title, headerBackVisible: false }} />
+          <Stack.Screen name="transactions" options={{ title: 'History', headerTitleStyle: commonStyles.title, headerBackVisible: false }} />
         </Stack>
       </View>
 
