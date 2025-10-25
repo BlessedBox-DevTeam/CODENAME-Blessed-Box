@@ -38,7 +38,7 @@ export default function Index() {
       const token = await getAccessToken();
       const socket = io(`${API_URL}:${API_PORT}`, { auth: { token } });
       setIsLoading(false);
-      router.replace('./home');
+      router.replace('/home');
     } else {
       setIsLoading(false);
       setModalVisible(true);

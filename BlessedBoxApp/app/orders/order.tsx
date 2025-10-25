@@ -2,12 +2,12 @@ import { router, Stack } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { Alert, LayoutAnimation, Platform, ScrollView, Text, TextInput, TouchableOpacity, UIManager, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import commonStyles from '../../baseStyles/baseStyles';
-import colors from '../../baseStyles/colors';
-import BoxLabel, { BoxLabelType } from '../../components/BoxLabel';
-import BackArrow from '../../components/icons/BackArrow';
-import PlusSign from '../../components/icons/PlusSign';
-import { BoxLabelInfo } from '../../types/BoxLabelInfo';
+import commonStyles from '../baseStyles/baseStyles';
+import colors from '../baseStyles/colors';
+import BoxLabel, { BoxLabelType } from '../components/BoxLabel';
+import BackArrow from '../components/icons/BackArrow';
+import PlusSign from '../components/icons/PlusSign';
+import { BoxLabelInfo } from '../types/BoxLabelInfo';
 
 /**
  * Order Entry Screen
