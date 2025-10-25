@@ -1,15 +1,15 @@
 import axios from 'axios';
 import Constants from 'expo-constants';
-import { Stack, useRouter } from 'expo-router'; // likely named export
+import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Modal, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import io from 'socket.io-client';
-import commonStyles from './baseStyles/baseStyles'; // default export
-import colors from './baseStyles/colors'; // default export
-import Checkbox from './components/icons/Checkbox';
-import LoadingOverlay from './components/LoadingSpinner';
-import { getAccessToken, saveAccessToken, saveRefreshToken } from './helpers/helpers';
+import commonStyles from '../baseStyles/baseStyles';
+import colors from '../baseStyles/colors';
+import Checkbox from '../components/icons/Checkbox';
+import LoadingOverlay from '../components/LoadingSpinner';
+import { getAccessToken, saveAccessToken, saveRefreshToken } from '../helpers/helpers';
 
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL;

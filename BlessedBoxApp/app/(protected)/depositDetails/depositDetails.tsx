@@ -2,22 +2,22 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import commonStyles from '../baseStyles/baseStyles';
+import commonStyles from '../../baseStyles/baseStyles';
 import SwitchSelector from 'react-native-switch-selector';
-import colors from '../baseStyles/colors';
+import colors from '../../baseStyles/colors';
 import { Modal } from 'react-native';
-import GenderInitial from '../components/GenderInitial';
-import UserAvatar from '../components/icons/UserAvatar';
-import Church from '../components/icons/Church';
-import Mail from '../components/icons/Mail';
-import Alert from '../components/icons/Alert';
-import BackArrow from '../components/icons/BackArrow';
-import Clock from '../components/icons/Clock';
+import GenderInitial from '../../components/GenderInitial';
+import UserAvatar from '../../components/icons/UserAvatar';
+import Church from '../../components/icons/Church';
+import Mail from '../../components/icons/Mail';
+import Alert from '../../components/icons/Alert';
+import BackArrow from '../../components/icons/BackArrow';
+import Clock from '../../components/icons/Clock';
 import axios from 'axios';
 import Constants from 'expo-constants';
-import LoadingOverlay from '../components/LoadingSpinner';
-import { formatTransactionDate, getUserRoles } from '../helpers/helpers';
-import { ADMIN_ROLE_TYPE_ID, CANCELLED_STATUS_ID, COMPLETED_STATUS_ID, PENDING_STATUS_ID } from '../helpers/constants';
+import LoadingOverlay from '../../components/LoadingSpinner';
+import { formatTransactionDate, getUserRoles } from '../../helpers/helpers';
+import { ADMIN_ROLE_TYPE_ID, CANCELLED_STATUS_ID, COMPLETED_STATUS_ID, PENDING_STATUS_ID } from '../../helpers/constants';
 
 /**
  * Deposit Details Screen

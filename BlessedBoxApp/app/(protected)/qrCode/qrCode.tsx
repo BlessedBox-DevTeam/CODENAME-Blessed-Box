@@ -4,12 +4,12 @@ import React, { useRef, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import SwitchSelector from 'react-native-switch-selector';
-import commonStyles from '../baseStyles/baseStyles';
-import colors from '../baseStyles/colors';
-import BackArrow from '../components/icons/BackArrow';
+import commonStyles from '../../baseStyles/baseStyles';
+import colors from '../../baseStyles/colors';
+import BackArrow from '../../components/icons/BackArrow';
 import axios from 'axios';
 import Constants from 'expo-constants';
-import LoadingOverlay from '../components/LoadingSpinner';
+import LoadingOverlay from '../../components/LoadingSpinner';
 
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL;

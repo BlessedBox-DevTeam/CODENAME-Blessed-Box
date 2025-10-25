@@ -1,9 +1,9 @@
-import { router, Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useRef } from 'react';
-import { Text, TouchableOpacity, View, Image } from 'react-native';
+import { Stack, useRouter } from 'expo-router';
+import React from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import commonStyles from '../baseStyles/baseStyles';
-import colors from '../baseStyles/colors';
+import commonStyles from '../../baseStyles/baseStyles';
+import colors from '../../baseStyles/colors';
 
 export default function Index({}) {
   const router = useRouter();
@@ -14,7 +14,7 @@ export default function Index({}) {
       <Stack.Screen options={{ headerShown: false }} />
       <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1, padding: 16, justifyContent: 'center' }}>
         <View style={[commonStyles.card, { height: 'auto', gap: 16, justifyContent: 'center', alignItems: 'center' }]}>
-          <Image source={require('../../assets/images/favicon.png')} style={{ width: 80, height: 80, resizeMode: 'contain' }} />
+          <Image source={require('../../../assets/images/favicon.png')} style={{ width: 80, height: 80, resizeMode: 'contain' }} />
           <Text style={[commonStyles.header, { textAlign: 'center', fontSize: 22 }]}>
             Order #{transactionId} {'\n'}has been received
           </Text>
@@ -23,7 +23,7 @@ export default function Index({}) {
           <TouchableOpacity
             style={[commonStyles.buttonNoShadow]}
             onPress={() => {
-              router.replace('./home');
+              router.replace('../../public/home');
             }}>
             <Text style={[commonStyles.header, { color: colors.white }]}>Return Home</Text>
           </TouchableOpacity>
