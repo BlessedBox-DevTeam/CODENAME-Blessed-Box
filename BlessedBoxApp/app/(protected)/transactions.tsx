@@ -2,7 +2,7 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Modal, SectionList, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, SectionList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import commonStyles from '../baseStyles/baseStyles';
@@ -14,6 +14,8 @@ import LoadingOverlay from '../components/LoadingSpinner';
 import TransactionTile from '../components/TransactionTile';
 import { formatTransactionDate, groupByDate, sortByDateProp } from '../helpers/helpers';
 import { TransactionTileInfo } from '../types/TransactionTileInfo';
+import { FEMALE_GENDER_ID, FIVE_TO_NINE_YEARS_ID, MALE_GENDER_ID, TEN_TO_FOURTEEN_YEARS_ID, TWO_TO_FOUR_YEARS_ID } from '../helpers/constants';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
@@ -22,14 +24,35 @@ export default function Index() {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [modal, setModal] = useState(false);
+  const [boxNumber, setBoxNumber] = useState('');
+  const [openDropdown, setOpenDropdown] = useState(false);
+  const [dropdownValue, setDropdownValue] = useState(null);
+  const [dropdownOptions, setDropdownOptions] = useState([
+    { label: 'Exact', value: 'exact' },
+    { label: 'Minimum', value: 'minimum' },
+    { label: 'Maximum', value: 'maximum' },
+    { label: 'Range', value: 'range' },
+  ]);
   const router = useRouter();
   const extra = Constants.expoConfig?.extra;
   const API_URL = extra?.URL;
   const API_PORT = extra?.PORT;
   const todayStr = new Date().toDateString();
-  const ages = ['All', '2-4', '5-9', '10-14'];
+  const ages = [
+    { label: 'All', value: [TWO_TO_FOUR_YEARS_ID, FIVE_TO_NINE_YEARS_ID, TEN_TO_FOURTEEN_YEARS_ID] },
+    { label: '2-4', value: [TWO_TO_FOUR_YEARS_ID] },
+    { label: '5-9', value: [FIVE_TO_NINE_YEARS_ID] },
+    { label: '10-14', value: [TEN_TO_FOURTEEN_YEARS_ID] },
+  ];
+
   const [selectedAges, setSelectedAges] = useState(['All']);
-  const genders = ['All', 'Female', 'Male', 'Unlabeled'];
+  const genders = [
+    { label: 'All', value: [MALE_GENDER_ID, FEMALE_GENDER_ID] },
+    { label: 'Female', value: [FEMALE_GENDER_ID] },
+    { label: 'Male', value: [MALE_GENDER_ID] },
+    { label: 'Unlabeled', value: [] },
+  ];
+
   const [selectedGenders, setSelectedGenders] = useState(['All']);
 
   const fetchTransactions = async () => {
@@ -55,26 +78,52 @@ export default function Index() {
     }
   };
 
-  const handleSelectedAge = (item) => {
+  const handleSelectedAge = (label) => {
     setSelectedAges((prev) => {
-      if (prev.includes(item)) {
-        // Si ya está seleccionado, lo removemos
-        return prev.filter((i) => i !== item);
-      } else {
-        // Si no está, lo agregamos
-        return [...prev, item];
+      // Si presiona "All"
+      if (label === 'All') {
+        return ['All'];
       }
+
+      // Si All estaba seleccionado y toca algo distinto
+      if (prev.includes('All')) {
+        return [label];
+      }
+
+      // Alternar selección normal
+      let newSelection = prev.includes(label)
+        ? prev.filter((item) => item !== label) // remover si ya estaba
+        : [...prev, label]; // agregar si no estaba
+
+      // Si seleccionó todas las opciones específicas → activar ALL
+      if (['2-4', '5-9', '10-14'].every((l) => newSelection.includes(l))) {
+        return ['All'];
+      }
+
+      return newSelection;
     });
   };
-  const handleSelectedGender = (item) => {
+  const handleSelectedGender = (label) => {
     setSelectedGenders((prev) => {
-      if (prev.includes(item)) {
-        // Si ya está seleccionado, lo removemos
-        return prev.filter((i) => i !== item);
-      } else {
-        // Si no está, lo agregamos
-        return [...prev, item];
+      // Si presiona "All"
+      if (label === 'All') {
+        return ['All'];
       }
+
+      // Si All estaba seleccionado y toca otra opción
+      if (prev.includes('All')) {
+        return [label];
+      }
+
+      // Alternar selección normal
+      let newSelection = prev.includes(label) ? prev.filter((i) => i !== label) : [...prev, label];
+
+      // Si seleccionó todas las opciones específicas → activar ALL
+      if (['Female', 'Male', 'Unlabeled'].every((l) => newSelection.includes(l))) {
+        return ['All'];
+      }
+
+      return newSelection;
     });
   };
   const handleFilterModal = () => {
@@ -109,7 +158,7 @@ export default function Index() {
               <View style={{ width: 25 }} />
             </View>
             {/* Main Container */}
-            <View style={{ paddingHorizontal: 16, gap: 16 }}>
+            <View style={{ paddingHorizontal: 16, paddingVertical: 10, gap: 16 }}>
               <Text style={commonStyles.paragraph}>Filter by Recollection Center</Text>
               {/* Country Container */}
               <View
@@ -123,7 +172,7 @@ export default function Index() {
                   borderBottomColor: colors.dark_gray,
                 }}>
                 <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Country</Text>
-                <Text style={[commonStyles.paragraph]}>Puerto Rico</Text>
+                <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Puerto Rico</Text>
               </View>
               {/* Recollection Center Container */}
               <View
@@ -137,41 +186,64 @@ export default function Index() {
                   borderBottomColor: colors.dark_gray,
                 }}>
                 <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>RC</Text>
-                <Text style={[commonStyles.paragraph]}>Iglesia Cristiana Bethlehem</Text>
+                <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Iglesia Cristiana Bethlehem</Text>
               </View>
               {/* Number of Boxes Container */}
-              <View style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                {/* Min number */}
-                <View style={{ backgroundColor: colors.white, borderRadius: 25, width: 75, padding: 25 }}>
-                  <Text>5</Text>
-                  <View style={{ backgroundColor: colors.light_gray }}>
-                    <Text>x</Text>
+              <View style={{ display: 'flex', gap: 16, paddingVertical: 4 }}>
+                <Text style={commonStyles.paragraph}>Filter by Number of Boxes</Text>
+                <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center', width: '100%' }}>
+                  <View style={{ flex: 2 }}>
+                    <DropDownPicker
+                      open={openDropdown}
+                      value={dropdownValue}
+                      items={dropdownOptions}
+                      setOpen={setOpenDropdown}
+                      setValue={setDropdownValue}
+                      setItems={setDropdownOptions}
+                      placeholder="Select option"
+                      style={{
+                        borderColor: colors.light_gray,
+                        borderRadius: 10,
+                        paddingVertical: 0,
+                      }}
+                      textStyle={[commonStyles.paragraph, { color: colors.dark_blue }]}
+                      dropDownContainerStyle={{ borderColor: colors.light_gray, borderRadius: 10 }}
+                      arrowIconStyle={{ tintColor: colors.dark_blue }}
+                    />
                   </View>
-                </View>
-                <Text>to</Text>
-                {/* Max number */}
-                <View style={{ backgroundColor: colors.white, borderRadius: 25, width: 75, padding: 25 }}>
-                  <Text>20</Text>
-                  <View style={{ backgroundColor: colors.light_gray }}>
-                    <Text>x</Text>
-                  </View>
+                  <TextInput
+                    style={{
+                      flex: 1,
+                      height: 50,
+                      backgroundColor: colors.white,
+                      textAlign: 'center',
+                      borderWidth: 1,
+                      borderColor: colors.light_gray,
+                      borderRadius: 10,
+                    }}
+                    value={boxNumber}
+                    onChangeText={setBoxNumber}
+                    keyboardType="numeric"
+                    placeholder="0"
+                    placeholderTextColor={colors.light_gray}
+                  />
                 </View>
               </View>
               {/* Filter by Age Container */}
-              <View style={{ display: 'flex', gap: 16, width: '100%' }}>
+              <View style={{ display: 'flex', gap: 16, width: '100%', paddingVertical: 4 }}>
                 <Text style={commonStyles.paragraph}>Filter by Age</Text>
                 <View style={{ alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
                   {ages.map((item) => (
-                    <FilterChip label={item} onPress={() => handleSelectedAge(item)} selected={selectedAges.includes(item)}></FilterChip>
+                    <FilterChip key={item.label} label={item.label} onPress={() => handleSelectedAge(item.label)} selected={selectedAges.includes(item.label)}></FilterChip>
                   ))}
                 </View>
               </View>
               {/* Filter by Gender Container */}
-              <View style={{ display: 'flex', gap: 16, width: '100%' }}>
+              <View style={{ display: 'flex', gap: 16, width: '100%', paddingVertical: 4 }}>
                 <Text style={commonStyles.paragraph}>Filter by Gender</Text>
                 <View style={{ alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
                   {genders.map((item) => (
-                    <FilterChip label={item} onPress={() => handleSelectedGender(item)} selected={selectedGenders.includes(item)}></FilterChip>
+                    <FilterChip key={item.label} label={item.label} onPress={() => handleSelectedGender(item.label)} selected={selectedGenders.includes(item.label)}></FilterChip>
                   ))}
                 </View>
               </View>
