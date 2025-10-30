@@ -1,8 +1,8 @@
 import axios from 'axios';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Modal, SectionList, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Modal, SectionList, Text, TextInput, TouchableOpacity, View, Animated, Easing, Alert } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import commonStyles from '../baseStyles/baseStyles';
@@ -24,7 +24,8 @@ export default function Index() {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [modal, setModal] = useState(false);
-  const [boxNumber, setBoxNumber] = useState('');
+  const [boxNumberMax, setBoxNumberMax] = useState('');
+  const [boxNumberMin, setBoxNumberMin] = useState('');
   const [openDropdown, setOpenDropdown] = useState(false);
   const [dropdownValue, setDropdownValue] = useState(null);
   const [dropdownOptions, setDropdownOptions] = useState([
@@ -54,22 +55,116 @@ export default function Index() {
   ];
 
   const [selectedGenders, setSelectedGenders] = useState(['All']);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const fetchTransactions = async () => {
+  useEffect(() => {
+    if (dropdownValue) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 250,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }).start();
+    } else {
+      fadeAnim.setValue(0);
+    }
+  }, [dropdownValue]);
+  const handleSetBoxNumberMin = (value: string) => {
+    const numericValue = value.replace(/[^0-9]/g, '');
+    if (numericValue === '' || (Number(numericValue) >= 1 && Number(numericValue) <= 100)) {
+      setBoxNumberMin(numericValue);
+    }
+  };
+  const handleSetBoxNumberMax = (value: string) => {
+    const numericValue = value.replace(/[^0-9]/g, '');
+    if (numericValue === '' || (Number(numericValue) >= 1 && Number(numericValue) <= 100)) {
+      setBoxNumberMax(numericValue);
+    }
+  };
+  const handleResetFilters = () => {
+    setDropdownValue(null);
+    setBoxNumberMin('');
+    setBoxNumberMax('');
+    setSelectedAges(['All']);
+    setSelectedGenders(['All']);
+    setOpenDropdown(false);
+  };
+  const handleApply = () => {
+    const filters = buildFilters();
+    if (!filters) return; // Detener si la validación falló
+
+    // Reiniciar la lista al aplicar filtros
+    setPage(1);
+    setAllTransactions([]);
+    fetchTransactions(filters);
+  };
+
+  const buildFilters = () => {
+    if (!selectedAges.length || !selectedGenders.length) {
+      Alert.alert('Validation Error', 'Please select at least one category of age and gender.');
+      return null;
+    }
+
+    // Validar valores numéricos según el modo
+    const isSingleDropdownValue = ['exact', 'minimum', 'maximum'].includes(dropdownValue);
+    if (isSingleDropdownValue) {
+      if (!boxNumberMin) {
+        Alert.alert('Validation Error', 'Please enter a value.');
+        return null;
+      }
+    } else if (dropdownValue === 'range') {
+      if (!boxNumberMin || !boxNumberMax) {
+        Alert.alert('Validation Error', 'Both min and max are required.');
+        return null;
+      }
+      const min = parseFloat(boxNumberMin);
+      const max = parseFloat(boxNumberMax);
+      if (isNaN(min) || isNaN(max)) {
+        Alert.alert('Validation Error', 'Values must be numbers.');
+        return null;
+      }
+      if (min >= max) {
+        Alert.alert('Validation Error', 'Min must be less than Max.');
+        return null;
+      }
+    }
+
+    return {
+      recollectionCenterId: 1,
+      page,
+      ageFilters: selectedAges,
+      genderValues: selectedGenders,
+      filterMode: dropdownValue,
+      numberOfBoxes: isSingleDropdownValue ? parseInt(boxNumberMin) : null,
+      maxNumberOfBoxes: dropdownValue === 'range' ? parseInt(boxNumberMax) : null,
+    };
+  };
+
+  const fetchTransactions = async (filters = { recollectionCenterId: 1, page }) => {
     try {
       setIsLoading(true);
       const {
         data: { response },
-      } = await axios.get(`${API_URL}:${API_PORT}/api/transactions/recollectionCenterTransactions`, { params: { recollectionCenterId: 1, page } });
+      } = await axios.get(`${API_URL}:${API_PORT}/api/transactions/recollectionCenterTransactions`, {
+        params: filters,
+      });
+
       setTotalCount(response.totalCount);
-      const updatedTransactions = [...allTransactions, ...response.transactions];
+
+      const updatedTransactions =
+        filters.page === 1
+          ? response.transactions // si es la primera página o filtros nuevos
+          : [...allTransactions, ...response.transactions]; // si estás paginando
+
       setAllTransactions(updatedTransactions);
+
       const sortedTransactions = sortByDateProp(updatedTransactions, 'createdDate');
-      const grouped: Record<string, TransactionTileInfo[]> = groupByDate(sortedTransactions, 'createdDate');
-      const newSections: { title: string; data: TransactionTileInfo[] }[] = Object.entries(grouped).map(([dateKey, items]) => ({
+      const grouped = groupByDate(sortedTransactions, 'createdDate');
+      const newSections = Object.entries(grouped).map(([dateKey, items]) => ({
         title: dateKey === todayStr ? 'Today' : formatTransactionDate(dateKey, false),
         data: items,
       }));
+
       setSections(newSections);
     } catch (err) {
       console.error(err);
@@ -103,7 +198,7 @@ export default function Index() {
       return newSelection;
     });
   };
-  const handleSelectedGender = (label) => {
+  const handleSelectedGender = (label: string) => {
     setSelectedGenders((prev) => {
       // Si presiona "All"
       if (label === 'All') {
@@ -159,7 +254,7 @@ export default function Index() {
             </View>
             {/* Main Container */}
             <View style={{ paddingHorizontal: 16, paddingVertical: 10, gap: 16 }}>
-              <Text style={commonStyles.paragraph}>Filter by Recollection Center</Text>
+              <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Recollection Center</Text>
               {/* Country Container */}
               <View
                 style={{
@@ -190,48 +285,75 @@ export default function Index() {
               </View>
               {/* Number of Boxes Container */}
               <View style={{ display: 'flex', gap: 16, paddingVertical: 4 }}>
-                <Text style={commonStyles.paragraph}>Filter by Number of Boxes</Text>
-                <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center', width: '100%' }}>
-                  <View style={{ flex: 2 }}>
-                    <DropDownPicker
-                      open={openDropdown}
-                      value={dropdownValue}
-                      items={dropdownOptions}
-                      setOpen={setOpenDropdown}
-                      setValue={setDropdownValue}
-                      setItems={setDropdownOptions}
-                      placeholder="Select option"
-                      style={{
-                        borderColor: colors.light_gray,
-                        borderRadius: 10,
-                        paddingVertical: 0,
-                      }}
-                      textStyle={[commonStyles.paragraph, { color: colors.dark_blue }]}
-                      dropDownContainerStyle={{ borderColor: colors.light_gray, borderRadius: 10 }}
-                      arrowIconStyle={{ tintColor: colors.dark_blue }}
-                    />
-                  </View>
-                  <TextInput
-                    style={{
-                      flex: 1,
-                      height: 50,
-                      backgroundColor: colors.white,
-                      textAlign: 'center',
-                      borderWidth: 1,
-                      borderColor: colors.light_gray,
-                      borderRadius: 10,
-                    }}
-                    value={boxNumber}
-                    onChangeText={setBoxNumber}
-                    keyboardType="numeric"
-                    placeholder="0"
-                    placeholderTextColor={colors.light_gray}
-                  />
-                </View>
+                <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Number of Boxes</Text>
+                <DropDownPicker
+                  open={openDropdown}
+                  value={dropdownValue}
+                  items={dropdownOptions}
+                  setOpen={setOpenDropdown}
+                  setValue={setDropdownValue}
+                  setItems={setDropdownOptions}
+                  placeholder="Select option"
+                  style={{
+                    borderColor: colors.light_gray,
+                    borderRadius: 10,
+                    paddingVertical: 0,
+                  }}
+                  textStyle={[commonStyles.paragraph, { color: colors.dark_blue }]}
+                  dropDownContainerStyle={{ borderColor: colors.light_gray, borderRadius: 10 }}
+                  arrowIconStyle={{ tintColor: colors.dark_blue }}
+                />
+
+                <Animated.View style={{ opacity: fadeAnim, width: '100%' }}>
+                  {dropdownValue && (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                      {/* Input Min or Exact */}
+                      <TextInput
+                        style={{
+                          flex: 1,
+                          height: 50,
+                          backgroundColor: colors.white,
+                          textAlign: 'center',
+                          borderWidth: 1,
+                          borderColor: colors.light_gray,
+                          borderRadius: 10,
+                        }}
+                        value={boxNumberMin}
+                        onChangeText={handleSetBoxNumberMin}
+                        keyboardType="numeric"
+                        placeholder="0"
+                        placeholderTextColor={colors.light_gray}
+                      />
+
+                      {/* Range mode */}
+                      {dropdownValue === 'range' && (
+                        <>
+                          <Text style={[commonStyles.paragraph, { flex: 0 }]}>to</Text>
+                          <TextInput
+                            style={{
+                              flex: 1,
+                              height: 50,
+                              backgroundColor: colors.white,
+                              textAlign: 'center',
+                              borderWidth: 1,
+                              borderColor: colors.light_gray,
+                              borderRadius: 10,
+                            }}
+                            value={boxNumberMax}
+                            onChangeText={handleSetBoxNumberMax}
+                            keyboardType="numeric"
+                            placeholder="Max"
+                            placeholderTextColor={colors.light_gray}
+                          />
+                        </>
+                      )}
+                    </View>
+                  )}
+                </Animated.View>
               </View>
               {/* Filter by Age Container */}
               <View style={{ display: 'flex', gap: 16, width: '100%', paddingVertical: 4 }}>
-                <Text style={commonStyles.paragraph}>Filter by Age</Text>
+                <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Age</Text>
                 <View style={{ alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
                   {ages.map((item) => (
                     <FilterChip key={item.label} label={item.label} onPress={() => handleSelectedAge(item.label)} selected={selectedAges.includes(item.label)}></FilterChip>
@@ -240,7 +362,7 @@ export default function Index() {
               </View>
               {/* Filter by Gender Container */}
               <View style={{ display: 'flex', gap: 16, width: '100%', paddingVertical: 4 }}>
-                <Text style={commonStyles.paragraph}>Filter by Gender</Text>
+                <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Gender</Text>
                 <View style={{ alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
                   {genders.map((item) => (
                     <FilterChip key={item.label} label={item.label} onPress={() => handleSelectedGender(item.label)} selected={selectedGenders.includes(item.label)}></FilterChip>
@@ -256,10 +378,12 @@ export default function Index() {
 
             {/* Row de botones */}
             <View style={{ flexDirection: 'row', backgroundColor: colors.white, padding: 20, width: '100%', gap: 12 }}>
-              <TouchableOpacity style={[commonStyles.buttonNoShadow, { flex: 1, backgroundColor: colors.white, borderWidth: 2, borderColor: colors.dark_blue }]} onPress={() => {}}>
+              <TouchableOpacity
+                style={[commonStyles.buttonNoShadow, { flex: 1, backgroundColor: colors.white, borderWidth: 2, borderColor: colors.dark_blue }]}
+                onPress={handleResetFilters}>
                 <Text style={[commonStyles.header, { color: colors.dark_blue }]}>Reset</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[commonStyles.buttonNoShadow, { flex: 1, backgroundColor: colors.dark_blue }]} onPress={() => {}}>
+              <TouchableOpacity style={[commonStyles.buttonNoShadow, { flex: 1, backgroundColor: colors.dark_blue }]} onPress={handleApply}>
                 <Text style={[commonStyles.header, { color: colors.white }]}>Apply</Text>
               </TouchableOpacity>
             </View>
