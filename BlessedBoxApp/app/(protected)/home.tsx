@@ -1,12 +1,52 @@
-import React from 'react';
+import axios from 'axios';
+import Constants from 'expo-constants';
+import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import CircularProgress from '../components/CircularProgress';
-import { router } from 'expo-router';
+import { getAccessToken } from '../helpers/helpers';
+import LoadingOverlay from '../components/LoadingSpinner';
+const extra = Constants.expoConfig?.extra;
+const API_URL = extra?.URL;
+const API_PORT = extra?.PORT;
 
 export default function Index() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [boxesCount, setBoxesCount] = useState({
+    totalBoxes: 0,
+    femaleBoxes: 0,
+    maleBoxes: 0,
+    unlabeledBoxes: 0,
+  });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = await getAccessToken();
+        const { data } = await axios.get(`${API_URL}:${API_PORT}/api/boxes/userBoxes`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setBoxesCount({
+          totalBoxes: data.response.totalBoxes,
+          femaleBoxes: data.response.femaleBoxes,
+          maleBoxes: data.response.maleBoxes,
+          unlabeledBoxes: data.response.unlabeledBoxes,
+        });
+        setIsLoading(false);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
+  }, []);
+  if (isLoading) {
+    return <LoadingOverlay></LoadingOverlay>;
+  }
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
@@ -18,7 +58,7 @@ export default function Index() {
               </Text>
               <Text style={commonStyles.header}>Yearly Goal</Text>
               <Text style={commonStyles.paragraph}>
-                Boxes Collected: <Text style={commonStyles.paragraphExtraBold}>6,000</Text>{' '}
+                Boxes Collected: <Text style={commonStyles.paragraphExtraBold}>6,000</Text>
               </Text>
               <Text style={commonStyles.paragraph}>Reaching Point: 12,000 Boxes</Text>
             </View>
@@ -30,7 +70,7 @@ export default function Index() {
             <Text style={commonStyles.header}>Your Contribution</Text>
             <Text style={[commonStyles.paragraph, { color: colors.dark_blue }]}>
               You have deposited a total of
-              <Text style={commonStyles.paragraphExtraBold}> 45 </Text>boxes
+              <Text style={commonStyles.paragraphExtraBold}> {boxesCount.totalBoxes} </Text>boxes
             </Text>
             <View
               style={{
@@ -47,7 +87,7 @@ export default function Index() {
                   borderTopLeftRadius: 10,
                   borderBottomLeftRadius: 10,
                 }}>
-                <Text style={[commonStyles.header, { color: colors.white }]}>15</Text>
+                <Text style={[commonStyles.header, { color: colors.white }]}>{boxesCount?.maleBoxes}</Text>
               </View>
               <View
                 style={{
@@ -56,7 +96,7 @@ export default function Index() {
                   flex: 1,
                   alignItems: 'center',
                 }}>
-                <Text style={[commonStyles.header, { color: colors.white }]}>15</Text>
+                <Text style={[commonStyles.header, { color: colors.white }]}>{boxesCount.femaleBoxes}</Text>
               </View>
               <View
                 style={{
@@ -67,7 +107,7 @@ export default function Index() {
                   borderTopRightRadius: 10,
                   borderBottomRightRadius: 10,
                 }}>
-                <Text style={[commonStyles.header, { color: colors.dark_gray }]}>15</Text>
+                <Text style={[commonStyles.header, { color: colors.dark_gray }]}>{boxesCount.unlabeledBoxes}</Text>
               </View>
             </View>
             <Text style={commonStyles.paragraph}>Great job! Keep it going!</Text>

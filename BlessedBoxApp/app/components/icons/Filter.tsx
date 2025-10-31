@@ -1,8 +1,9 @@
+import colors from '@/app/baseStyles/colors';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Circle, Line } from 'react-native-svg';
 
-export default function Filter({ size = 28, color = '#000', onPress = () => {} }) {
+export default function Filter({ size = 28, color = colors.dark_gray, onPress = () => {} }) {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -20,15 +21,13 @@ export default function Filter({ size = 28, color = '#000', onPress = () => {} }
         elevation: 3,
       }}
       activeOpacity={0.7}>
-      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-        <Path d="M4 21h16" />
-        <Path d="M4 17h10" />
-        <Path d="M4 13h6" />
-        <Path d="M4 9h8" />
-        <Path d="M4 5h16" />
-        <Path d="M15 17a2 2 0 1 0 4 0 2 2 0 1 0-4 0" />
-        <Path d="M9 13a2 2 0 1 0 4 0 2 2 0 1 0-4 0" />
-        <Path d="M11 5a2 2 0 1 0 4 0 2 2 0 1 0-4 0" />
+      <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+        <Line x1={4} y1={6} x2={20} y2={6} />
+        <Circle cx={8} cy={6} r={2} stroke={color} />
+        <Line x1={4} y1={12} x2={20} y2={12} />
+        <Circle cx={12} cy={12} r={2} stroke={color} />
+        <Line x1={4} y1={18} x2={20} y2={18} />
+        <Circle cx={16} cy={18} r={2} stroke={color} />
       </Svg>
     </TouchableOpacity>
   );

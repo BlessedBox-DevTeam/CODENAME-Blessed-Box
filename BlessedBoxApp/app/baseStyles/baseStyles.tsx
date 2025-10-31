@@ -21,7 +21,7 @@ const commonStyles = StyleSheet.create({
     fontFamily: 'PlayfairDisplay-Black',
     fontSize: 36,
     fontStyle: 'normal',
-    fontWeight: 900,
+    // fontWeight: 900,
     // lineHeight: 16 * 1.4
   },
   header: {
@@ -29,7 +29,7 @@ const commonStyles = StyleSheet.create({
     fontFamily: 'OpenSans-Bold',
     fontSize: 16,
     fontStyle: 'normal',
-    fontWeight: 700,
+    // fontWeight: 700,
     // lineHeight: 16 * 1.4
   },
   paragraph: {
@@ -37,7 +37,7 @@ const commonStyles = StyleSheet.create({
     fontFamily: 'OpenSans-SemiBold',
     fontSize: 14,
     fontStyle: 'normal',
-    fontWeight: 600,
+    // fontWeight: 600,
     // lineHeight: 16 * 1.4
   },
   paragraphItalic: {
@@ -45,7 +45,7 @@ const commonStyles = StyleSheet.create({
     fontFamily: 'OpenSans-SemiBoldItalic',
     fontSize: 14,
     fontStyle: 'normal',
-    fontWeight: 600,
+    // fontWeight: 600,
     // lineHeight: 16 * 1.4
   },
   paragraphBold: {
@@ -53,7 +53,7 @@ const commonStyles = StyleSheet.create({
     fontFamily: 'OpenSans-Bold',
     fontSize: 14,
     fontStyle: 'normal',
-    fontWeight: 700,
+    // fontWeight: 700,
     // lineHeight: 16 * 1.4
   },
   paragraphExtraBold: {
@@ -61,7 +61,7 @@ const commonStyles = StyleSheet.create({
     fontFamily: 'OpenSans-ExtraBold',
     fontSize: 14,
     fontStyle: 'normal',
-    fontWeight: 700,
+    // fontWeight: 700,
     // lineHeight: 16 * 1.4
   },
   container: {
@@ -127,7 +127,7 @@ const commonStyles = StyleSheet.create({
     fontFamily: 'OpenSans-Bold',
     fontSize: 12,
     fontStyle: 'normal',
-    fontWeight: 700,
+    // fontWeight: 700,
     // lineHeight: 16 * 1.4
   },
 });

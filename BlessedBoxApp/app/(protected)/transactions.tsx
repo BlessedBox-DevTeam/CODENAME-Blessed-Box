@@ -1,10 +1,11 @@
 import axios from 'axios';
 import Constants from 'expo-constants';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { Modal, SectionList, Text, TextInput, TouchableOpacity, View, Animated, Easing, Alert } from 'react-native';
+import { Alert, Animated, Easing, Modal, SectionList, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import FilterChip from '../components/FilterChip';
@@ -12,22 +13,33 @@ import BackArrow from '../components/icons/BackArrow';
 import Filter from '../components/icons/Filter';
 import LoadingOverlay from '../components/LoadingSpinner';
 import TransactionTile from '../components/TransactionTile';
-import { formatTransactionDate, groupByDate, sortByDateProp } from '../helpers/helpers';
-import { TransactionTileInfo } from '../types/TransactionTileInfo';
 import { FEMALE_GENDER_ID, FIVE_TO_NINE_YEARS_ID, MALE_GENDER_ID, TEN_TO_FOURTEEN_YEARS_ID, TWO_TO_FOUR_YEARS_ID } from '../helpers/constants';
-import DropDownPicker from 'react-native-dropdown-picker';
+import { formatTransactionDate, groupByDate, sortByDateProp } from '../helpers/helpers';
+import CalendarIcon from '../components/icons/CalendarIcon';
+import { Calendar } from 'react-native-calendars';
 
 export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [allTransactions, setAllTransactions] = useState([]);
   const [sections, setSections] = useState([]);
-  const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [modal, setModal] = useState(false);
+  const [calendarModal, setCalendarModal] = useState(false);
   const [boxNumberMax, setBoxNumberMax] = useState('');
   const [boxNumberMin, setBoxNumberMin] = useState('');
   const [openDropdown, setOpenDropdown] = useState(false);
   const [dropdownValue, setDropdownValue] = useState(null);
+  const [queryParams, setQueryParams] = useState({
+    page: 1,
+    selectedDay: '',
+    filters: {
+      ageFilters: [],
+      genderValues: [],
+      filterMode: null,
+      numberOfBoxes: null,
+      maxNumberOfBoxes: null,
+    },
+  });
   const [dropdownOptions, setDropdownOptions] = useState([
     { label: 'Exact', value: 'exact' },
     { label: 'Minimum', value: 'minimum' },
@@ -88,24 +100,42 @@ export default function Index() {
     setSelectedAges(['All']);
     setSelectedGenders(['All']);
     setOpenDropdown(false);
+    setAllTransactions([]);
+    setQueryParams({
+      page: 1,
+      selectedDay: queryParams.selectedDay,
+      filters: {
+        ageFilters: [],
+        genderValues: [],
+        filterMode: null,
+        numberOfBoxes: null,
+        maxNumberOfBoxes: null,
+      },
+    });
   };
   const handleApply = () => {
-    const filters = buildFilters();
-    if (!filters) return; // Detener si la validación falló
+    const built = buildFilters();
+    if (!built) return;
 
-    // Reiniciar la lista al aplicar filtros
-    setPage(1);
     setAllTransactions([]);
-    fetchTransactions(filters);
+    setQueryParams({
+      page: 1,
+      selectedDay: queryParams.selectedDay,
+      filters: {
+        ageFilters: built.ageFilters,
+        genderValues: built.genderValues,
+        filterMode: built.filterMode,
+        numberOfBoxes: built.numberOfBoxes,
+        maxNumberOfBoxes: built.maxNumberOfBoxes,
+      },
+    });
+    setModal(false);
   };
-
   const buildFilters = () => {
     if (!selectedAges.length || !selectedGenders.length) {
       Alert.alert('Validation Error', 'Please select at least one category of age and gender.');
       return null;
     }
-
-    // Validar valores numéricos según el modo
     const isSingleDropdownValue = ['exact', 'minimum', 'maximum'].includes(dropdownValue);
     if (isSingleDropdownValue) {
       if (!boxNumberMin) {
@@ -128,10 +158,7 @@ export default function Index() {
         return null;
       }
     }
-
     return {
-      recollectionCenterId: 1,
-      page,
       ageFilters: selectedAges,
       genderValues: selectedGenders,
       filterMode: dropdownValue,
@@ -139,32 +166,23 @@ export default function Index() {
       maxNumberOfBoxes: dropdownValue === 'range' ? parseInt(boxNumberMax) : null,
     };
   };
-
-  const fetchTransactions = async (filters = { recollectionCenterId: 1, page }) => {
+  const fetchTransactions = async () => {
     try {
       setIsLoading(true);
       const {
         data: { response },
       } = await axios.get(`${API_URL}:${API_PORT}/api/transactions/recollectionCenterTransactions`, {
-        params: filters,
+        params: { page: queryParams.page, selectedDay: queryParams.selectedDay, filters: JSON.stringify(queryParams.filters) },
       });
-
       setTotalCount(response.totalCount);
-
-      const updatedTransactions =
-        filters.page === 1
-          ? response.transactions // si es la primera página o filtros nuevos
-          : [...allTransactions, ...response.transactions]; // si estás paginando
-
+      const updatedTransactions = queryParams.page === 1 ? response.transactions : [...allTransactions, ...response.transactions];
       setAllTransactions(updatedTransactions);
-
       const sortedTransactions = sortByDateProp(updatedTransactions, 'createdDate');
       const grouped = groupByDate(sortedTransactions, 'createdDate');
       const newSections = Object.entries(grouped).map(([dateKey, items]) => ({
         title: dateKey === todayStr ? 'Today' : formatTransactionDate(dateKey, false),
         data: items,
       }));
-
       setSections(newSections);
     } catch (err) {
       console.error(err);
@@ -173,51 +191,33 @@ export default function Index() {
     }
   };
 
-  const handleSelectedAge = (label) => {
+  const handleSelectedAge = (label: string) => {
     setSelectedAges((prev) => {
-      // Si presiona "All"
       if (label === 'All') {
         return ['All'];
       }
-
-      // Si All estaba seleccionado y toca algo distinto
       if (prev.includes('All')) {
         return [label];
       }
-
-      // Alternar selección normal
-      let newSelection = prev.includes(label)
-        ? prev.filter((item) => item !== label) // remover si ya estaba
-        : [...prev, label]; // agregar si no estaba
-
-      // Si seleccionó todas las opciones específicas → activar ALL
+      let newSelection = prev.includes(label) ? prev.filter((item) => item !== label) : [...prev, label];
       if (['2-4', '5-9', '10-14'].every((l) => newSelection.includes(l))) {
         return ['All'];
       }
-
       return newSelection;
     });
   };
   const handleSelectedGender = (label: string) => {
     setSelectedGenders((prev) => {
-      // Si presiona "All"
       if (label === 'All') {
         return ['All'];
       }
-
-      // Si All estaba seleccionado y toca otra opción
       if (prev.includes('All')) {
         return [label];
       }
-
-      // Alternar selección normal
       let newSelection = prev.includes(label) ? prev.filter((i) => i !== label) : [...prev, label];
-
-      // Si seleccionó todas las opciones específicas → activar ALL
       if (['Female', 'Male', 'Unlabeled'].every((l) => newSelection.includes(l))) {
         return ['All'];
       }
-
       return newSelection;
     });
   };
@@ -226,7 +226,7 @@ export default function Index() {
   };
   useEffect(() => {
     fetchTransactions();
-  }, [page]);
+  }, [queryParams]);
 
   if (isLoading) {
     return <LoadingOverlay />;
@@ -390,7 +390,74 @@ export default function Index() {
           </View>
         </Modal>
 
-        <Filter size={20} onPress={handleFilterModal}></Filter>
+        <Modal visible={calendarModal} animationType="fade" transparent={true} onRequestClose={() => setCalendarModal(false)}>
+          {/* Fondo semi-transparente */}
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0,0,0,0.5)', // oscurece el fondo
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            {/* Contenedor del calendario */}
+            <View
+              style={{
+                width: '90%',
+                backgroundColor: '#fff',
+                borderRadius: 16,
+                padding: 20,
+                shadowColor: '#000',
+                shadowOpacity: 0.25,
+                shadowOffset: { width: 0, height: 4 },
+                shadowRadius: 8,
+                elevation: 10,
+              }}>
+              {/* Botón de cerrar */}
+              <TouchableOpacity
+                onPress={() => setCalendarModal(false)}
+                style={{
+                  position: 'absolute',
+                  top: 10,
+                  left: 10,
+                  zIndex: 10,
+                  padding: 8,
+                }}>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    color: '#333',
+                  }}>
+                  ✕
+                </Text>
+              </TouchableOpacity>
+
+              {/* Calendario */}
+              <Calendar
+                current={new Date().toISOString().split('T')[0]}
+                onDayPress={(day) => {
+                  setCalendarModal(false);
+                  setQueryParams({
+                    page: queryParams.page,
+                    filters: queryParams.filters,
+                    selectedDay: day.dateString,
+                  });
+                }}
+                style={{
+                  marginTop: 20,
+                }}
+              />
+            </View>
+          </View>
+        </Modal>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 16, paddingHorizontal: 16, gap: 6 }}>
+          <View style={{ backgroundColor: colors.white, borderRadius: 10, flex: 1, padding: 6 }}>
+            <Text style={commonStyles.paragraphItalic}>Coming soon</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
+            <Filter size={20} onPress={handleFilterModal}></Filter>
+            <CalendarIcon size={20} onPress={() => setCalendarModal(true)}></CalendarIcon>
+          </View>
+        </View>
         <SectionList
           sections={sections}
           keyExtractor={(item) => item.transactionId.toString()}
@@ -410,7 +477,7 @@ export default function Index() {
             const totalLoaded = allTransactions.length;
             const hasMore = totalLoaded < totalCount;
             if (hasMore && !isLoading) {
-              setPage(page + 1);
+              setQueryParams({ page: queryParams.page + 1, filters: queryParams.filters });
             }
           }}
           onEndReachedThreshold={0.1}
