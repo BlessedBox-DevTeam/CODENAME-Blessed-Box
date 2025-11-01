@@ -122,7 +122,7 @@ export default function Index() {
                   borderTopLeftRadius: 10,
                   borderBottomLeftRadius: 10,
                 }}>
-                <Text style={[commonStyles.header, { color: colors.white }]}>{userBoxesCount?.maleBoxes}</Text>
+                <Text style={[commonStyles.header, { color: colors.white }]}>{userBoxesCount?.maleBoxes || 0}</Text>
               </View>
               {/* Female Container */}
               <View
@@ -132,7 +132,7 @@ export default function Index() {
                   flex: 1,
                   alignItems: 'center',
                 }}>
-                <Text style={[commonStyles.header, { color: colors.white }]}>{userBoxesCount.femaleBoxes}</Text>
+                <Text style={[commonStyles.header, { color: colors.white }]}>{userBoxesCount.femaleBoxes || 0}</Text>
               </View>
               {/* Unlabeled Container */}
               <View
@@ -144,7 +144,7 @@ export default function Index() {
                   borderTopRightRadius: 10,
                   borderBottomRightRadius: 10,
                 }}>
-                <Text style={[commonStyles.header, { color: colors.dark_gray }]}>{userBoxesCount.unlabeledBoxes}</Text>
+                <Text style={[commonStyles.header, { color: colors.dark_gray }]}>{userBoxesCount.unlabeledBoxes || 0}</Text>
               </View>
             </View>
 

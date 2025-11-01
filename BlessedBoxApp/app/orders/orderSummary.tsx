@@ -13,6 +13,7 @@ import Constants from 'expo-constants';
 import axios from 'axios';
 import LoadingOverlay from '../components/LoadingSpinner';
 import { BOX_AGE_MAP, UNLABELED_GENDER_ID } from '../helpers/constants';
+import { getAccessToken } from '../helpers/helpers';
 
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL;
@@ -150,7 +151,10 @@ export default function Index() {
               style={[commonStyles.button]}
               onPress={async () => {
                 setIsLoading(true);
-                const { response, message } = (await axios.post(`${API_URL}:${API_PORT}/api/transactions/newTransaction`, { boxLabels: parsedBoxLabels })).data;
+                const token = await getAccessToken();
+                const { response, message } = (
+                  await axios.post(`${API_URL}:${API_PORT}/api/transactions/newTransaction`, { boxLabels: parsedBoxLabels }, { headers: { Authorization: `Bearer ${token}` } })
+                ).data;
                 console.log(response.transactionId);
                 setIsLoading(false);
                 if (response) {

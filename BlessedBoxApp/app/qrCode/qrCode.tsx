@@ -40,9 +40,10 @@ export default function Index() {
       setIsLoading(true);
       setScanned(true);
       const codeValue = data;
-      const { success, message, data: responseData, error } = (await axios.post(`${API_URL}:${API_PORT}/api/qrCodes/isQRCode`, { qrCodeValue: codeValue })).data;
+      const { response, message } = (await axios.post(`${API_URL}:${API_PORT}/api/qrCodes/isQRCode`, { qrCodeValue: codeValue })).data;
+      console.log(response);
       setIsLoading(false);
-      if (responseData && success) {
+      if (response) {
         router.push('/orders/order');
       } else {
         alert(message);
