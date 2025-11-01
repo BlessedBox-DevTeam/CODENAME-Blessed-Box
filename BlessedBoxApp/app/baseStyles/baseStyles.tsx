@@ -21,48 +21,36 @@ const commonStyles = StyleSheet.create({
     fontFamily: 'PlayfairDisplay-Black',
     fontSize: 36,
     fontStyle: 'normal',
-    // fontWeight: 900,
-    // lineHeight: 16 * 1.4
   },
   header: {
     color: colors.dark_blue,
     fontFamily: 'OpenSans-Bold',
     fontSize: 16,
     fontStyle: 'normal',
-    // fontWeight: 700,
-    // lineHeight: 16 * 1.4
   },
   paragraph: {
     color: colors.dark_gray,
     fontFamily: 'OpenSans-SemiBold',
     fontSize: 14,
     fontStyle: 'normal',
-    // fontWeight: 600,
-    // lineHeight: 16 * 1.4
   },
   paragraphItalic: {
     color: colors.dark_gray,
     fontFamily: 'OpenSans-SemiBoldItalic',
     fontSize: 14,
     fontStyle: 'normal',
-    // fontWeight: 600,
-    // lineHeight: 16 * 1.4
   },
   paragraphBold: {
     color: colors.dark_gray,
     fontFamily: 'OpenSans-Bold',
     fontSize: 14,
     fontStyle: 'normal',
-    // fontWeight: 700,
-    // lineHeight: 16 * 1.4
   },
   paragraphExtraBold: {
     color: colors.dark_green,
     fontFamily: 'OpenSans-ExtraBold',
     fontSize: 14,
     fontStyle: 'normal',
-    // fontWeight: 700,
-    // lineHeight: 16 * 1.4
   },
   container: {
     width: 'auto',
@@ -74,21 +62,6 @@ const commonStyles = StyleSheet.create({
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  // TODO:FIND A BETTER WAY OR ELIMINATE
-  gridContainer: {
-    flexDirection: 'row',
-    columnGap: 16,
-    alignItems: 'center',
-  },
-  leftColumn: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    rowGap: 16,
-  },
-  rightColumn: {
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   button: {
     width: '100%',
@@ -127,8 +100,6 @@ const commonStyles = StyleSheet.create({
     fontFamily: 'OpenSans-Bold',
     fontSize: 12,
     fontStyle: 'normal',
-    // fontWeight: 700,
-    // lineHeight: 16 * 1.4
   },
 });
 

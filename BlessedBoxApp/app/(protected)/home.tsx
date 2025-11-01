@@ -9,33 +9,48 @@ import colors from '../baseStyles/colors';
 import CircularProgress from '../components/CircularProgress';
 import { getAccessToken } from '../helpers/helpers';
 import LoadingOverlay from '../components/LoadingSpinner';
+import Person from '../components/icons/Person';
+import Church from '../components/icons/Church';
+import BackArrow from '../components/icons/BackArrow';
+import TargetArrow from '../components/icons/TargetArrow';
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL;
 const API_PORT = extra?.PORT;
 
 export default function Index() {
+  const GOAL_BOXES_COUNT = 10000;
   const [isLoading, setIsLoading] = useState(true);
-  const [boxesCount, setBoxesCount] = useState({
+  const [recollectionCenterBoxesCount, setRecollectionCenterBoxesCount] = useState(0);
+  const [percentage, setPercentage] = useState(0);
+  const [userBoxesCount, setUserBoxesCount] = useState({
     totalBoxes: 0,
     femaleBoxes: 0,
     maleBoxes: 0,
     unlabeledBoxes: 0,
   });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = await getAccessToken();
-        const { data } = await axios.get(`${API_URL}:${API_PORT}/api/boxes/userBoxes`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const [userBoxesResponse, countRCBoxesResponse] = await Promise.all([
+          axios.get(`${API_URL}:${API_PORT}/api/boxes/userBoxes`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${API_URL}:${API_PORT}/api/boxes/countRCBoxes`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+        const userBoxesData = userBoxesResponse.data;
+        const countRCBoxesData = countRCBoxesResponse.data;
+        setUserBoxesCount({
+          totalBoxes: userBoxesData.response.totalBoxes,
+          femaleBoxes: userBoxesData.response.femaleBoxes,
+          maleBoxes: userBoxesData.response.maleBoxes,
+          unlabeledBoxes: userBoxesData.response.unlabeledBoxes,
         });
-        setBoxesCount({
-          totalBoxes: data.response.totalBoxes,
-          femaleBoxes: data.response.femaleBoxes,
-          maleBoxes: data.response.maleBoxes,
-          unlabeledBoxes: data.response.unlabeledBoxes,
-        });
+        setRecollectionCenterBoxesCount(countRCBoxesData.response.totalBoxes);
+        setPercentage(Number(((countRCBoxesData.response.totalBoxes / GOAL_BOXES_COUNT) * 100).toFixed(2)));
         setIsLoading(false);
       } catch (err) {
         console.error(err);
@@ -51,33 +66,53 @@ export default function Index() {
     <SafeAreaProvider>
       <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
         <ScrollView style={{ flex: 1, height: '100%', padding: 20 }}>
-          <View style={[commonStyles.card, commonStyles.gridContainer]}>
-            <View style={commonStyles.leftColumn}>
+          {/* Overall Card */}
+          <View style={[commonStyles.card, { flexDirection: 'row', alignItems: 'center' }]}>
+            {/* Left Column */}
+            <View style={{ flex: 2, gap: 10 }}>
               <Text style={[commonStyles.paragraphExtraBold, { color: colors.green_label, gap: 0.5 }]}>
                 ICB <Text style={[commonStyles.paragraphExtraBold, { color: colors.red_label }]}>2025</Text>
               </Text>
-              <Text style={commonStyles.header}>Yearly Goal</Text>
-              <Text style={commonStyles.paragraph}>
-                Boxes Collected: <Text style={commonStyles.paragraphExtraBold}>6,000</Text>
-              </Text>
-              <Text style={commonStyles.paragraph}>Reaching Point: 12,000 Boxes</Text>
+              {/* Yearly Goal */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <TargetArrow height={25} width={25}></TargetArrow>
+                <Text style={commonStyles.header}>Yearly Goal</Text>
+              </View>
+              <View style={{ gap: 6 }}>
+                {/* Total Boxes Collected */}
+                <Text style={commonStyles.paragraph}>
+                  Boxes Collected: <Text style={commonStyles.paragraphExtraBold}>{recollectionCenterBoxesCount.toLocaleString()}</Text>
+                </Text>
+                {/* Reaching Point */}
+                <Text style={commonStyles.paragraph}>
+                  Reaching Point: <Text style={[commonStyles.paragraphExtraBold, { color: colors.dark_blue }]}>{`${GOAL_BOXES_COUNT.toLocaleString()}`} </Text>
+                </Text>
+              </View>
             </View>
-            <View style={commonStyles.rightColumn}>
-              <CircularProgress percentage={50} />
+
+            {/* Right Column */}
+            <View style={[{ flex: 1 }]}>
+              <CircularProgress percentage={percentage} />
             </View>
           </View>
+
+          {/* User Contribution Card */}
           <View style={[commonStyles.card, { marginTop: 20, rowGap: 16 }]}>
-            <Text style={commonStyles.header}>Your Contribution</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Person width={25} height={25}></Person>
+              <Text style={commonStyles.header}>Your Contribution</Text>
+            </View>
             <Text style={[commonStyles.paragraph, { color: colors.dark_blue }]}>
-              You have deposited a total of
-              <Text style={commonStyles.paragraphExtraBold}> {boxesCount.totalBoxes} </Text>boxes
+              You have deposited a total of <Text style={commonStyles.paragraphExtraBold}> {userBoxesCount.totalBoxes} </Text>boxes
             </Text>
+            {/* Gender Categories */}
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
+              {/* Male Container */}
               <View
                 style={{
                   backgroundColor: colors.green_label,
@@ -87,8 +122,9 @@ export default function Index() {
                   borderTopLeftRadius: 10,
                   borderBottomLeftRadius: 10,
                 }}>
-                <Text style={[commonStyles.header, { color: colors.white }]}>{boxesCount?.maleBoxes}</Text>
+                <Text style={[commonStyles.header, { color: colors.white }]}>{userBoxesCount?.maleBoxes}</Text>
               </View>
+              {/* Female Container */}
               <View
                 style={{
                   backgroundColor: colors.red_label,
@@ -96,8 +132,9 @@ export default function Index() {
                   flex: 1,
                   alignItems: 'center',
                 }}>
-                <Text style={[commonStyles.header, { color: colors.white }]}>{boxesCount.femaleBoxes}</Text>
+                <Text style={[commonStyles.header, { color: colors.white }]}>{userBoxesCount.femaleBoxes}</Text>
               </View>
+              {/* Unlabeled Container */}
               <View
                 style={{
                   backgroundColor: colors.light_gray,
@@ -107,23 +144,37 @@ export default function Index() {
                   borderTopRightRadius: 10,
                   borderBottomRightRadius: 10,
                 }}>
-                <Text style={[commonStyles.header, { color: colors.dark_gray }]}>{boxesCount.unlabeledBoxes}</Text>
+                <Text style={[commonStyles.header, { color: colors.dark_gray }]}>{userBoxesCount.unlabeledBoxes}</Text>
               </View>
             </View>
+
+            {/* View Activity Button */}
             <Text style={commonStyles.paragraph}>Great job! Keep it going!</Text>
             <TouchableOpacity style={[commonStyles.buttonNoShadow, { backgroundColor: colors.dark_blue }]} onPress={() => router.replace('/transactions')}>
               <Text style={[commonStyles.paragraphBold, { color: colors.white }]}>View Activity</Text>
             </TouchableOpacity>
           </View>
-          <View style={[commonStyles.card, { marginTop: 20, rowGap: 16 }]}>
-            <Text style={commonStyles.header}>Your Church</Text>
-            <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>
-              Rejoice in the Lord always: and again I say, Rejoice. <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>(Philippians 4:4) </Text>
+
+          {/* Your Church Card  */}
+          <View style={[commonStyles.card, { marginTop: 20, rowGap: 12 }]}>
+            <View style={{ gap: 12 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Church height={25} width={25}></Church>
+                <Text style={commonStyles.header}>Your Church</Text>
+              </View>
+              {/* Bible Verse */}
+              <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>
+                Rejoice in the Lord always: and again I say, Rejoice. <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>(Philippians 4:4) </Text>
+              </Text>
+            </View>
+            <Text style={[commonStyles.paragraph, { color: colors.dark_blue }]}>
+              Iglesia Cristiana Bethlehem has collected <Text style={commonStyles.paragraphExtraBold}>{recollectionCenterBoxesCount}</Text> boxes
             </Text>
-            <Text style={commonStyles.paragraph}>
-              Iglesia Cristiana Bethlehem has collected <Text style={commonStyles.paragraphExtraBold}>10,000</Text> boxes
-            </Text>
-            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue, alignSelf: 'flex-end' }]}>See details</Text>
+            {/* See details button */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-end', gap: 6 }}>
+              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>See details</Text>
+              <BackArrow height={25} width={25} style={{ transform: [{ scaleX: -1 }] }}></BackArrow>
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>

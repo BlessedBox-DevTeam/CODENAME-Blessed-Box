@@ -17,7 +17,7 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import LoadingOverlay from '../components/LoadingSpinner';
 import { formatTransactionDate, getUserRoles } from '../helpers/helpers';
-import { ADMIN_ROLE_TYPE_ID, DECLINED_STATUS_ID, COMPLETED_STATUS_ID, PENDING_STATUS_ID } from '../helpers/constants';
+import { ADMIN_ROLE_TYPE_ID, DECLINED_STATUS_ID, COMPLETED_STATUS_ID, PENDING_STATUS_ID, UNLABELED_GENDER_ID } from '../helpers/constants';
 
 /**
  * Deposit Details Screen
@@ -206,7 +206,7 @@ export default function Index() {
             </View>
             {/* Second Column */}
             <View style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-              {box.genderId === false || box.ageId === false ? (
+              {box.genderId === UNLABELED_GENDER_ID ? (
                 <Text style={[commonStyles.paragraphItalic, { color: colors.dark_gray }]}>Unlabeled</Text>
               ) : (
                 <>

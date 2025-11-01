@@ -12,7 +12,7 @@ import Church from '../components/icons/Church';
 import Constants from 'expo-constants';
 import axios from 'axios';
 import LoadingOverlay from '../components/LoadingSpinner';
-import { BOX_AGE_MAP } from '../helpers/constants';
+import { BOX_AGE_MAP, UNLABELED_GENDER_ID } from '../helpers/constants';
 
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL;
@@ -74,7 +74,7 @@ export default function Index() {
 
         {/* Details Container */}
         <View style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-          {boxLabel.genderId === false || boxLabel.boxAgeId === false ? (
+          {boxLabel.genderId === UNLABELED_GENDER_ID ? (
             <Text style={[commonStyles.paragraphItalic, { color: colors.dark_gray }]}>Unlabeled</Text>
           ) : (
             <>

@@ -1,6 +1,6 @@
 import { router, Stack } from 'expo-router';
 import React, { useRef, useState } from 'react';
-import { Alert, LayoutAnimation, Platform, ScrollView, Text, TextInput, TouchableOpacity, UIManager, View } from 'react-native';
+import { Alert, LayoutAnimation, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, UIManager, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
@@ -8,6 +8,7 @@ import BoxLabel, { BoxLabelType } from '../components/BoxLabel';
 import BackArrow from '../components/icons/BackArrow';
 import PlusSign from '../components/icons/PlusSign';
 import { BoxLabelInfo } from '../types/BoxLabelInfo';
+import { UNLABELED_GENDER_ID } from '../helpers/constants';
 
 /**
  * Order Entry Screen
@@ -41,6 +42,15 @@ export default function Index() {
 
   /** Error state for total boxes border */
   const [inputBorderColor, setInputBorderColor] = useState(colors.light_gray);
+
+  /** Sets the visible modal for the remaining unlabeled boxes */
+  const [modal, setModal] = useState(false);
+
+  /** Sets the amount of unlabeled boxes */
+  const [unlabeledAmount, setUnlabeled] = useState(0);
+
+  /** Sets the mergedData for the orderSummary screen */
+  const [mergedBoxData, setMergedBoxData] = React.useState<BoxLabelInfo[] | null>(null);
 
   /**
    * Add a new BoxLabel
@@ -117,33 +127,32 @@ export default function Index() {
     if (Object.keys(newErrors).length > 0) return;
 
     // Merge duplicates by age and gender
-    const mergedData: BoxLabelInfo[] = Array.from(
-      allData.reduce((map, item) => {
-        if (!item) return map;
-        const key = `${item.boxAgeId}-${item.genderId ?? 'any'}`;
-        if (!map.has(key)) {
-          map.set(key, { ...item });
-        } else {
-          map.get(key)!.quantity += item.quantity;
-        }
-        return map;
-      }, new Map<string, BoxLabelInfo>())
-    ).map(([_, value]) => value);
+    setMergedBoxData(
+      Array.from(
+        allData.reduce((map, item) => {
+          if (!item) return map;
+          const key = `${item.boxAgeId}-${item.genderId ?? 'any'}`;
+          if (!map.has(key)) {
+            map.set(key, { ...item });
+          } else {
+            map.get(key)!.quantity += item.quantity;
+          }
+          return map;
+        }, new Map<string, BoxLabelInfo>())
+      ).map(([_, value]) => value)
+    );
 
     // Add remaining boxes as unlabeled if sum < total
     const remaining = total - sumQuantity;
     if (remaining > 0) {
-      mergedData.push({
-        boxAgeId: false as any,
-        genderId: false as any,
-        quantity: remaining,
+      setUnlabeled(remaining);
+      return setModal(true);
+    } else {
+      router.push({
+        pathname: '/orders/orderSummary',
+        params: { boxLabels: JSON.stringify(mergedBoxData) },
       });
     }
-
-    router.push({
-      pathname: '/orders/orderSummary',
-      params: { boxLabels: JSON.stringify(mergedData) },
-    });
   };
 
   return (
@@ -158,6 +167,72 @@ export default function Index() {
           </View>
           <View style={{ width: 25 }} />
         </View>
+
+        {/* Modal for unlabeled boxes */}
+        <Modal visible={modal} transparent animationType="fade" onRequestClose={() => setModal(false)}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0,0,0,0.4)',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <View
+              style={{
+                width: '90%',
+                maxWidth: 400,
+                borderRadius: 10,
+                backgroundColor: colors.white,
+                padding: 32,
+                flexDirection: 'column',
+                alignSelf: 'center',
+              }}>
+              <Text
+                style={[
+                  commonStyles.paragraph,
+                  { marginBottom: 32, textAlign: 'center' },
+                ]}>{`You have ${unlabeledAmount} remaining unlabeled boxes. Do you wish to continue?`}</Text>
+              <View style={{ flexDirection: 'row', gap: 32 }}>
+                <TouchableOpacity
+                  style={[
+                    commonStyles.buttonNoShadow,
+                    {
+                      backgroundColor: colors.white,
+                      borderColor: colors.dark_gray,
+                      borderWidth: 2,
+                      flex: 1,
+                    },
+                  ]}
+                  onPress={async () => {
+                    setUnlabeled(0);
+                    setModal(false);
+                  }}>
+                  <Text style={[commonStyles.header, { color: colors.dark_gray }]}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[commonStyles.buttonNoShadow, { backgroundColor: colors.green_label, flex: 1 }]}
+                  onPress={async () => {
+                    const updated = [
+                      ...(mergedBoxData ?? []),
+                      {
+                        boxAgeId: false,
+                        genderId: UNLABELED_GENDER_ID,
+                        quantity: unlabeledAmount,
+                      },
+                    ];
+                    setMergedBoxData(updated);
+                    setModal(false);
+                    router.push({
+                      pathname: '/orders/orderSummary',
+                      params: { boxLabels: JSON.stringify(updated) }, // usa el array actualizado
+                    });
+                  }}>
+                  <Text style={[commonStyles.header, { color: colors.white }]}>Continue</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
 
         {/* Main Section */}
         <View style={{ display: 'flex', flex: 1, gap: 16 }}>
