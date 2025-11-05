@@ -15,6 +15,8 @@ const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL;
 const API_PORT = extra?.PORT;
 
+console.log(extra);
+
 export default function Index() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
