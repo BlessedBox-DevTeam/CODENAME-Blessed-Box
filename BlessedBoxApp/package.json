@@ -10,8 +10,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "dev": "cross-env APP_VARIANT=development expo start",
-    "prod": "cross-env APP_VARIANT=production expo start --no-dev"
+    "dev": "cross-env APP_ENV=development expo start",
+    "prod": "cross-env APP_ENV=production expo start --no-dev",
+    "staging": "cross-env APP_ENV=staging expo start --no-dev"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",

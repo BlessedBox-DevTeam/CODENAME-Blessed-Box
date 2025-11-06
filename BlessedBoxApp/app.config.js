@@ -1,17 +1,39 @@
-console.log('App Environment:', process.env.APP_VARIANT);
+import 'dotenv/config';
 
-const IS_PROD = process.env.APP_VARIANT === 'production';
-const IS_DEW = process.env.APP_VARIANT === 'development';
+/**
+ * Define el entorno actual: development, production o staging.
+ */
+const ENV = process.env.APP_ENV || 'development';
 
-const getUniqueIdentifier = () => {
-  if (IS_PROD) {
-    return 'com.kennepo23.blessedboxapp';
-  }
-  if (IS_DEW) {
-    return 'com.kennepo23.blessedboxapp.dev';
-  }
-  return 'com.kennepo23.blessedboxapp.staging';
+/**
+ * Configuración según el entorno.
+ * Puedes cambiar las URLs, puertos y demás según necesites.
+ */
+const CONFIG = {
+  development: {
+    URL: process.env.URL || 'http://192.168.40.214',
+    PORT: process.env.PORT || '3000',
+    BUNDLE_ID: 'com.kennepo23.blessedboxapp.dev',
+    PACKAGE_ID: 'com.kennepo23.blessedboxapp.dev',
+  },
+  staging: {
+    URL: process.env.URL || 'https://staging-api.tudominio.com',
+    PORT: process.env.PORT || '443',
+    BUNDLE_ID: 'com.kennepo23.blessedboxapp.staging',
+    PACKAGE_ID: 'com.kennepo23.blessedboxapp.staging',
+  },
+  production: {
+    URL: process.env.URL || 'https://api.tudominio.com',
+    PORT: process.env.PORT || '443',
+    BUNDLE_ID: 'com.kennepo23.blessedboxapp',
+    PACKAGE_ID: 'com.kennepo23.blessedboxapp',
+  },
 };
+
+/**
+ * Selecciona la config correcta según el entorno actual.
+ */
+const { URL, PORT, BUNDLE_ID, PACKAGE_ID } = CONFIG[ENV];
 
 export default ({ config }) => ({
   ...config,
@@ -23,23 +45,27 @@ export default ({ config }) => ({
   scheme: 'blessedboxapp',
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
+
   ios: {
     supportsTablet: true,
-    bundleIdentifier: getUniqueIdentifier(),
+    bundleIdentifier: BUNDLE_ID,
   },
+
   android: {
     adaptiveIcon: {
       foregroundImage: './assets/images/adaptive-icon.png',
       backgroundColor: '#ffffff',
     },
     edgeToEdgeEnabled: true,
-    package: getUniqueIdentifier(),
+    package: PACKAGE_ID,
   },
+
   web: {
     bundler: 'metro',
     output: 'static',
     favicon: './assets/images/favicon.png',
   },
+
   plugins: [
     'expo-router',
     [
@@ -52,20 +78,26 @@ export default ({ config }) => ({
       },
     ],
   ],
-  experiments: { typedRoutes: true },
+
+  experiments: {
+    typedRoutes: true,
+  },
+
   assetBundlePatterns: ['assets/fonts/*'],
+
   extra: {
-    router: {},
-    origin: false,
-    EXPO_PUBLIC_URL: process.env.EXPO_PUBLIC_URL,
-    EXPO_PUBLIC_PORT: process.env.EXPO_PUBLIC_PORT,
+    env: ENV,
+    URL,
+    PORT,
     eas: {
       projectId: 'c5861fad-066a-4c25-9240-ddabb311ac75',
     },
   },
+
   updates: {
     url: 'https://u.expo.dev/c5861fad-066a-4c25-9240-ddabb311ac75',
   },
+
   runtimeVersion: {
     policy: 'appVersion',
   },
