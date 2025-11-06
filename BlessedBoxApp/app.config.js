@@ -1,6 +1,17 @@
 import 'dotenv/config';
 
-const APP_ENV = process.env.APP_ENV || 'development';
+const IS_PROD = APP_ENV === 'production';
+const IS_DEW = APP_ENV === 'development';
+
+const getUniqueIdentifier = () => {
+  if (IS_PROD) {
+    return 'com.kennepo23.blessedboxapp';
+  }
+  if (IS_DEW) {
+    return 'com.kennepo23.blessedboxapp.dev';
+  }
+  return 'com.kennepo23.blessedboxapp.staging';
+};
 
 export default ({ config }) => ({
   ...config,
@@ -14,7 +25,7 @@ export default ({ config }) => ({
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
-    bundleIdentifier: 'com.kennepo23.blessedboxapp', // obligatorio
+    bundleIdentifier: getUniqueIdentifier(),
   },
   android: {
     adaptiveIcon: {
@@ -22,7 +33,7 @@ export default ({ config }) => ({
       backgroundColor: '#ffffff',
     },
     edgeToEdgeEnabled: true,
-    package: 'com.kennepo23.blessedboxapp', // obligatorio
+    package: getUniqueIdentifier(),
   },
   web: {
     bundler: 'metro',
@@ -45,10 +56,11 @@ export default ({ config }) => ({
   assetBundlePatterns: ['assets/fonts/*'],
   extra: {
     router: {},
-    URL: APP_ENV === 'production' ? process.env.URL : process.env.URL,
-    PORT: APP_ENV === 'production' ? process.env.PORT : process.env.PORT,
+    origin: false,
+    URL: process.env.URL,
+    PORT: process.env.PORT,
     eas: {
-      projectId: 'c5861fad-066a-4c25-9240-ddabb311ac75', // obligatorio para EAS
+      projectId: 'c5861fad-066a-4c25-9240-ddabb311ac75',
     },
   },
   updates: {
