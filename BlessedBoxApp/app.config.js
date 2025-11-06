@@ -1,7 +1,7 @@
-import 'dotenv/config';
+console.log('App Environment:', process.env.APP_VARIANT);
 
-const IS_PROD = APP_ENV === 'production';
-const IS_DEW = APP_ENV === 'development';
+const IS_PROD = process.env.APP_VARIANT === 'production';
+const IS_DEW = process.env.APP_VARIANT === 'development';
 
 const getUniqueIdentifier = () => {
   if (IS_PROD) {
@@ -57,8 +57,8 @@ export default ({ config }) => ({
   extra: {
     router: {},
     origin: false,
-    URL: process.env.URL,
-    PORT: process.env.PORT,
+    EXPO_PUBLIC_URL: process.env.EXPO_PUBLIC_URL,
+    EXPO_PUBLIC_PORT: process.env.EXPO_PUBLIC_PORT,
     eas: {
       projectId: 'c5861fad-066a-4c25-9240-ddabb311ac75',
     },
