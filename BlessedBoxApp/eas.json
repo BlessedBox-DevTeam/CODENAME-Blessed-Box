@@ -1,0 +1,40 @@
+{
+  "cli": {
+    "version": ">= 3.17.1"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "credentialsSource": "remote",
+      "env": {
+        "APP_ENV": "development"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "credentialsSource": "remote",
+      "env": {
+        "APP_ENV": "production"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "distribution": "store",
+      "credentialsSource": "remote",
+      "env": {
+        "APP_ENV": "production"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "tu_email_de_apple@example.com"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./service-account.json"
+      }
+    }
+  }
+}
