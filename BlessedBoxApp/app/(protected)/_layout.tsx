@@ -1,6 +1,8 @@
+import axios from 'axios';
+import Constants from 'expo-constants';
 import { Stack, usePathname, useRouter } from 'expo-router';
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Alert, Button, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
@@ -9,6 +11,10 @@ import DepositHistory from '../components/icons/DepositHistory';
 import Home from '../components/icons/Home';
 import Newspaper from '../components/icons/NewsPaper';
 import QRCode from '../components/icons/QRCode';
+import { deleteAccessToken, deleteRefreshToken, getRefreshToken } from '../helpers/helpers';
+const extra = Constants.expoConfig?.extra;
+const API_URL = extra?.URL;
+const API_PORT = extra?.PORT;
 
 export default function ProtectedLayout() {
   const router = useRouter();
@@ -22,14 +28,63 @@ export default function ProtectedLayout() {
       router.replace(path);
     }
   };
+  const exit = async () => {
+    const refreshToken = getRefreshToken();
+    const { success } = (await axios.post(`${API_URL}:${API_PORT}/api/auth/logout`, { refreshToken })).data;
+    if (success) {
+      deleteAccessToken();
+      deleteRefreshToken();
+      router.replace('/login');
+    }
+  };
 
   return (
     <>
       {/* Stack de pantallas */}
       <View style={{ flex: 1, height: '100%' }}>
         <Stack>
-          <Stack.Screen name="home" options={{ title: 'Blessed Box', headerTitleStyle: commonStyles.title, headerBackVisible: false }} />
-          <Stack.Screen name="transactions" options={{ title: 'History', headerTitleStyle: commonStyles.title, headerBackVisible: false }} />
+          <Stack.Screen
+            name="home"
+            options={{
+              title: 'Blessed Box',
+              headerTitleStyle: commonStyles.title,
+              headerBackVisible: false,
+              headerRight: () => (
+                <Button
+                  onPress={() => {
+                    // Aquí defines la acción de salir
+                    Alert.alert('Salir', '¿Quieres cerrar la aplicación?', [
+                      { text: 'Cancelar', style: 'cancel' },
+                      { text: 'Salir', onPress: () => exit() },
+                    ]);
+                  }}
+                  title="Exit"
+                  color="#FF0000"
+                />
+              ),
+            }}
+          />
+
+          <Stack.Screen
+            name="transactions"
+            options={{
+              title: 'History',
+              headerTitleStyle: commonStyles.title,
+              headerBackVisible: false,
+              headerRight: () => (
+                <Button
+                  onPress={() => {
+                    Alert.alert('Salir', '¿Quieres cerrar la aplicación?', [
+                      { text: 'Cancelar', style: 'cancel' },
+                      { text: 'Salir', onPress: () => exit() },
+                    ]);
+                  }}
+                  title="Exit"
+                  color="#FF0000"
+                />
+              ),
+            }}
+          />
         </Stack>
       </View>
 

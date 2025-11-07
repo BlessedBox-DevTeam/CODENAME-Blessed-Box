@@ -17,6 +17,8 @@ const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL;
 const API_PORT = extra?.PORT;
 
+console.log(API_PORT, API_URL);
+
 export default function Index() {
   const GOAL_BOXES_COUNT = 10000;
   const [isLoading, setIsLoading] = useState(true);
@@ -33,6 +35,7 @@ export default function Index() {
     const fetchData = async () => {
       try {
         const token = await getAccessToken();
+        console.log(token);
         const [userBoxesResponse, countRCBoxesResponse] = await Promise.all([
           axios.get(`${API_URL}:${API_PORT}/api/boxes/userBoxes`, {
             headers: { Authorization: `Bearer ${token}` },

@@ -111,3 +111,6 @@ export async function saveRefreshToken(token: string) {
 export async function getRefreshToken() {
   return await SecureStore.getItemAsync('refreshToken');
 }
+export async function deleteRefreshToken() {
+  await SecureStore.deleteItemAsync('refreshToken');
+}
