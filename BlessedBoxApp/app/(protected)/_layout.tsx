@@ -11,7 +11,7 @@ import DepositHistory from '../components/icons/DepositHistory';
 import Home from '../components/icons/Home';
 import Newspaper from '../components/icons/NewsPaper';
 import QRCode from '../components/icons/QRCode';
-import { deleteAccessToken, deleteRefreshToken, getRefreshToken } from '../helpers/helpers';
+import { deleteAccessToken, deleteRefreshToken, getAccessToken, getRefreshToken } from '../helpers/helpers';
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL;
 const API_PORT = extra?.PORT;
@@ -29,8 +29,9 @@ export default function ProtectedLayout() {
     }
   };
   const exit = async () => {
-    const refreshToken = getRefreshToken();
-    const { success } = (await axios.post(`${API_URL}:${API_PORT}/api/auth/logout`, { refreshToken })).data;
+    const accessToken = await getAccessToken();
+    console.log(accessToken);
+    const { success } = (await axios.post(`${API_URL}:${API_PORT}/api/auth/logout`, { accessToken })).data;
     if (success) {
       deleteAccessToken();
       deleteRefreshToken();
