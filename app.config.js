@@ -33,5 +33,6 @@ export default ({ config }) => {
       bundleIdentifier: 'com.kennepo23.blessedboxapp',
       buildNumber: '1.0.0',
     },
+    plugins: ['expo-barcode-scanner'],
   };
 };
