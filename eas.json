@@ -1,41 +1,21 @@
 {
   "cli": {
-    "version": ">= 3.17.1",
+    "version": ">= 16.26.0",
     "appVersionSource": "remote"
   },
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal",
-      "credentialsSource": "remote",
-      "env": {
-        "APP_ENV": "development"
-      }
+      "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal",
-      "credentialsSource": "remote",
-      "env": {
-        "APP_ENV": "production"
-      }
+      "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
-      "distribution": "store",
-      "credentialsSource": "remote",
-      "env": {
-        "APP_ENV": "production"
-      }
+      "autoIncrement": true
     }
   },
   "submit": {
-    "production": {
-      "ios": {
-        "appleId": "tu_email_de_apple@example.com"
-      },
-      "android": {
-        "serviceAccountKeyPath": "./service-account.json"
-      }
-    }
+    "production": {}
   }
 }
