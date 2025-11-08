@@ -12,6 +12,9 @@ export default ({ config }) => {
     sdkVersion: '54.0.0',
     platforms: ['android', 'ios', 'web'],
     extra: {
+      eas: {
+        projectId: '04925fcb-f1be-4ab1-bca4-116c6f23d04c',
+      },
       APP_ENV,
       URL: process.env.EXPO_PUBLIC_URL,
       PORT: process.env.EXPO_PUBLIC_PORT,
