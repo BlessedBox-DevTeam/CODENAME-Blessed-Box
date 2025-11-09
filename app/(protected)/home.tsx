@@ -68,7 +68,7 @@ export default function Index() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
-        <ScrollView style={{ flex: 1, height: '100%', padding: 20 }}>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
           {/* Overall Card */}
           <View style={[commonStyles.card, { flexDirection: 'row', alignItems: 'center' }]}>
             {/* Left Column */}

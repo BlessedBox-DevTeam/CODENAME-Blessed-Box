@@ -9,6 +9,7 @@ import BackArrow from '../components/icons/BackArrow';
 import PlusSign from '../components/icons/PlusSign';
 import { BoxLabelInfo } from '../types/BoxLabelInfo';
 import { UNLABELED_GENDER_ID } from '../helpers/constants';
+import BlessedBox from '../components/icons/BlessedBox';
 
 /**
  * Order Entry Screen
@@ -127,30 +128,30 @@ export default function Index() {
     if (Object.keys(newErrors).length > 0) return;
 
     // Merge duplicates by age and gender
-    setMergedBoxData(
-      Array.from(
-        allData.reduce((map, item) => {
-          if (!item) return map;
-          const key = `${item.boxAgeId}-${item.genderId ?? 'any'}`;
-          if (!map.has(key)) {
-            map.set(key, { ...item });
-          } else {
-            map.get(key)!.quantity += item.quantity;
-          }
-          return map;
-        }, new Map<string, BoxLabelInfo>())
-      ).map(([_, value]) => value)
-    );
+    const parseBoxedLabels = Array.from(
+      allData.reduce((map, item) => {
+        if (!item) return map;
+        const key = `${item.boxAgeId}-${item.genderId ?? 'any'}`;
+        if (!map.has(key)) {
+          map.set(key, { ...item });
+        } else {
+          map.get(key)!.quantity += item.quantity;
+        }
+        return map;
+      }, new Map<string, BoxLabelInfo>())
+    ).map(([_, value]) => value);
 
+    setMergedBoxData(parseBoxedLabels);
     // Add remaining boxes as unlabeled if sum < total
     const remaining = total - sumQuantity;
     if (remaining > 0) {
       setUnlabeled(remaining);
       return setModal(true);
     } else {
+      console.log(parseBoxedLabels);
       router.push({
         pathname: '/orders/orderSummary',
-        params: { boxLabels: JSON.stringify(mergedBoxData) },
+        params: { boxLabels: JSON.stringify(parseBoxedLabels) },
       });
     }
   };
@@ -249,47 +250,48 @@ export default function Index() {
                 marginHorizontal: 16,
               },
             ]}>
-            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Total Boxes</Text>
-            <View
-              style={{
-                borderWidth: 1,
-                borderColor: inputBorderColor,
-                padding: 5,
-                borderRadius: 10,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 1,
-              }}>
-              <TextInput
-                value={totalBoxes}
-                keyboardType="numeric"
-                style={[commonStyles.paragraph, { color: colors.dark_blue }]}
-                selectTextOnFocus
-                maxLength={3}
-                onChangeText={(text) => {
-                  const filtered = text.replace(/[^0-9]/g, '');
-                  setTotalBoxes(filtered);
-                  if (totalBoxesError) setTotalBoxesError('');
-                }}
-                onBlur={() => {
-                  let num = Number(totalBoxes);
-                  if (!totalBoxes || isNaN(num)) {
-                    setTotalBoxes('1');
-                    setTotalBoxesError('Must enter a number between 1 and 100');
-                  } else if (num < 1) {
-                    setTotalBoxes('1');
-                    setTotalBoxesError('Minimum value is 1');
-                  } else if (num > 100) {
-                    setTotalBoxes('100');
-                    setTotalBoxesError('Maximum value is 100');
-                  } else {
-                    setTotalBoxes(String(num));
-                    setTotalBoxesError('');
-                  }
-                }}
-              />
-              <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>★</Text>
+            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Enter total boxes</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: inputBorderColor,
+                  width: 50,
+                  borderRadius: 10,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <TextInput
+                  value={totalBoxes}
+                  keyboardType="numeric"
+                  style={[commonStyles.paragraph, { color: colors.dark_blue }]}
+                  selectTextOnFocus
+                  maxLength={3}
+                  onChangeText={(text) => {
+                    const filtered = text.replace(/[^0-9]/g, '');
+                    setTotalBoxes(filtered);
+                    if (totalBoxesError) setTotalBoxesError('');
+                  }}
+                  onBlur={() => {
+                    let num = Number(totalBoxes);
+                    if (!totalBoxes || isNaN(num)) {
+                      setTotalBoxes('1');
+                      setTotalBoxesError('Must enter a number between 1 and 100');
+                    } else if (num < 1) {
+                      setTotalBoxes('1');
+                      setTotalBoxesError('Minimum value is 1');
+                    } else if (num > 100) {
+                      setTotalBoxes('100');
+                      setTotalBoxesError('Maximum value is 100');
+                    } else {
+                      setTotalBoxes(String(num));
+                      setTotalBoxesError('');
+                    }
+                  }}
+                />
+              </View>
+              <BlessedBox width={40} height={40}></BlessedBox>
             </View>
           </View>
 

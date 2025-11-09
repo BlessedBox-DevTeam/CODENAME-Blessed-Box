@@ -1,7 +1,7 @@
-import { CameraView } from 'expo-camera';
+import { Camera, CameraView } from 'expo-camera';
 import { router, Stack } from 'expo-router';
-import React, { useRef, useState } from 'react';
-import { Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import SwitchSelector from 'react-native-switch-selector';
 import commonStyles from '../baseStyles/baseStyles';
@@ -16,22 +16,41 @@ const API_URL = extra?.URL;
 const API_PORT = extra?.PORT;
 
 export default function Index() {
+  const [hasPermission, setHasPermission] = useState(null);
   const [facing, setFacing] = useState<'front' | 'back'>('back');
   const [maxCameraWidth, setMaxCameraWidth] = useState<number | `${number}%`>('100%');
   const [maxManualWidth, setManualWidth] = useState<number | `${number}%`>(0);
-  const [code, setCode] = useState('');
   const [scanned, setScanned] = useState(false);
+  const [isScanTabActive, setIsScanTabActive] = useState(true);
+  const [code, setCode] = useState('');
   const inputRef = useRef<TextInput>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isScanTabActive && hasPermission === null) {
+      (async () => {
+        const { status } = await Camera.requestCameraPermissionsAsync();
+        setHasPermission(status === 'granted');
+      })();
+    }
+  }, [isScanTabActive]);
+
+  useEffect(() => {
+    if (isScanTabActive) {
+      setScanned(false);
+    }
+  }, [isScanTabActive]);
 
   const handleQRCodeMethod = (value: string) => {
     if (value === 'scan') {
       setMaxCameraWidth('100%');
       setManualWidth(0);
+      setIsScanTabActive(true);
       setScanned(false);
     } else {
       setMaxCameraWidth(0);
       setManualWidth('100%');
+      setIsScanTabActive(false);
     }
   };
 
@@ -59,6 +78,14 @@ export default function Index() {
   const handleBackPress = () => {
     return router.back();
   };
+
+  if (hasPermission === null) {
+    return <Text>Solicitando permisos...</Text>;
+  }
+
+  if (hasPermission === false) {
+    return <Text>No se tienen permisos para usar la cámara.</Text>;
+  }
 
   return (
     <SafeAreaProvider>
@@ -110,119 +137,105 @@ export default function Index() {
         </View>
 
         {/* Body */}
-        <View
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'row',
-            flex: 1,
-          }}>
-          {/* QR Scanner */}
-          <CameraView
-            style={{
-              width: '100%',
-              height: '100%',
-              maxWidth: maxCameraWidth,
-            }}
-            facing={facing}
-            onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-            barcodeScannerSettings={{
-              barcodeTypes: ['qr'],
-            }}
-          />
-
-          {/* Manual Input */}
-          <View
-            style={[
-              commonStyles.card,
-              {
-                width: '100%',
-                height: '100%',
-                maxWidth: maxManualWidth,
-                gap: 16,
-              },
-            ]}>
-            <View
-              style={{
-                borderBottomWidth: 1,
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                borderColor: colors.gray,
-              }}>
-              <Text style={{ height: 50 }}>Placeholder Image</Text>
-            </View>
-
-            <Text style={[commonStyles.header, { alignSelf: 'center' }]}>Trouble Scanning the QR Code?</Text>
-            <Text style={commonStyles.paragraph}>Enter the #id of the Recollection Center</Text>
-
-            <TouchableWithoutFeedback onPress={() => inputRef.current?.focus()}>
-              <View
+        <View style={{ flex: 1 }}>
+          {isScanTabActive ? (
+            <View style={{ flex: 1 }}>
+              <CameraView style={{ flex: 1 }} facing={facing} onBarcodeScanned={scanned ? undefined : handleBarCodeScanned} barcodeScannerSettings={{ barcodeTypes: ['qr'] }} />
+              <TouchableOpacity
                 style={{
-                  backgroundColor: colors.white,
-                  borderWidth: 2,
-                  borderRadius: 10,
-                  borderColor: colors.gray,
-                  position: 'relative',
+                  position: 'absolute',
+                  top: 20,
+                  right: 20,
+                  backgroundColor: 'rgba(0,0,0,0.5)',
                   padding: 10,
-                }}>
-                <TextInput
-                  ref={inputRef}
-                  value={code}
-                  onChangeText={handleChangeText}
-                  keyboardType="default"
-                  maxLength={8}
-                  style={{
-                    position: 'absolute',
-                    opacity: 0,
-                    width: '100%',
-                  }}
-                  autoFocus={false}
-                />
+                  borderRadius: 25,
+                }}
+                onPress={() => setFacing((prev) => (prev === 'back' ? 'front' : 'back'))}>
+                <Text style={{ color: 'white', fontWeight: 'bold' }}>{facing === 'back' ? 'Frontal' : 'Trasera'}</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={{ flex: 1, padding: 20 }}>
+              <View
+                style={[
+                  commonStyles.card,
+                  {
+                    gap: 16,
+                  },
+                ]}>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    gap: 2,
+                    borderBottomWidth: 1,
+                    width: '100%',
+                    alignItems: 'center',
+                    borderColor: colors.gray,
+                    paddingBottom: 10,
                   }}>
-                  {[...Array(8)].map((_, i) => (
-                    <View
-                      key={i}
-                      style={{
-                        width: 35,
-                        alignItems: 'center',
-                        padding: 5,
-                      }}>
-                      <Text style={commonStyles.header}>{code[i] || ''}</Text>
-                      <View
-                        style={{
-                          height: 2,
-                          width: '100%',
-                          backgroundColor: colors.dark_blue,
-                        }}
-                      />
-                    </View>
-                  ))}
+                  <Image source={require('../../assets/images/test-qr.png')} style={{ width: 125, height: 125, resizeMode: 'contain' }} />
+                  <Text style={[commonStyles.paragraph, { alignSelf: 'center', letterSpacing: 4 }]}>1234ABCD</Text>
                 </View>
-              </View>
-            </TouchableWithoutFeedback>
 
-            <TouchableOpacity
-              style={[commonStyles.button]}
-              onPress={async () => {
-                setIsLoading(true);
-                const { response, message } = (await axios.post(`${API_URL}:${API_PORT}/api/backupKeys/isKey`, { keyValue: code })).data;
-                setIsLoading(false);
-                if (response) {
-                  router.push('/orders/order');
-                } else {
-                  alert(message);
-                }
-              }}>
-              <Text style={[commonStyles.header, { color: colors.white }]}>Confirm</Text>
-            </TouchableOpacity>
-          </View>
+                <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue, alignSelf: 'center' }]}>Trouble Scanning the QR Code?</Text>
+
+                <KeyboardAvoidingView style={{ gap: 5 }} keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                  <Text style={commonStyles.paragraph}>Enter the #id of the RC</Text>
+                  <TouchableWithoutFeedback onPress={() => inputRef.current?.focus()}>
+                    <View
+                      style={{
+                        backgroundColor: colors.white,
+                        borderWidth: 2,
+                        borderRadius: 10,
+                        borderColor: colors.gray,
+                        position: 'relative',
+                        padding: 10,
+                      }}>
+                      <TextInput
+                        ref={inputRef}
+                        value={code}
+                        onChangeText={handleChangeText}
+                        keyboardType="default"
+                        maxLength={8}
+                        style={{
+                          position: 'absolute',
+                          opacity: 0,
+                          width: '100%',
+                        }}
+                        autoFocus={false}
+                      />
+                      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 2 }}>
+                        {[...Array(8)].map((_, i) => (
+                          <View key={i} style={{ width: 30, alignItems: 'center', padding: 5 }}>
+                            <Text style={commonStyles.header}>{code[i] || ''}</Text>
+                            <View
+                              style={{
+                                height: 2,
+                                width: '100%',
+                                backgroundColor: colors.dark_blue,
+                              }}
+                            />
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+                  </TouchableWithoutFeedback>
+                </KeyboardAvoidingView>
+              </View>
+              <TouchableOpacity
+                style={[commonStyles.button, { marginTop: 'auto' }]}
+                onPress={async () => {
+                  setIsLoading(true);
+                  const { response, message } = (await axios.post(`${API_URL}:${API_PORT}/api/backupKeys/isKey`, { keyValue: code })).data;
+                  setIsLoading(false);
+                  if (response) {
+                    router.push('/orders/order');
+                  } else {
+                    alert(message);
+                  }
+                }}>
+                <Text style={[commonStyles.header, { color: colors.white }]}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

@@ -431,17 +431,30 @@ export default function Index() {
                 </Text>
               </TouchableOpacity>
 
+              {/* Botón de reset */}
+
+              <TouchableOpacity
+                onPress={() => setQueryParams({ ...queryParams, selectedDay: '' })}
+                style={{
+                  alignSelf: 'flex-end',
+                  padding: 8,
+                  opacity: queryParams.selectedDay ? 1 : 0,
+                  backgroundColor: colors.light_gray,
+                  borderRadius: 8,
+                }}>
+                <Text style={{ color: colors.dark_blue }}>Clear Date</Text>
+              </TouchableOpacity>
+
               {/* Calendario */}
               <Calendar
-                current={new Date().toISOString().split('T')[0]}
+                current={queryParams.selectedDay || undefined}
+                // manejar la selección de fecha
                 onDayPress={(day) => {
                   setCalendarModal(false);
-                  setQueryParams({
-                    page: queryParams.page,
-                    filters: queryParams.filters,
-                    selectedDay: day.dateString,
-                  });
+                  setQueryParams({ ...queryParams, selectedDay: day.dateString });
                 }}
+                // marcar fechas seleccionadas
+                markedDates={queryParams.selectedDay ? { [queryParams.selectedDay]: { selected: true, selectedColor: colors.green } } : {}}
                 style={{
                   marginTop: 20,
                 }}
