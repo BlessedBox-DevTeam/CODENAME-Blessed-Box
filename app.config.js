@@ -20,7 +20,7 @@ export default ({ config }) => {
       PORT: process.env.EXPO_PUBLIC_PORT,
     },
     updates: {
-      url: 'https://u.expo.dev/6ab4cd27-c46d-4cc2-be7e-ebf6a3471209',
+      url: 'https://u.expo.dev/04925fcb-f1be-4ab1-bca4-116c6f23d04c',
     },
     runtimeVersion: {
       policy: 'sdkVersion',
