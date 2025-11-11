@@ -17,6 +17,7 @@ import { FEMALE_GENDER_ID, FIVE_TO_NINE_YEARS_ID, MALE_GENDER_ID, TEN_TO_FOURTEE
 import { formatTransactionDate, groupByDate, sortByDateProp } from '../helpers/helpers';
 import CalendarIcon from '../components/icons/CalendarIcon';
 import { Calendar } from 'react-native-calendars';
+import { getSocket } from '../socketService';
 
 export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
@@ -228,9 +229,69 @@ export default function Index() {
     fetchTransactions();
   }, [queryParams]);
 
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handleNewTransaction = (newTransaction) => {
+      console.log('Nueva transacción recibida:', newTransaction);
+      setTotalCount(totalCount + 1);
+      setAllTransactions((prev) => {
+        const updated = [newTransaction, ...prev];
+        const sorted = sortByDateProp(updated, 'createdDate');
+        const grouped = groupByDate(sorted, 'createdDate');
+        const newSections = Object.entries(grouped).map(([dateKey, items]) => ({
+          title: dateKey === todayStr ? 'Today' : formatTransactionDate(dateKey, false),
+          data: items,
+        }));
+        setSections(newSections);
+        return updated;
+      });
+    };
+    socket.on('transaction:new', handleNewTransaction);
+    return () => {
+      socket.off('transaction:new', handleNewTransaction);
+    };
+  }, [todayStr]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handleUpdatedTransaction = (updatedTransaction: { id: number; statusCode: string }) => {
+      let updatedTx: (typeof allTransactions)[0] | undefined;
+      setAllTransactions((prevTransactions) =>
+        prevTransactions.map((transaction) => {
+          if (transaction.transactionId === updatedTransaction.id) {
+            updatedTx = { ...transaction, status: updatedTransaction.statusCode };
+            return updatedTx;
+          }
+          return transaction;
+        })
+      );
+      if (!updatedTx) return;
+      const transactionDate = formatTransactionDate(updatedTx.createdDate, false);
+      setSections((prevSections) =>
+        prevSections.map((section) => {
+          if (section.title !== transactionDate) return section;
+
+          const updatedData = section.data.map((transaction) =>
+            transaction.id === updatedTransaction.id ? { ...transaction, status: updatedTransaction.statusCode } : transaction
+          );
+          return { ...section, data: updatedData };
+        })
+      );
+    };
+    socket.on('transaction:statusUpdated', handleUpdatedTransaction);
+    return () => {
+      socket.off('transaction:statusUpdated', handleUpdatedTransaction);
+    };
+  }, []);
+
   if (isLoading) {
     return <LoadingOverlay />;
   }
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>

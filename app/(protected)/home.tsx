@@ -13,6 +13,7 @@ import Person from '../components/icons/Person';
 import Church from '../components/icons/Church';
 import BackArrow from '../components/icons/BackArrow';
 import TargetArrow from '../components/icons/TargetArrow';
+import { getSocket } from '../socketService';
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL;
 const API_PORT = extra?.PORT;
@@ -30,38 +31,52 @@ export default function Index() {
     maleBoxes: 0,
     unlabeledBoxes: 0,
   });
-
+  const fetchData = async () => {
+    try {
+      const token = await getAccessToken();
+      console.log(token);
+      const [userBoxesResponse, countRCBoxesResponse] = await Promise.all([
+        axios.get(`${API_URL}:${API_PORT}/api/boxes/userBoxes`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get(`${API_URL}:${API_PORT}/api/boxes/countRCBoxes`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+      const userBoxesData = userBoxesResponse.data;
+      const countRCBoxesData = countRCBoxesResponse.data;
+      setUserBoxesCount({
+        totalBoxes: userBoxesData.response.totalBoxes,
+        femaleBoxes: userBoxesData.response.femaleBoxes,
+        maleBoxes: userBoxesData.response.maleBoxes,
+        unlabeledBoxes: userBoxesData.response.unlabeledBoxes,
+      });
+      setRecollectionCenterBoxesCount(countRCBoxesData.response.totalBoxes);
+      setPercentage(Number(((countRCBoxesData.response.totalBoxes / GOAL_BOXES_COUNT) * 100).toFixed(2)));
+      setIsLoading(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = await getAccessToken();
-        console.log(token);
-        const [userBoxesResponse, countRCBoxesResponse] = await Promise.all([
-          axios.get(`${API_URL}:${API_PORT}/api/boxes/userBoxes`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${API_URL}:${API_PORT}/api/boxes/countRCBoxes`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-        const userBoxesData = userBoxesResponse.data;
-        const countRCBoxesData = countRCBoxesResponse.data;
-        setUserBoxesCount({
-          totalBoxes: userBoxesData.response.totalBoxes,
-          femaleBoxes: userBoxesData.response.femaleBoxes,
-          maleBoxes: userBoxesData.response.maleBoxes,
-          unlabeledBoxes: userBoxesData.response.unlabeledBoxes,
-        });
-        setRecollectionCenterBoxesCount(countRCBoxesData.response.totalBoxes);
-        setPercentage(Number(((countRCBoxesData.response.totalBoxes / GOAL_BOXES_COUNT) * 100).toFixed(2)));
-        setIsLoading(false);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handleFetch = () => {
+      fetchData();
+    };
+    socket.on('transaction:statusUpdated', handleFetch);
+    socket.on('transaction:new', handleFetch);
+    return () => {
+      socket.off('transaction:statusUpdated', handleFetch);
+      socket.off('transaction:new', handleFetch);
+    };
+  }, []);
+
   if (isLoading) {
     return <LoadingOverlay></LoadingOverlay>;
   }

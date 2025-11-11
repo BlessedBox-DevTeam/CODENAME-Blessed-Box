@@ -18,6 +18,7 @@ import Constants from 'expo-constants';
 import LoadingOverlay from '../components/LoadingSpinner';
 import { formatTransactionDate, getUserRoles } from '../helpers/helpers';
 import { ADMIN_ROLE_TYPE_ID, DECLINED_STATUS_ID, COMPLETED_STATUS_ID, PENDING_STATUS_ID, UNLABELED_GENDER_ID } from '../helpers/constants';
+import { getSocket } from '../socketService';
 
 /**
  * Deposit Details Screen
@@ -89,6 +90,22 @@ export default function Index() {
     setActiveTab(value === 'information' ? 'information' : 'summary');
   };
   const [showWarning, setShowWarning] = useState(false);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handleStatusUpdate = (updatedTransaction: { id: number; statusCode: string }) => {
+      // Solo actualizar si es la misma transacción
+      if (transactionDetails?.transactionId === updatedTransaction.id) {
+        setTransactionDetails((prev) => (prev ? { ...prev, statusCode: updatedTransaction.statusCode } : prev));
+      }
+    };
+    socket.on('transaction:statusUpdated', handleStatusUpdate);
+    return () => {
+      socket.off('transaction:statusUpdated', handleStatusUpdate);
+    };
+  }, [transactionDetails]);
 
   /**
    * Renders the deposit information section.

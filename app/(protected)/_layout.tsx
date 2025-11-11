@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Constants from 'expo-constants';
 import { Stack, usePathname, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Alert, Button, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
@@ -14,6 +14,7 @@ import QRCode from '../components/icons/QRCode';
 import { deleteAccessToken, deleteRefreshToken, getAccessToken, getRefreshToken } from '../helpers/helpers';
 import { LinearGradient } from 'expo-linear-gradient';
 import SignOut from '../components/icons/SignOut';
+import { disconnectSocket, initSocket } from '../socketService';
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL;
 const API_PORT = extra?.PORT;
@@ -37,9 +38,21 @@ export default function ProtectedLayout() {
     if (success) {
       deleteAccessToken();
       deleteRefreshToken();
+      disconnectSocket();
       router.replace('/login');
     }
   };
+  useEffect(() => {
+    const init = async () => {
+      const token = await getAccessToken();
+      if (token) {
+        await initSocket();
+      }
+    };
+    init();
+
+    return () => disconnectSocket();
+  }, []);
 
   return (
     <>

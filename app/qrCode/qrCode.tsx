@@ -151,7 +151,7 @@ export default function Index() {
                   borderRadius: 25,
                 }}
                 onPress={() => setFacing((prev) => (prev === 'back' ? 'front' : 'back'))}>
-                <Text style={{ color: 'white', fontWeight: 'bold' }}>{facing === 'back' ? 'Frontal' : 'Trasera'}</Text>
+                <Text style={{ color: 'white', fontWeight: 'bold' }}>{facing === 'back' ? 'Front' : 'Rear'}</Text>
               </TouchableOpacity>
             </View>
           ) : (

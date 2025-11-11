@@ -10,6 +10,7 @@ import colors from '../baseStyles/colors';
 import Checkbox from '../components/icons/Checkbox';
 import LoadingOverlay from '../components/LoadingSpinner';
 import { getAccessToken, saveAccessToken, saveRefreshToken } from '../helpers/helpers';
+import { initSocket } from '../socketService';
 
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL;
@@ -36,8 +37,7 @@ export default function Index() {
       if (keepMeSignedIn && response.data.refreshToken) {
         await saveRefreshToken(response.data.refreshToken);
       }
-      const token = await getAccessToken();
-      const socket = io(`${API_URL}:${API_PORT}`, { auth: { token } });
+      await initSocket();
       setIsLoading(false);
       router.replace('/home');
     } else {
