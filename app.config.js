@@ -21,6 +21,9 @@ export default ({ config }) => {
     },
     updates: {
       url: 'https://u.expo.dev/04925fcb-f1be-4ab1-bca4-116c6f23d04c',
+      enabled: true,
+      checkAutomatically: 'ON_LOAD',
+      fallbackToCacheTimeout: 0,
     },
     runtimeVersion: {
       policy: 'sdkVersion',
