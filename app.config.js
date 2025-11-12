@@ -16,7 +16,8 @@ export default ({ config }) => {
         projectId: '04925fcb-f1be-4ab1-bca4-116c6f23d04c',
       },
       APP_ENV,
-      URL: process.env.EXPO_PUBLIC_URL,
+      URL: 'http://BlessedBox-LoadBalancer-187715699.us-east-2.elb.amazonaws.com',
+      // URL: process.env.EXPO_PUBLIC_URL,
       PORT: process.env.EXPO_PUBLIC_PORT,
     },
     updates: {
@@ -31,6 +32,7 @@ export default ({ config }) => {
     android: {
       package: 'com.kennepo23.blessedboxapp',
       versionCode: 1,
+      useCleartextTraffic: true,
     },
     ios: {
       bundleIdentifier: 'com.kennepo23.blessedboxapp',
