@@ -16,10 +16,8 @@ export default ({ config }) => {
         projectId: '04925fcb-f1be-4ab1-bca4-116c6f23d04c',
       },
       APP_ENV,
-      URL: 'http://BlessedBox-LoadBalancer-187715699.us-east-2.elb.amazonaws.com',
-      // URL: process.env.EXPO_PUBLIC_URL,
-      PORT: 3000,
-      // PORT: process.env.EXPO_PUBLIC_PORT,
+      URL: process.env.EXPO_PUBLIC_URL,
+      PORT: process.env.EXPO_PUBLIC_PORT,
     },
     updates: {
       url: 'https://u.expo.dev/04925fcb-f1be-4ab1-bca4-116c6f23d04c',
