@@ -4,12 +4,11 @@ import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Modal, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import io from 'socket.io-client';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import Checkbox from '../components/icons/Checkbox';
 import LoadingOverlay from '../components/LoadingSpinner';
-import { getAccessToken, saveAccessToken, saveRefreshToken } from '../helpers/helpers';
+import { saveAccessToken, saveRefreshToken } from '../helpers/helpers';
 import { initSocket } from '../socketService';
 
 const extra = Constants.expoConfig?.extra;
@@ -84,6 +83,8 @@ export default function Index() {
         </Modal>
 
         <Text style={[commonStyles.title, { paddingTop: 15 }]}>Blessed Box</Text>
+        <Text>{API_PORT}</Text>
+        <Text>{API_URL}</Text>
         <View style={{ flexDirection: 'column', gap: 16, width: '100%' }}>
           <TextInput style={commonStyles.input} placeholder="Correo electrónico" keyboardType="email-address" autoCapitalize="none" onChangeText={setEmail} value={email} />
           <TextInput style={commonStyles.input} placeholder="Contraseña" secureTextEntry onChangeText={setPassword} value={password} />
