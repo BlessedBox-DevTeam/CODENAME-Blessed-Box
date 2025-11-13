@@ -83,7 +83,6 @@ export default function Index() {
         </Modal>
 
         <Text style={[commonStyles.title, { paddingTop: 15 }]}>Blessed Box</Text>
-        <Text>{API_PORT}</Text>
         <Text>{API_URL}</Text>
         <View style={{ flexDirection: 'column', gap: 16, width: '100%' }}>
           <TextInput style={commonStyles.input} placeholder="Correo electrónico" keyboardType="email-address" autoCapitalize="none" onChangeText={setEmail} value={email} />
