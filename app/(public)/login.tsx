@@ -26,7 +26,7 @@ export default function Index() {
   const handleLogin = async () => {
     setIsLoading(true);
     console.log(API_PORT, API_URL);
-    const response = await axios.post(`${API_URL}:${API_PORT}/api/auth/login`, {
+    const response = await axios.post(`${API_URL}/api/auth/login`, {
       email: email,
       password: password,
       keepMeSignedIn: keepMeSignedIn,

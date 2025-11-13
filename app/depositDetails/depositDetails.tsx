@@ -44,10 +44,7 @@ export default function Index() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [roles, { response }] = await Promise.all([
-          getUserRoles(),
-          (await axios.get(`${API_URL}:${API_PORT}/api/transactions/transactionDetails`, { params: { transactionId } })).data,
-        ]);
+        const [roles, { response }] = await Promise.all([getUserRoles(), (await axios.get(`${API_URL}/api/transactions/transactionDetails`, { params: { transactionId } })).data]);
         setRoles(roles);
         setTransactionDetails(response.transactionDetails);
         const mergedData = Array.from(
@@ -368,7 +365,7 @@ export default function Index() {
                     onPress={async () => {
                       setShowWarning(false);
                       setIsLoading(true);
-                      await axios.post(`${API_URL}:${API_PORT}/api/transactions/editTransactionStatus`, {
+                      await axios.post(`${API_URL}/api/transactions/editTransactionStatus`, {
                         transactionId: transactionId,
                         statusCode: DECLINED_STATUS_ID,
                       });
@@ -389,7 +386,7 @@ export default function Index() {
                 style={commonStyles.buttonNoShadow}
                 onPress={async () => {
                   setIsLoading(true);
-                  await axios.post(`${API_URL}:${API_PORT}/api/transactions/editTransactionStatus`, {
+                  await axios.post(`${API_URL}/api/transactions/editTransactionStatus`, {
                     transactionId: transactionId,
                     statusCode: COMPLETED_STATUS_ID,
                   });

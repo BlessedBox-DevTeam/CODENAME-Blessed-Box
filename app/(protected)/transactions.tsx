@@ -172,7 +172,7 @@ export default function Index() {
       setIsLoading(true);
       const {
         data: { response },
-      } = await axios.get(`${API_URL}:${API_PORT}/api/transactions/recollectionCenterTransactions`, {
+      } = await axios.get(`${API_URL}/api/transactions/recollectionCenterTransactions`, {
         params: { page: queryParams.page, selectedDay: queryParams.selectedDay, filters: JSON.stringify(queryParams.filters) },
       });
       setTotalCount(response.totalCount);

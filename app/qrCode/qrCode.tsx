@@ -59,7 +59,7 @@ export default function Index() {
       setIsLoading(true);
       setScanned(true);
       const codeValue = data;
-      const { response, message } = (await axios.post(`${API_URL}:${API_PORT}/api/qrCodes/isQRCode`, { qrCodeValue: codeValue })).data;
+      const { response, message } = (await axios.post(`${API_URL}/api/qrCodes/isQRCode`, { qrCodeValue: codeValue })).data;
       console.log(response);
       setIsLoading(false);
       if (response) {
@@ -224,7 +224,7 @@ export default function Index() {
                 style={[commonStyles.button, { marginTop: 'auto' }]}
                 onPress={async () => {
                   setIsLoading(true);
-                  const { response, message } = (await axios.post(`${API_URL}:${API_PORT}/api/backupKeys/isKey`, { keyValue: code })).data;
+                  const { response, message } = (await axios.post(`${API_URL}/api/backupKeys/isKey`, { keyValue: code })).data;
                   setIsLoading(false);
                   if (response) {
                     router.push('/orders/order');

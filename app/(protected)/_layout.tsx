@@ -34,7 +34,7 @@ export default function ProtectedLayout() {
   const exit = async () => {
     const accessToken = await getAccessToken();
     console.log(accessToken);
-    const { success } = (await axios.post(`${API_URL}:${API_PORT}/api/auth/logout`, { accessToken })).data;
+    const { success } = (await axios.post(`${API_URL}/api/auth/logout`, { accessToken })).data;
     if (success) {
       deleteAccessToken();
       deleteRefreshToken();

@@ -153,7 +153,7 @@ export default function Index() {
                 setIsLoading(true);
                 const token = await getAccessToken();
                 const { response, message } = (
-                  await axios.post(`${API_URL}:${API_PORT}/api/transactions/newTransaction`, { boxLabels: parsedBoxLabels }, { headers: { Authorization: `Bearer ${token}` } })
+                  await axios.post(`${API_URL}/api/transactions/newTransaction`, { boxLabels: parsedBoxLabels }, { headers: { Authorization: `Bearer ${token}` } })
                 ).data;
                 console.log(response.transactionId);
                 setIsLoading(false);
