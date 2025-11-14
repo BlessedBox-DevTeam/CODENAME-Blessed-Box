@@ -49,7 +49,7 @@ export default function Index() {
   ]);
   const router = useRouter();
   const extra = Constants.expoConfig?.extra;
-  const API_URL = extra?.URL;
+  const API_URL = extra?.URL || 'https://blessedbox.org';
   const API_PORT = extra?.PORT;
   const todayStr = new Date().toDateString();
   const ages = [

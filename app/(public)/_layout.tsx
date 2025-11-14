@@ -7,7 +7,7 @@ import Constants from 'expo-constants';
 import { jwtDecode } from 'jwt-decode';
 
 const extra = Constants.expoConfig?.extra;
-const API_URL = extra?.URL;
+const API_URL = extra?.URL || 'https://blessedbox.org';
 const API_PORT = extra?.PORT;
 
 export default function LoginLayout() {

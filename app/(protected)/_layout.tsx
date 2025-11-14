@@ -16,7 +16,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import SignOut from '../components/icons/SignOut';
 import { disconnectSocket, initSocket } from '../socketService';
 const extra = Constants.expoConfig?.extra;
-const API_URL = extra?.URL;
+const API_URL = extra?.URL || 'https://blessedbox.org';
 const API_PORT = extra?.PORT;
 
 export default function ProtectedLayout() {

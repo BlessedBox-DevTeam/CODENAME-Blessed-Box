@@ -4,7 +4,7 @@ import { getAccessToken } from './helpers/helpers';
 import { useEffect } from 'react';
 
 const extra = Constants.expoConfig?.extra;
-const API_URL = extra?.URL;
+const API_URL = extra?.URL || 'https://blessedbox.org';
 const API_PORT = extra?.PORT;
 let socket = null;
 
@@ -14,7 +14,7 @@ export const initSocket = async () => {
   const token = await getAccessToken();
   if (!token) return null;
 
-  socket = io(`${API_URL}:${API_PORT}`, {
+  socket = io(`${API_URL}`, {
     auth: { token },
     transports: ['websocket'],
     reconnection: true,

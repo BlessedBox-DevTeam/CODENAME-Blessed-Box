@@ -25,7 +25,6 @@ export default function Index() {
 
   const handleLogin = async () => {
     setIsLoading(true);
-    console.log(API_PORT, API_URL);
     const response = await axios.post(`${API_URL}/api/auth/login`, {
       email: email,
       password: password,
@@ -83,7 +82,6 @@ export default function Index() {
         </Modal>
 
         <Text style={[commonStyles.title, { paddingTop: 15 }]}>Blessed Box</Text>
-        <Text>texto {API_URL ? 'Existe' : 'No existe'}</Text>
         <View style={{ flexDirection: 'column', gap: 16, width: '100%' }}>
           <TextInput style={commonStyles.input} placeholder="Correo electrónico" keyboardType="email-address" autoCapitalize="none" onChangeText={setEmail} value={email} />
           <TextInput style={commonStyles.input} placeholder="Contraseña" secureTextEntry onChangeText={setPassword} value={password} />

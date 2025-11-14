@@ -16,7 +16,7 @@ import { BOX_AGE_MAP, UNLABELED_GENDER_ID } from '../helpers/constants';
 import { getAccessToken } from '../helpers/helpers';
 
 const extra = Constants.expoConfig?.extra;
-const API_URL = extra?.URL;
+const API_URL = extra?.URL || 'https://blessedbox.org';
 const API_PORT = extra?.PORT;
 
 /**

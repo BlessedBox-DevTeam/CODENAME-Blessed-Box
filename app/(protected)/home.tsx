@@ -15,10 +15,8 @@ import BackArrow from '../components/icons/BackArrow';
 import TargetArrow from '../components/icons/TargetArrow';
 import { getSocket } from '../socketService';
 const extra = Constants.expoConfig?.extra;
-const API_URL = extra?.URL;
+const API_URL = extra?.URL || 'https://blessedbox.org';
 const API_PORT = extra?.PORT;
-
-console.log(API_PORT, API_URL);
 
 export default function Index() {
   const GOAL_BOXES_COUNT = 10000;

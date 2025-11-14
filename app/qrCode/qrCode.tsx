@@ -12,7 +12,7 @@ import Constants from 'expo-constants';
 import LoadingOverlay from '../components/LoadingSpinner';
 
 const extra = Constants.expoConfig?.extra;
-const API_URL = extra?.URL;
+const API_URL = extra?.URL || 'https://blessedbox.org';
 const API_PORT = extra?.PORT;
 
 export default function Index() {

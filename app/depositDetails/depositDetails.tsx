@@ -27,7 +27,7 @@ import { getSocket } from '../socketService';
  */
 export default function Index() {
   const extra = Constants.expoConfig?.extra;
-  const API_URL = extra?.URL;
+  const API_URL = extra?.URL || 'https://blessedbox.org';
   const API_PORT = extra?.PORT;
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'information' | 'summary'>('information');
