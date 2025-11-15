@@ -19,7 +19,7 @@ const API_URL = extra?.URL || 'https://blessedbox.org';
 const API_PORT = extra?.PORT;
 
 export default function Index() {
-  const GOAL_BOXES_COUNT = 10000;
+  const GOAL_BOXES_COUNT = 3000;
   const [isLoading, setIsLoading] = useState(true);
   const [recollectionCenterBoxesCount, setRecollectionCenterBoxesCount] = useState(0);
   const [percentage, setPercentage] = useState(0);
