@@ -32,7 +32,6 @@ export default function Index() {
   const fetchData = async () => {
     try {
       const token = await getAccessToken();
-      console.log(token);
       const [userBoxesResponse, countRCBoxesResponse] = await Promise.all([
         axios.get(`${API_URL}/api/boxes/userBoxes`, {
           headers: { Authorization: `Bearer ${token}` },

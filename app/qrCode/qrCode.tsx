@@ -223,13 +223,19 @@ export default function Index() {
               <TouchableOpacity
                 style={[commonStyles.button, { marginTop: 'auto' }]}
                 onPress={async () => {
+                  const showAlert = (message: string) => {
+                    alert(message);
+                  };
+                  if (code.length < 8) {
+                    return showAlert('Please enter a valid 8-character code.');
+                  }
                   setIsLoading(true);
                   const { response, message } = (await axios.post(`${API_URL}/api/backupKeys/isKey`, { keyValue: code })).data;
                   setIsLoading(false);
                   if (response) {
                     router.push('/orders/order');
                   } else {
-                    alert(message);
+                    showAlert(message);
                   }
                 }}>
                 <Text style={[commonStyles.header, { color: colors.white }]}>Confirm</Text>

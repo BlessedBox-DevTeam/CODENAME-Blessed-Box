@@ -34,7 +34,6 @@ export default function LoginLayout() {
       if (!authenticated && refreshToken) {
         try {
           const response = await axios.post(`${API_URL}/api/auth/refresh`, { refreshToken });
-          console.log(response);
           const data = response.data;
           if (data.success) {
             await saveAccessToken(data.accessToken);

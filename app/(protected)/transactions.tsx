@@ -30,9 +30,18 @@ export default function Index() {
   const [boxNumberMin, setBoxNumberMin] = useState('');
   const [openDropdown, setOpenDropdown] = useState(false);
   const [dropdownValue, setDropdownValue] = useState(null);
-  const [queryParams, setQueryParams] = useState({
+  const [selectedDay, setSelectedDay] = useState('');
+  const [queryParams, setQueryParams] = useState<{
+    page: number;
+    filters: {
+      ageFilters: string[];
+      genderValues: string[];
+      filterMode: 'exact' | 'minimum' | 'maximum' | 'range' | null;
+      numberOfBoxes: number | null;
+      maxNumberOfBoxes: number | null;
+    };
+  }>({
     page: 1,
-    selectedDay: '',
     filters: {
       ageFilters: [],
       genderValues: [],
@@ -41,6 +50,7 @@ export default function Index() {
       maxNumberOfBoxes: null,
     },
   });
+
   const [dropdownOptions, setDropdownOptions] = useState([
     { label: 'Exact', value: 'exact' },
     { label: 'Minimum', value: 'minimum' },
@@ -59,7 +69,7 @@ export default function Index() {
     { label: '10-14', value: [TEN_TO_FOURTEEN_YEARS_ID] },
   ];
 
-  const [selectedAges, setSelectedAges] = useState(['All']);
+  const [selectedAges, setSelectedAges] = useState([]);
   const genders = [
     { label: 'All', value: [MALE_GENDER_ID, FEMALE_GENDER_ID] },
     { label: 'Female', value: [FEMALE_GENDER_ID] },
@@ -67,7 +77,7 @@ export default function Index() {
     { label: 'Unlabeled', value: [] },
   ];
 
-  const [selectedGenders, setSelectedGenders] = useState(['All']);
+  const [selectedGenders, setSelectedGenders] = useState([]);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -98,13 +108,12 @@ export default function Index() {
     setDropdownValue(null);
     setBoxNumberMin('');
     setBoxNumberMax('');
-    setSelectedAges(['All']);
-    setSelectedGenders(['All']);
     setOpenDropdown(false);
     setAllTransactions([]);
-    setQueryParams({
+    setSelectedGenders([]);
+    setSelectedAges([]);
+    setQueryParams((prev) => ({
       page: 1,
-      selectedDay: queryParams.selectedDay,
       filters: {
         ageFilters: [],
         genderValues: [],
@@ -112,16 +121,15 @@ export default function Index() {
         numberOfBoxes: null,
         maxNumberOfBoxes: null,
       },
-    });
+    }));
   };
   const handleApply = () => {
     const built = buildFilters();
     if (!built) return;
 
     setAllTransactions([]);
-    setQueryParams({
+    setQueryParams((prev) => ({
       page: 1,
-      selectedDay: queryParams.selectedDay,
       filters: {
         ageFilters: built.ageFilters,
         genderValues: built.genderValues,
@@ -129,14 +137,11 @@ export default function Index() {
         numberOfBoxes: built.numberOfBoxes,
         maxNumberOfBoxes: built.maxNumberOfBoxes,
       },
-    });
+    }));
+
     setModal(false);
   };
   const buildFilters = () => {
-    if (!selectedAges.length || !selectedGenders.length) {
-      Alert.alert('Validation Error', 'Please select at least one category of age and gender.');
-      return null;
-    }
     const isSingleDropdownValue = ['exact', 'minimum', 'maximum'].includes(dropdownValue);
     if (isSingleDropdownValue) {
       if (!boxNumberMin) {
@@ -173,7 +178,7 @@ export default function Index() {
       const {
         data: { response },
       } = await axios.get(`${API_URL}/api/transactions/recollectionCenterTransactions`, {
-        params: { page: queryParams.page, selectedDay: queryParams.selectedDay, filters: JSON.stringify(queryParams.filters) },
+        params: { page: queryParams.page, selectedDay: selectedDay, filters: JSON.stringify(queryParams.filters) },
       });
       setTotalCount(response.totalCount);
       const updatedTransactions = queryParams.page === 1 ? response.transactions : [...allTransactions, ...response.transactions];
@@ -195,33 +200,47 @@ export default function Index() {
   const handleSelectedAge = (label: string) => {
     setSelectedAges((prev) => {
       if (label === 'All') {
+        return prev.includes('All') ? [] : ['All'];
+      }
+
+      let newSelection = prev.filter((item) => item !== 'All');
+      if (newSelection.includes(label)) {
+        newSelection = newSelection.filter((item) => item !== label);
+      } else {
+        newSelection.push(label);
+      }
+
+      const specificLabels = ['2-4', '5-9', '10-14'];
+      if (specificLabels.every((l) => newSelection.includes(l))) {
         return ['All'];
       }
-      if (prev.includes('All')) {
-        return [label];
-      }
-      let newSelection = prev.includes(label) ? prev.filter((item) => item !== label) : [...prev, label];
-      if (['2-4', '5-9', '10-14'].every((l) => newSelection.includes(l))) {
-        return ['All'];
-      }
+
       return newSelection;
     });
   };
+
   const handleSelectedGender = (label: string) => {
     setSelectedGenders((prev) => {
       if (label === 'All') {
+        return prev.includes('All') ? [] : ['All'];
+      }
+
+      let newSelection = prev.filter((item) => item !== 'All');
+      if (newSelection.includes(label)) {
+        newSelection = newSelection.filter((item) => item !== label);
+      } else {
+        newSelection.push(label);
+      }
+
+      const specificLabels = ['Female', 'Male', 'Unlabeled'];
+      if (specificLabels.every((l) => newSelection.includes(l))) {
         return ['All'];
       }
-      if (prev.includes('All')) {
-        return [label];
-      }
-      let newSelection = prev.includes(label) ? prev.filter((i) => i !== label) : [...prev, label];
-      if (['Female', 'Male', 'Unlabeled'].every((l) => newSelection.includes(l))) {
-        return ['All'];
-      }
+
       return newSelection;
     });
   };
+
   const handleFilterModal = () => {
     setModal(true);
   };
@@ -450,7 +469,6 @@ export default function Index() {
             </View>
           </View>
         </Modal>
-
         <Modal visible={calendarModal} animationType="fade" transparent={true} onRequestClose={() => setCalendarModal(false)}>
           {/* Fondo semi-transparente */}
           <View
@@ -493,13 +511,12 @@ export default function Index() {
               </TouchableOpacity>
 
               {/* Botón de reset */}
-
               <TouchableOpacity
-                onPress={() => setQueryParams({ ...queryParams, selectedDay: '' })}
+                onPress={() => setSelectedDay('')}
                 style={{
                   alignSelf: 'flex-end',
                   padding: 8,
-                  opacity: queryParams.selectedDay ? 1 : 0,
+                  opacity: selectedDay ? 1 : 0,
                   backgroundColor: colors.light_gray,
                   borderRadius: 8,
                 }}>
@@ -508,14 +525,14 @@ export default function Index() {
 
               {/* Calendario */}
               <Calendar
-                current={queryParams.selectedDay || undefined}
-                // manejar la selección de fecha
+                current={selectedDay || undefined}
                 onDayPress={(day) => {
+                  setSelectedDay(day.dateString);
+                  setQueryParams((prev) => ({ ...prev, page: 1 }));
                   setCalendarModal(false);
-                  setQueryParams({ ...queryParams, selectedDay: day.dateString });
                 }}
                 // marcar fechas seleccionadas
-                markedDates={queryParams.selectedDay ? { [queryParams.selectedDay]: { selected: true, selectedColor: colors.green } } : {}}
+                markedDates={selectedDay ? { [selectedDay]: { selected: true, selectedColor: colors.green } } : {}}
                 style={{
                   marginTop: 20,
                 }}
@@ -551,11 +568,17 @@ export default function Index() {
             const totalLoaded = allTransactions.length;
             const hasMore = totalLoaded < totalCount;
             if (hasMore && !isLoading) {
-              setQueryParams({ page: queryParams.page + 1, filters: queryParams.filters });
+              setQueryParams((prev) => ({ ...prev, page: queryParams.page + 1 }));
             }
           }}
           onEndReachedThreshold={0.1}
-          contentContainerStyle={{ gap: 16, padding: 18 }}></SectionList>
+          contentContainerStyle={{ gap: 16, padding: 18 }}
+          ListEmptyComponent={() => (
+            <View style={{ alignItems: 'center', marginTop: 50 }}>
+              <Text style={[commonStyles.paragraph, { color: colors.gray }]}>No se encontraron transacciones</Text>
+            </View>
+          )}
+        />
       </SafeAreaView>
     </SafeAreaProvider>
   );

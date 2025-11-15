@@ -1,8 +1,9 @@
 import axios from 'axios';
 import Constants from 'expo-constants';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, usePathname, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
-import { Alert, Button, Pressable, Text, View } from 'react-native';
+import { Alert, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
@@ -11,9 +12,8 @@ import DepositHistory from '../components/icons/DepositHistory';
 import Home from '../components/icons/Home';
 import Newspaper from '../components/icons/NewsPaper';
 import QRCode from '../components/icons/QRCode';
-import { deleteAccessToken, deleteRefreshToken, getAccessToken, getRefreshToken } from '../helpers/helpers';
-import { LinearGradient } from 'expo-linear-gradient';
 import SignOut from '../components/icons/SignOut';
+import { deleteAccessToken, deleteRefreshToken, getAccessToken } from '../helpers/helpers';
 import { disconnectSocket, initSocket } from '../socketService';
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL || 'https://blessedbox.org';
@@ -33,7 +33,6 @@ export default function ProtectedLayout() {
   };
   const exit = async () => {
     const accessToken = await getAccessToken();
-    console.log(accessToken);
     const { success } = (await axios.post(`${API_URL}/api/auth/logout`, { accessToken })).data;
     if (success) {
       deleteAccessToken();

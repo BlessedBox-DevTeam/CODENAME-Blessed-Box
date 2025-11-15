@@ -24,6 +24,29 @@ export default function Index() {
   const router = useRouter();
 
   const handleLogin = async () => {
+    const validateInputs = (email, password) => {
+      const errors = {};
+
+      if (!email || email.trim() === '') {
+        errors.email = 'El email es requerido.';
+      } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+        errors.email = 'El email no es válido.';
+      }
+      if (!password || password.trim() === '') {
+        errors.password = 'La contraseña es requerida.';
+      } else if (password.length < 6) {
+        errors.password = 'La contraseña debe tener al menos 6 caracteres.';
+      }
+      return {
+        valid: Object.keys(errors).length === 0,
+        errors,
+      };
+    };
+    const { valid, errors } = validateInputs(email, password);
+    if (!valid) {
+      setModalVisible(true);
+      return;
+    }
     setIsLoading(true);
     const response = await axios.post(`${API_URL}/api/auth/login`, {
       email: email,
@@ -59,7 +82,7 @@ export default function Index() {
         <LoadingOverlay visible={isLoading} />
 
         <Modal
-          animationType="slide"
+          animationType="fade"
           transparent={true}
           visible={modalVisible}
           onRequestClose={() => {
@@ -73,10 +96,12 @@ export default function Index() {
             <View
               style={{
                 backgroundColor: 'transparent',
-                width: '80%',
-                height: '100%',
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingTop: 100,
               }}>
-              <Text style={commonStyles.paragraph}>Your email or password is incorrect</Text>
+              <Text style={[commonStyles.paragraph, { color: colors.red }]}>Your email or password is incorrect</Text>
             </View>
           </TouchableWithoutFeedback>
         </Modal>
@@ -84,12 +109,14 @@ export default function Index() {
         <Text style={[commonStyles.title, { paddingTop: 15 }]}>Blessed Box</Text>
         <View style={{ flexDirection: 'column', gap: 16, width: '100%' }}>
           <TextInput style={commonStyles.input} placeholder="Correo electrónico" keyboardType="email-address" autoCapitalize="none" onChangeText={setEmail} value={email} />
-          <TextInput style={commonStyles.input} placeholder="Contraseña" secureTextEntry onChangeText={setPassword} value={password} />
+          <TextInput style={commonStyles.input} placeholder="Contraseña" secureTextEntry autoCapitalize="none" onChangeText={setPassword} value={password} />
         </View>
-        <TouchableOpacity style={[commonStyles.button]} onPress={handleLogin}>
-          <Text style={[commonStyles.header, { color: colors.white }]}>Login</Text>
-        </TouchableOpacity>
-        <Checkbox onChange={(value) => setKeepMeSignedIn(value)} label="Keep me signed in" />
+        <View style={{ flexDirection: 'column', gap: 16, width: '100%', marginBottom: 20, alignItems: 'center' }}>
+          <TouchableOpacity style={[commonStyles.button]} onPress={handleLogin}>
+            <Text style={[commonStyles.header, { color: colors.white }]}>Login</Text>
+          </TouchableOpacity>
+          <Checkbox onChange={(value) => setKeepMeSignedIn(value)} label="Keep me signed in" />
+        </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );
