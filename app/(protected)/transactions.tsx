@@ -315,160 +315,163 @@ export default function Index() {
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <Modal visible={modal} animationType="slide">
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: colors.backgroundColor,
-            }}>
-            {/* Header Container */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', padding: 20 }}>
-              <BackArrow
-                onPress={() => {
-                  setModal(false);
-                }}
-              />
-              <View style={{ flex: 1, alignItems: 'center' }}>
-                <Text style={commonStyles.header}>Filters</Text>
-              </View>
-              <View style={{ width: 25 }} />
-            </View>
-            {/* Main Container */}
-            <View style={{ paddingHorizontal: 16, paddingVertical: 10, gap: 16 }}>
-              <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Recollection Center</Text>
-              {/* Country Container */}
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  padding: 4,
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  borderBottomWidth: 2,
-                  borderBottomColor: colors.dark_gray,
-                }}>
-                <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Country</Text>
-                <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Puerto Rico</Text>
-              </View>
-              {/* Recollection Center Container */}
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  padding: 4,
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  borderBottomWidth: 2,
-                  borderBottomColor: colors.dark_gray,
-                }}>
-                <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>RC</Text>
-                <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Iglesia Cristiana Bethlehem</Text>
-              </View>
-              {/* Number of Boxes Container */}
-              <View style={{ display: 'flex', gap: 16, paddingVertical: 4 }}>
-                <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Number of Boxes</Text>
-                <DropDownPicker
-                  open={openDropdown}
-                  value={dropdownValue}
-                  items={dropdownOptions}
-                  setOpen={setOpenDropdown}
-                  setValue={setDropdownValue}
-                  setItems={setDropdownOptions}
-                  placeholder="Select option"
-                  style={{
-                    borderColor: colors.light_gray,
-                    borderRadius: 10,
-                    paddingVertical: 0,
+          <SafeAreaView style={{ flex: 1 }}>
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: colors.backgroundColor,
+              }}>
+              {/* Header Container */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', padding: 20 }}>
+                <BackArrow
+                  onPress={() => {
+                    setModal(false);
                   }}
-                  textStyle={[commonStyles.paragraph, { color: colors.dark_blue }]}
-                  dropDownContainerStyle={{ borderColor: colors.light_gray, borderRadius: 10 }}
-                  arrowIconStyle={{ tintColor: colors.dark_blue }}
                 />
-
-                <Animated.View style={{ opacity: fadeAnim, width: '100%' }}>
-                  {dropdownValue && (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                      {/* Input Min or Exact */}
-                      <TextInput
-                        style={{
-                          flex: 1,
-                          height: 50,
-                          backgroundColor: colors.white,
-                          textAlign: 'center',
-                          borderWidth: 1,
-                          borderColor: colors.light_gray,
-                          borderRadius: 10,
-                        }}
-                        value={boxNumberMin}
-                        onChangeText={handleSetBoxNumberMin}
-                        keyboardType="numeric"
-                        placeholder="0"
-                        placeholderTextColor={colors.light_gray}
-                      />
-
-                      {/* Range mode */}
-                      {dropdownValue === 'range' && (
-                        <>
-                          <Text style={[commonStyles.paragraph, { flex: 0 }]}>to</Text>
-                          <TextInput
-                            style={{
-                              flex: 1,
-                              height: 50,
-                              backgroundColor: colors.white,
-                              textAlign: 'center',
-                              borderWidth: 1,
-                              borderColor: colors.light_gray,
-                              borderRadius: 10,
-                            }}
-                            value={boxNumberMax}
-                            onChangeText={handleSetBoxNumberMax}
-                            keyboardType="numeric"
-                            placeholder="Max"
-                            placeholderTextColor={colors.light_gray}
-                          />
-                        </>
-                      )}
-                    </View>
-                  )}
-                </Animated.View>
-              </View>
-              {/* Filter by Age Container */}
-              <View style={{ display: 'flex', gap: 16, width: '100%', paddingVertical: 4 }}>
-                <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Age</Text>
-                <View style={{ alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
-                  {ages.map((item) => (
-                    <FilterChip key={item.label} label={item.label} onPress={() => handleSelectedAge(item.label)} selected={selectedAges.includes(item.label)}></FilterChip>
-                  ))}
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                  <Text style={commonStyles.header}>Filters</Text>
                 </View>
+                <View style={{ width: 25 }} />
               </View>
-              {/* Filter by Gender Container */}
-              <View style={{ display: 'flex', gap: 16, width: '100%', paddingVertical: 4 }}>
-                <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Gender</Text>
-                <View style={{ alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
-                  {genders.map((item) => (
-                    <FilterChip key={item.label} label={item.label} onPress={() => handleSelectedGender(item.label)} selected={selectedGenders.includes(item.label)}></FilterChip>
-                  ))}
+              {/* Main Container */}
+              <View style={{ paddingHorizontal: 16, paddingVertical: 10, gap: 16 }}>
+                <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Recollection Center</Text>
+                {/* Country Container */}
+                <View
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    padding: 4,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    borderBottomWidth: 2,
+                    borderBottomColor: colors.dark_gray,
+                  }}>
+                  <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Country</Text>
+                  <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Puerto Rico</Text>
+                </View>
+                {/* Recollection Center Container */}
+                <View
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    padding: 4,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    borderBottomWidth: 2,
+                    borderBottomColor: colors.dark_gray,
+                  }}>
+                  <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>RC</Text>
+                  <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Iglesia Cristiana Bethlehem</Text>
+                </View>
+                {/* Number of Boxes Container */}
+                <View style={{ display: 'flex', gap: 16, paddingVertical: 4 }}>
+                  <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Number of Boxes</Text>
+                  <DropDownPicker
+                    open={openDropdown}
+                    value={dropdownValue}
+                    items={dropdownOptions}
+                    setOpen={setOpenDropdown}
+                    setValue={setDropdownValue}
+                    setItems={setDropdownOptions}
+                    placeholder="Select option"
+                    style={{
+                      borderColor: colors.light_gray,
+                      borderRadius: 10,
+                      paddingVertical: 0,
+                    }}
+                    textStyle={[commonStyles.paragraph, { color: colors.dark_blue }]}
+                    dropDownContainerStyle={{ borderColor: colors.light_gray, borderRadius: 10 }}
+                    arrowIconStyle={{ tintColor: colors.dark_blue }}
+                  />
+
+                  <Animated.View style={{ opacity: fadeAnim, width: '100%' }}>
+                    {dropdownValue && (
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                        {/* Input Min or Exact */}
+                        <TextInput
+                          style={{
+                            flex: 1,
+                            height: 50,
+                            backgroundColor: colors.white,
+                            textAlign: 'center',
+                            borderWidth: 1,
+                            borderColor: colors.light_gray,
+                            borderRadius: 10,
+                          }}
+                          value={boxNumberMin}
+                          onChangeText={handleSetBoxNumberMin}
+                          keyboardType="numeric"
+                          placeholder="0"
+                          placeholderTextColor={colors.light_gray}
+                        />
+
+                        {/* Range mode */}
+                        {dropdownValue === 'range' && (
+                          <>
+                            <Text style={[commonStyles.paragraph, { flex: 0 }]}>to</Text>
+                            <TextInput
+                              style={{
+                                flex: 1,
+                                height: 50,
+                                backgroundColor: colors.white,
+                                textAlign: 'center',
+                                borderWidth: 1,
+                                borderColor: colors.light_gray,
+                                borderRadius: 10,
+                              }}
+                              value={boxNumberMax}
+                              onChangeText={handleSetBoxNumberMax}
+                              keyboardType="numeric"
+                              placeholder="Max"
+                              placeholderTextColor={colors.light_gray}
+                            />
+                          </>
+                        )}
+                      </View>
+                    )}
+                  </Animated.View>
+                </View>
+                {/* Filter by Age Container */}
+                <View style={{ display: 'flex', gap: 16, width: '100%', paddingVertical: 4 }}>
+                  <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Age</Text>
+                  <View style={{ alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
+                    {ages.map((item) => (
+                      <FilterChip key={item.label} label={item.label} onPress={() => handleSelectedAge(item.label)} selected={selectedAges.includes(item.label)}></FilterChip>
+                    ))}
+                  </View>
+                </View>
+                {/* Filter by Gender Container */}
+                <View style={{ display: 'flex', gap: 16, width: '100%', paddingVertical: 4 }}>
+                  <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Gender</Text>
+                  <View style={{ alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
+                    {genders.map((item) => (
+                      <FilterChip key={item.label} label={item.label} onPress={() => handleSelectedGender(item.label)} selected={selectedGenders.includes(item.label)}></FilterChip>
+                    ))}
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
-          {/* Buttons Container */}
-          <View style={{ width: '100%', position: 'relative' }}>
-            {/* Shadow top */}
-            <LinearGradient colors={['rgba(0,0,0,0.15)', 'transparent']} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, zIndex: 10 }} />
+            {/* Buttons Container */}
+            <View style={{ width: '100%', position: 'relative' }}>
+              {/* Shadow top */}
+              <LinearGradient colors={['rgba(0,0,0,0.15)', 'transparent']} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, zIndex: 10 }} />
 
-            {/* Row de botones */}
-            <View style={{ flexDirection: 'row', backgroundColor: colors.white, padding: 20, width: '100%', gap: 12 }}>
-              <TouchableOpacity
-                style={[commonStyles.buttonNoShadow, { flex: 1, backgroundColor: colors.white, borderWidth: 2, borderColor: colors.dark_blue }]}
-                onPress={handleResetFilters}>
-                <Text style={[commonStyles.header, { color: colors.dark_blue }]}>Reset</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[commonStyles.buttonNoShadow, { flex: 1, backgroundColor: colors.dark_blue }]} onPress={handleApply}>
-                <Text style={[commonStyles.header, { color: colors.white }]}>Apply</Text>
-              </TouchableOpacity>
+              {/* Row de botones */}
+              <View style={{ flexDirection: 'row', backgroundColor: colors.white, padding: 20, width: '100%', gap: 12 }}>
+                <TouchableOpacity
+                  style={[commonStyles.buttonNoShadow, { flex: 1, backgroundColor: colors.white, borderWidth: 2, borderColor: colors.dark_blue }]}
+                  onPress={handleResetFilters}>
+                  <Text style={[commonStyles.header, { color: colors.dark_blue }]}>Reset</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[commonStyles.buttonNoShadow, { flex: 1, backgroundColor: colors.dark_blue }]} onPress={handleApply}>
+                  <Text style={[commonStyles.header, { color: colors.white }]}>Apply</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          </SafeAreaView>
         </Modal>
+
         <Modal visible={calendarModal} animationType="fade" transparent={true} onRequestClose={() => setCalendarModal(false)}>
           {/* Fondo semi-transparente */}
           <View
