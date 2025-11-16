@@ -1,6 +1,6 @@
 import { Slot, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 import { getAccessToken, getRefreshToken, saveAccessToken } from '../helpers/helpers';
 import axios from 'axios';
 import Constants from 'expo-constants';
@@ -18,6 +18,10 @@ export default function LoginLayout() {
     async function init() {
       let authenticated = false;
 
+      if (Platform.OS === 'web') {
+        // return localStorage.getItem(key);
+        setCheckingAuth(false);
+      }
       const accessToken = await getAccessToken();
       const refreshToken = await getRefreshToken();
 
