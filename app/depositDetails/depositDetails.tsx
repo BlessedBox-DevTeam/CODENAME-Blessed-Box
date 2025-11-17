@@ -1,23 +1,22 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import commonStyles from '../baseStyles/baseStyles';
-import SwitchSelector from 'react-native-switch-selector';
-import colors from '../baseStyles/colors';
-import { Modal } from 'react-native';
-import GenderInitial from '../components/GenderInitial';
-import UserAvatar from '../components/icons/UserAvatar';
-import Church from '../components/icons/Church';
-import Mail from '../components/icons/Mail';
-import Alert from '../components/icons/Alert';
-import BackArrow from '../components/icons/BackArrow';
-import Clock from '../components/icons/Clock';
 import axios from 'axios';
 import Constants from 'expo-constants';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import SwitchSelector from 'react-native-switch-selector';
+import commonStyles from '../baseStyles/baseStyles';
+import colors from '../baseStyles/colors';
+import GenderInitial from '../components/GenderInitial';
+import Alert from '../components/icons/Alert';
+import BackArrow from '../components/icons/BackArrow';
+import Church from '../components/icons/Church';
+import Clock from '../components/icons/Clock';
+import Mail from '../components/icons/Mail';
+import UserAvatar from '../components/icons/UserAvatar';
 import LoadingOverlay from '../components/LoadingSpinner';
+import { ADMIN_ROLE_TYPE_ID, COMPLETED_STATUS_ID, DECLINED_STATUS_ID, PENDING_STATUS_ID, UNLABELED_GENDER_ID } from '../helpers/constants';
 import { formatTransactionDate, getUserRoles } from '../helpers/helpers';
-import { ADMIN_ROLE_TYPE_ID, DECLINED_STATUS_ID, COMPLETED_STATUS_ID, PENDING_STATUS_ID, UNLABELED_GENDER_ID } from '../helpers/constants';
 import { getSocket } from '../socketService';
 
 /**
@@ -41,38 +40,39 @@ export default function Index() {
   let { transactionId } = useLocalSearchParams<{ transactionId: string }>();
   transactionId = JSON.parse(transactionId);
 
+  const fetchData = async () => {
+    try {
+      const [roles, { response }] = await Promise.all([getUserRoles(), (await axios.get(`${API_URL}/api/transactions/transactionDetails`, { params: { transactionId } })).data]);
+      setRoles(roles);
+      setTransactionDetails(response.transactionDetails);
+      const mergedData = Array.from(
+        response.boxes.reduce((map, item) => {
+          if (!item) return map;
+
+          const age = item.age ?? false;
+          const genderId = item.genderId ?? false;
+          const key = `${age}-${genderId}`;
+
+          if (!map.has(key)) {
+            map.set(key, { age, genderId, quantity: 1 });
+          } else {
+            map.get(key).quantity += 1;
+          }
+          return map;
+        }, new Map())
+      ).map(([_, value]) => value);
+      setBoxes(mergedData);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [roles, { response }] = await Promise.all([getUserRoles(), (await axios.get(`${API_URL}/api/transactions/transactionDetails`, { params: { transactionId } })).data]);
-        setRoles(roles);
-        setTransactionDetails(response.transactionDetails);
-        const mergedData = Array.from(
-          response.boxes.reduce((map, item) => {
-            if (!item) return map;
-
-            const age = item.age ?? false;
-            const genderId = item.genderId ?? false;
-            const key = `${age}-${genderId}`;
-
-            if (!map.has(key)) {
-              map.set(key, { age, genderId, quantity: 1 });
-            } else {
-              map.get(key)!.quantity += 1;
-            }
-
-            return map;
-          }, new Map())
-        ).map(([_, value]) => value);
-        setBoxes(mergedData);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchData();
   }, []);
+
   /**
    * Navigates back to the order screen.
    */
@@ -301,7 +301,7 @@ export default function Index() {
               { label: 'Deposit Info', value: 'information' },
               { label: 'Box Summary', value: 'summary' },
             ]}
-            initial={0}
+            initial={activeTab === 'information' ? 0 : 1}
             onPress={handleTab}
             textColor={colors.dark_gray}
             selectedColor={colors.white}
@@ -369,7 +369,7 @@ export default function Index() {
                         transactionId: transactionId,
                         statusCode: DECLINED_STATUS_ID,
                       });
-                      setIsLoading(false);
+                      await fetchData();
                     }}>
                     <Text style={[commonStyles.header, { color: colors.white }]}>Decline</Text>
                   </TouchableOpacity>
@@ -390,7 +390,7 @@ export default function Index() {
                     transactionId: transactionId,
                     statusCode: COMPLETED_STATUS_ID,
                   });
-                  setIsLoading(false);
+                  await fetchData();
                 }}>
                 <Text style={[commonStyles.header, { color: colors.white }]}>Confirm Deposit</Text>
               </TouchableOpacity>

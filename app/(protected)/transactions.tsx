@@ -112,16 +112,6 @@ export default function Index() {
     setAllTransactions([]);
     setSelectedGenders([]);
     setSelectedAges([]);
-    setQueryParams((prev) => ({
-      page: 1,
-      filters: {
-        ageFilters: [],
-        genderValues: [],
-        filterMode: null,
-        numberOfBoxes: null,
-        maxNumberOfBoxes: null,
-      },
-    }));
   };
   const handleApply = () => {
     const built = buildFilters();
@@ -138,7 +128,6 @@ export default function Index() {
         maxNumberOfBoxes: built.maxNumberOfBoxes,
       },
     }));
-
     setModal(false);
   };
   const buildFilters = () => {
@@ -168,7 +157,7 @@ export default function Index() {
       ageFilters: selectedAges,
       genderValues: selectedGenders,
       filterMode: dropdownValue,
-      numberOfBoxes: isSingleDropdownValue ? parseInt(boxNumberMin) : null,
+      numberOfBoxes: boxNumberMin ? parseInt(boxNumberMin) : null,
       maxNumberOfBoxes: dropdownValue === 'range' ? parseInt(boxNumberMax) : null,
     };
   };
@@ -328,14 +317,17 @@ export default function Index() {
                     setModal(false);
                   }}
                 />
+
                 <View style={{ flex: 1, alignItems: 'center' }}>
                   <Text style={commonStyles.header}>Filters</Text>
                 </View>
                 <View style={{ width: 25 }} />
               </View>
+
               {/* Main Container */}
               <View style={{ paddingHorizontal: 16, paddingVertical: 10, gap: 16 }}>
                 <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Recollection Center</Text>
+
                 {/* Country Container */}
                 <View
                   style={{
@@ -350,6 +342,7 @@ export default function Index() {
                   <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Country</Text>
                   <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Puerto Rico</Text>
                 </View>
+
                 {/* Recollection Center Container */}
                 <View
                   style={{
@@ -364,6 +357,7 @@ export default function Index() {
                   <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>RC</Text>
                   <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Iglesia Cristiana Bethlehem</Text>
                 </View>
+
                 {/* Number of Boxes Container */}
                 <View style={{ display: 'flex', gap: 16, paddingVertical: 4 }}>
                   <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Number of Boxes</Text>
@@ -432,6 +426,7 @@ export default function Index() {
                     )}
                   </Animated.View>
                 </View>
+
                 {/* Filter by Age Container */}
                 <View style={{ display: 'flex', gap: 16, width: '100%', paddingVertical: 4 }}>
                   <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Age</Text>
@@ -441,6 +436,7 @@ export default function Index() {
                     ))}
                   </View>
                 </View>
+
                 {/* Filter by Gender Container */}
                 <View style={{ display: 'flex', gap: 16, width: '100%', paddingVertical: 4 }}>
                   <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Gender</Text>
@@ -452,6 +448,7 @@ export default function Index() {
                 </View>
               </View>
             </View>
+
             {/* Buttons Container */}
             <View style={{ width: '100%', position: 'relative' }}>
               {/* Shadow top */}
@@ -477,7 +474,7 @@ export default function Index() {
           <View
             style={{
               flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.5)', // oscurece el fondo
+              backgroundColor: 'rgba(0,0,0,0.5)',
               justifyContent: 'center',
               alignItems: 'center',
             }}>
@@ -496,7 +493,10 @@ export default function Index() {
               }}>
               {/* Botón de cerrar */}
               <TouchableOpacity
-                onPress={() => setCalendarModal(false)}
+                onPress={() => {
+                  setCalendarModal(false);
+                  setQueryParams((prev) => ({ ...prev, page: 1 }));
+                }}
                 style={{
                   position: 'absolute',
                   top: 10,
@@ -531,10 +531,7 @@ export default function Index() {
                 current={selectedDay || undefined}
                 onDayPress={(day) => {
                   setSelectedDay(day.dateString);
-                  setQueryParams((prev) => ({ ...prev, page: 1 }));
-                  setCalendarModal(false);
                 }}
-                // marcar fechas seleccionadas
                 markedDates={selectedDay ? { [selectedDay]: { selected: true, selectedColor: colors.green } } : {}}
                 style={{
                   marginTop: 20,

@@ -1,4 +1,4 @@
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -7,8 +7,7 @@ import colors from '../baseStyles/colors';
 
 export default function Index({}) {
   const router = useRouter();
-  const { transactionId } = router.query || {};
-  console.log(transactionId);
+  const { transactionId } = useLocalSearchParams();
   return (
     <SafeAreaProvider>
       <Stack.Screen options={{ headerShown: false }} />
