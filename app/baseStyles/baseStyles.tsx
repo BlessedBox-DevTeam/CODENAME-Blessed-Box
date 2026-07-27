@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native'; // Hello from front
 import colors from './colors';
 const commonStyles = StyleSheet.create({
   card: {
