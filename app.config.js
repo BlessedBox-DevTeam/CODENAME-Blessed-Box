@@ -28,6 +28,9 @@ export default ({ config }) => {
     runtimeVersion: {
       policy: 'sdkVersion',
     },
+    splash: {
+      backgroundColor: '#F3B080',
+    },
     android: {
       package: 'com.kennepo23.blessedboxapp',
       versionCode: 1,

@@ -1,14 +1,9 @@
-import { Slot, useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Platform, Text, View } from 'react-native';
-import { getAccessToken, getRefreshToken, saveAccessToken } from '../helpers/helpers';
-import axios from 'axios';
-import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+import AppLoadingScreen from '../components/auth/AppLoadingScreen';
+import { getAccessToken } from '../helpers/helpers';
 import { jwtDecode } from 'jwt-decode';
-
-const extra = Constants.expoConfig?.extra;
-const API_URL = extra?.URL || 'https://blessedbox.org';
-const API_PORT = extra?.PORT;
 
 export default function LoginLayout() {
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -23,26 +18,11 @@ export default function LoginLayout() {
         setCheckingAuth(false);
       }
       const accessToken = await getAccessToken();
-      const refreshToken = await getRefreshToken();
-
       if (accessToken) {
         try {
           const decoded: any = jwtDecode(accessToken);
           const now = Math.floor(Date.now() / 1000);
           authenticated = decoded.exp > now;
-        } catch {
-          authenticated = false;
-        }
-      }
-
-      if (!authenticated && refreshToken) {
-        try {
-          const response = await axios.post(`${API_URL}/api/auth/refresh`, { refreshToken });
-          const data = response.data;
-          if (data.success) {
-            await saveAccessToken(data.accessToken);
-            authenticated = true;
-          }
         } catch {
           authenticated = false;
         }
@@ -56,15 +36,27 @@ export default function LoginLayout() {
     }
 
     init();
-  }, []);
+  }, [router]);
 
   if (checkingAuth) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Cargando...</Text>
-      </View>
-    );
+    return <AppLoadingScreen />;
   }
 
-  return <Slot />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="login"
+        options={{
+          animation: 'none',
+        }}
+      />
+
+      <Stack.Screen
+        name="register"
+        options={{
+          animation: 'slide_from_left',
+        }}
+      />
+    </Stack>
+  );
 }
