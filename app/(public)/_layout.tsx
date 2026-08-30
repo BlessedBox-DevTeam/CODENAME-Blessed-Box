@@ -57,6 +57,13 @@ export default function LoginLayout() {
           animation: 'slide_from_left',
         }}
       />
+
+      <Stack.Screen
+        name="verification"
+        options={{
+          animation: 'slide_from_right',
+        }}
+      />
     </Stack>
   );
 }

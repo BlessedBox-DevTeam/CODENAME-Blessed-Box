@@ -9,11 +9,27 @@ import { jwtDecode } from 'jwt-decode';
  * @param {boolean} includeTime - Si true, incluye la hora. Default: true
  * @returns {string} Fecha formateada o cadena vacía si la fecha es inválida
  */
-export function formatTransactionDate(dateInput: string | Date, includeTime: boolean = true): string {
+export function formatTransactionDate(
+  dateInput: string | Date,
+  includeTime: boolean = true
+): string {
   const d = new Date(dateInput);
   if (isNaN(d.getTime())) return '';
 
-  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
 
   const monthName = months[d.getMonth()];
   const day = d.getDate();
@@ -87,10 +103,10 @@ export async function getUserFromToken(): Promise<TokenPayload | null> {
   if (!token) return null;
   try {
     const decoded = jwtDecode<TokenPayload>(token);
+    const expiresAt = Number(decoded.exp ?? 0);
+    const currentTime = Math.floor(Date.now() / 1000);
 
-    // Validate expiration
-    const currentTime = Date.now() / 1000;
-    if (decoded.exp && decoded.exp < currentTime) {
+    if (expiresAt && expiresAt < currentTime) {
       console.warn('Token has expired');
       return null;
     }
@@ -113,4 +129,16 @@ export async function getRefreshToken() {
 }
 export async function deleteRefreshToken() {
   await SecureStore.deleteItemAsync('refreshToken');
+}
+
+export async function savePendingRegistrationEmail(email: string) {
+  await SecureStore.setItemAsync('pendingRegistrationEmail', email);
+}
+
+export async function getPendingRegistrationEmail(): Promise<string | null> {
+  return await SecureStore.getItemAsync('pendingRegistrationEmail');
+}
+
+export async function deletePendingRegistrationEmail() {
+  await SecureStore.deleteItemAsync('pendingRegistrationEmail');
 }

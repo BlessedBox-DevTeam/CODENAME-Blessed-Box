@@ -12,12 +12,14 @@ import { authColors, authStyles } from '../../baseStyles/authStyles';
 
 type RegisterFormProps = {
   onBackToLogin: () => void;
+  onCreateAccount: (email: string) => void;
 };
 
-export default function RegisterForm({ onBackToLogin }: RegisterFormProps) {
+export default function RegisterForm({ onBackToLogin, onCreateAccount }: RegisterFormProps) {
   const { width, height } = useWindowDimensions();
   const scrollViewRef = React.useRef<ScrollView>(null);
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
@@ -36,7 +38,8 @@ export default function RegisterForm({ onBackToLogin }: RegisterFormProps) {
   const termsTopSpacing = veryCompact ? 6 : compact ? 8 : 10;
 
   const canSubmit = Boolean(
-    fullName.trim() &&
+    firstName.trim() &&
+    lastName.trim() &&
     email.trim() &&
     password.length >= 8 &&
     password === confirmation &&
@@ -59,25 +62,51 @@ export default function RegisterForm({ onBackToLogin }: RegisterFormProps) {
       ]}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
-      <RegisterField fontSize={labelFontSize} marginBottom={fieldSpacing} label="FULL NAME">
-        <TextInput
-          style={[
-            authStyles.registerInput,
-            {
-              height: inputHeight,
-              borderRadius: inputRadius,
-              paddingHorizontal: inputHorizontalPadding,
-              marginTop: 0,
-              fontSize: inputFontSize,
-            },
-          ]}
-          placeholder="Maria Gonzalez"
-          placeholderTextColor="#A99A90"
-          value={fullName}
-          onChangeText={setFullName}
-          autoCapitalize="words"
-        />
-      </RegisterField>
+      <View style={{ flexDirection: 'row', marginBottom: fieldSpacing }}>
+        <View style={{ flex: 1, marginRight: 10 }}>
+          <RegisterField fontSize={labelFontSize} marginBottom={0} label="NAME">
+            <TextInput
+              style={[
+                authStyles.registerInput,
+                {
+                  height: inputHeight,
+                  borderRadius: inputRadius,
+                  paddingHorizontal: inputHorizontalPadding,
+                  marginTop: 0,
+                  fontSize: inputFontSize,
+                },
+              ]}
+              placeholder="Maria"
+              placeholderTextColor="#A99A90"
+              value={firstName}
+              onChangeText={setFirstName}
+              autoCapitalize="words"
+            />
+          </RegisterField>
+        </View>
+
+        <View style={{ flex: 1 }}>
+          <RegisterField fontSize={labelFontSize} marginBottom={0} label="LAST NAME">
+            <TextInput
+              style={[
+                authStyles.registerInput,
+                {
+                  height: inputHeight,
+                  borderRadius: inputRadius,
+                  paddingHorizontal: inputHorizontalPadding,
+                  marginTop: 0,
+                  fontSize: inputFontSize,
+                },
+              ]}
+              placeholder="Gonzalez"
+              placeholderTextColor="#A99A90"
+              value={lastName}
+              onChangeText={setLastName}
+              autoCapitalize="words"
+            />
+          </RegisterField>
+        </View>
+      </View>
 
       <RegisterField fontSize={labelFontSize} marginBottom={fieldSpacing} label="EMAIL">
         <TextInput
@@ -159,6 +188,7 @@ export default function RegisterForm({ onBackToLogin }: RegisterFormProps) {
       <TouchableOpacity
         activeOpacity={0.85}
         disabled={!canSubmit}
+        onPress={() => onCreateAccount(email)}
         style={[
           authStyles.registerButton,
           compact && authStyles.registerButtonCompact,
