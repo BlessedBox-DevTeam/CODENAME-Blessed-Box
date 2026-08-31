@@ -31,6 +31,14 @@ export const login = async (email: string, password: string) => {
 /**
  *
  * @param email
+ * @returns
+ */
+export const forgotPassword = async (email: string) => {
+  return await axios.post(`${API_URL}/api/auth/forgot-password`, { email });
+};
+/**
+ *
+ * @param email
  * @param otp
  * @returns
  */
