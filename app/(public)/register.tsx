@@ -1,5 +1,5 @@
 import { Stack, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import RegisterForm from '../components/auth/RegisterForm';
@@ -7,9 +7,11 @@ import RegisterHeader from '../components/auth/RegisterHeader';
 import { authStyles } from '../baseStyles/authStyles';
 import { savePendingRegistrationEmail } from '../helpers/helpers';
 import { register } from '../services/services';
+import LoadingOverlay from '../components/LoadingSpinner';
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCreateAccount = async (
     email: string,
@@ -17,10 +19,19 @@ export default function RegisterScreen() {
     lastName: string,
     password: string
   ) => {
-    const { success } = (await register(firstName, lastName, email, password)).data;
-    if (success) {
-      await savePendingRegistrationEmail(email);
-      router.push({ pathname: '/verification', params: { email } });
+    try {
+      setIsLoading(true);
+      const { success, message } = (await register(firstName, lastName, email, password)).data;
+      if (success) {
+        await savePendingRegistrationEmail(email);
+        router.push({ pathname: '/verification', params: { email } });
+      } else {
+        alert(message || 'If an account exists, you will receive instructions.');
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -28,6 +39,7 @@ export default function RegisterScreen() {
     <SafeAreaProvider>
       <SafeAreaView style={authStyles.registerScreen} edges={['top', 'left', 'right', 'bottom']}>
         <Stack.Screen options={{ headerShown: false }} />
+        <LoadingOverlay visible={isLoading} />
         <KeyboardAvoidingView
           style={authStyles.keyboard}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>

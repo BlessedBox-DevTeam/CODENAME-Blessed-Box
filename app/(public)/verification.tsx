@@ -38,7 +38,6 @@ export default function VerificationScreen() {
 
   const handleSubmit = async () => {
     const finalEmail = email || (await getPendingRegistrationEmail()) || '';
-
     if (!finalEmail || otp.length !== OTP_LENGTH) {
       return;
     }
@@ -46,13 +45,11 @@ export default function VerificationScreen() {
 
     try {
       const response = await verifyOTP(finalEmail, otp);
-
       if (response.data?.success) {
         await deletePendingRegistrationEmail();
         router.replace('/login');
         return;
       }
-
       alert(response.data?.message || 'The code is invalid. Please try again.');
     } catch (error: any) {
       alert(error?.response?.data?.message || 'Unable to verify the code.');
@@ -63,11 +60,9 @@ export default function VerificationScreen() {
 
   const handleResend = async () => {
     const pendingEmail = email || (await getPendingRegistrationEmail()) || '';
-
     if (!pendingEmail) {
       return;
     }
-
     try {
       await resendOTP(pendingEmail);
       alert('A new verification code has been sent.');

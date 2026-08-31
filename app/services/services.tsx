@@ -78,7 +78,7 @@ export const verifyOTP = async (email: string, otp: number | string) => {
  * @returns
  */
 export const resendOTP = async (email: string) => {
-  return await axios.post(`${API_URL}/api/auth/resend-otp`, email);
+  return await axios.post(`${API_URL}/api/auth/resend-otp`, { email });
 };
 /**
  *
