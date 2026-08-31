@@ -1,24 +1,22 @@
+import axios from 'axios';
 import { Camera, CameraView } from 'expo-camera';
 import { router, Stack } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
   Text,
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import SwitchSelector from 'react-native-switch-selector';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import BackArrow from '../components/icons/BackArrow';
-import axios from 'axios';
-import Constants from 'expo-constants';
 import LoadingOverlay from '../components/LoadingSpinner';
 import { scanQRCode } from '../services/services';
 

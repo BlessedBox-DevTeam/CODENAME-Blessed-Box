@@ -1,5 +1,3 @@
-import axios from 'axios';
-import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -7,14 +5,13 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import CircularProgress from '../components/CircularProgress';
-import { getAccessToken } from '../helpers/helpers';
 import LoadingOverlay from '../components/LoadingSpinner';
-import Person from '../components/icons/Person';
-import Church from '../components/icons/Church';
 import BackArrow from '../components/icons/BackArrow';
+import Church from '../components/icons/Church';
+import Person from '../components/icons/Person';
 import TargetArrow from '../components/icons/TargetArrow';
-import { getSocket } from '../socketService';
 import { getRecollectionCenterBoxesCount, getUserBoxes } from '../services/services';
+import { getSocket } from '../socketService';
 
 export default function Index() {
   const GOAL_BOXES_COUNT = 3000;

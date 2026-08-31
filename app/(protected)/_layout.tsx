@@ -1,5 +1,3 @@
-import axios from 'axios';
-import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, usePathname, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
@@ -13,9 +11,9 @@ import Home from '../components/icons/Home';
 import Newspaper from '../components/icons/NewsPaper';
 import QRCode from '../components/icons/QRCode';
 import SignOut from '../components/icons/SignOut';
-import { deleteAccessToken, deleteRefreshToken, getAccessToken } from '../helpers/helpers';
-import { disconnectSocket, initSocket } from '../socketService';
+import { getAccessToken } from '../helpers/helpers';
 import { logout } from '../services/services';
+import { disconnectSocket, initSocket } from '../socketService';
 
 export default function ProtectedLayout() {
   const router = useRouter();

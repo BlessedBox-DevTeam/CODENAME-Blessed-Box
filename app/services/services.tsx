@@ -28,6 +28,9 @@ export const logout = async () => {
 export const login = async (email: string, password: string) => {
   return await axios.post(`${API_URL}/api/auth/login`, { email, password });
 };
+export const refreshTokens = async (refreshToken: string) => {
+  return await axios.post(`${API_URL}/api/auth/refresh`, { refreshToken });
+};
 /**
  *
  * @param email

@@ -10,10 +10,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import axios from 'axios';
-import Constants from 'expo-constants';
 import OtpInput from '../components/auth/OtpInput';
-import { getPendingRegistrationEmail, deletePendingRegistrationEmail } from '../helpers/helpers';
+import { deletePendingRegistrationEmail, getPendingRegistrationEmail } from '../helpers/helpers';
 import { resendOTP, verifyOTP } from '../services/services';
 
 const OTP_LENGTH = 6;

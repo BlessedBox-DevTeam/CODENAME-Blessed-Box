@@ -1,17 +1,16 @@
-import axios from 'axios';
 import Constants from 'expo-constants';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { authStyles } from '../baseStyles/authStyles';
 import AuthErrorModal from '../components/auth/AuthErrorModal';
 import AuthHeader from '../components/auth/AuthHeader';
 import LoginForm from '../components/auth/LoginForm';
 import LoadingOverlay from '../components/LoadingSpinner';
 import { saveAccessToken } from '../helpers/helpers';
-import { initSocket } from '../socketService';
-import { authStyles } from '../baseStyles/authStyles';
 import { login } from '../services/services';
+import { initSocket } from '../socketService';
 
 const extra = Constants.expoConfig?.extra;
 
