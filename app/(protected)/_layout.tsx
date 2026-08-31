@@ -15,9 +15,7 @@ import QRCode from '../components/icons/QRCode';
 import SignOut from '../components/icons/SignOut';
 import { deleteAccessToken, deleteRefreshToken, getAccessToken } from '../helpers/helpers';
 import { disconnectSocket, initSocket } from '../socketService';
-const extra = Constants.expoConfig?.extra;
-const API_URL = extra?.URL || 'https://blessedbox.org';
-const API_PORT = extra?.PORT;
+import { logout } from '../services/services';
 
 export default function ProtectedLayout() {
   const router = useRouter();
@@ -32,14 +30,8 @@ export default function ProtectedLayout() {
     }
   };
   const exit = async () => {
-    const accessToken = await getAccessToken();
-    const { success } = (await axios.post(`${API_URL}/api/auth/logout`, { accessToken })).data;
-    if (success) {
-      deleteAccessToken();
-      deleteRefreshToken();
-      disconnectSocket();
-      router.replace('/login');
-    }
+    const success = await logout();
+    if (success) router.replace('/login');
   };
   useEffect(() => {
     const init = async () => {
@@ -110,10 +102,15 @@ export default function ProtectedLayout() {
           backgroundColor: colors.white,
           position: 'relative',
         }}>
-        <LinearGradient colors={['rgba(0,0,0,0.15)', 'transparent']} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, zIndex: 10 }} />
+        <LinearGradient
+          colors={['rgba(0,0,0,0.15)', 'transparent']}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, zIndex: 10 }}
+        />
 
         {/* Home */}
-        <Pressable onPress={() => handleNavigate('/home')} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Pressable
+          onPress={() => handleNavigate('/home')}
+          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Home width={24} height={24} />
           <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>Home</Text>
         </Pressable>
@@ -125,13 +122,17 @@ export default function ProtectedLayout() {
         </Pressable>
 
         {/* QRCode */}
-        <Pressable onPress={() => handleNavigate('/qrCode/qrCode')} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Pressable
+          onPress={() => handleNavigate('/qrCode/qrCode')}
+          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <QRCode width={24} height={24} />
           <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>QR</Text>
         </Pressable>
 
         {/* DepositHistory */}
-        <Pressable onPress={() => handleNavigate('/transactions')} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Pressable
+          onPress={() => handleNavigate('/transactions')}
+          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <DepositHistory width={24} height={24} />
           <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>History</Text>
         </Pressable>

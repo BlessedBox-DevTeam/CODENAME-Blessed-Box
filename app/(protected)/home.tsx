@@ -14,9 +14,7 @@ import Church from '../components/icons/Church';
 import BackArrow from '../components/icons/BackArrow';
 import TargetArrow from '../components/icons/TargetArrow';
 import { getSocket } from '../socketService';
-const extra = Constants.expoConfig?.extra;
-const API_URL = extra?.URL || 'https://blessedbox.org';
-const API_PORT = extra?.PORT;
+import { getRecollectionCenterBoxesCount, getUserBoxes } from '../services/services';
 
 export default function Index() {
   const GOAL_BOXES_COUNT = 3000;
@@ -31,14 +29,9 @@ export default function Index() {
   });
   const fetchData = async () => {
     try {
-      const token = await getAccessToken();
       const [userBoxesResponse, countRCBoxesResponse] = await Promise.all([
-        axios.get(`${API_URL}/api/boxes/userBoxes`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        axios.get(`${API_URL}/api/boxes/countRCBoxes`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        getUserBoxes(),
+        getRecollectionCenterBoxesCount(),
       ]);
       const userBoxesData = userBoxesResponse.data;
       const countRCBoxesData = countRCBoxesResponse.data;
@@ -49,7 +42,9 @@ export default function Index() {
         unlabeledBoxes: userBoxesData.response.unlabeledBoxes,
       });
       setRecollectionCenterBoxesCount(countRCBoxesData.response.totalBoxes);
-      setPercentage(Number(((countRCBoxesData.response.totalBoxes / GOAL_BOXES_COUNT) * 100).toFixed(2)));
+      setPercentage(
+        Number(((countRCBoxesData.response.totalBoxes / GOAL_BOXES_COUNT) * 100).toFixed(2))
+      );
       setIsLoading(false);
     } catch (err) {
       console.error(err);
@@ -85,8 +80,12 @@ export default function Index() {
           <View style={[commonStyles.card, { flexDirection: 'row', alignItems: 'center' }]}>
             {/* Left Column */}
             <View style={{ flex: 2, gap: 10 }}>
-              <Text style={[commonStyles.paragraphExtraBold, { color: colors.green_label, gap: 0.5 }]}>
-                ICB <Text style={[commonStyles.paragraphExtraBold, { color: colors.red_label }]}>2025</Text>
+              <Text
+                style={[commonStyles.paragraphExtraBold, { color: colors.green_label, gap: 0.5 }]}>
+                ICB{' '}
+                <Text style={[commonStyles.paragraphExtraBold, { color: colors.red_label }]}>
+                  2025
+                </Text>
               </Text>
               {/* Yearly Goal */}
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -96,11 +95,17 @@ export default function Index() {
               <View style={{ gap: 6 }}>
                 {/* Total Boxes Collected */}
                 <Text style={commonStyles.paragraph}>
-                  Boxes Collected: <Text style={commonStyles.paragraphExtraBold}>{recollectionCenterBoxesCount.toLocaleString()}</Text>
+                  Boxes Collected:{' '}
+                  <Text style={commonStyles.paragraphExtraBold}>
+                    {recollectionCenterBoxesCount.toLocaleString()}
+                  </Text>
                 </Text>
                 {/* Reaching Point */}
                 <Text style={commonStyles.paragraph}>
-                  Reaching Point: <Text style={[commonStyles.paragraphExtraBold, { color: colors.dark_blue }]}>{`${GOAL_BOXES_COUNT.toLocaleString()}`} </Text>
+                  Reaching Point:{' '}
+                  <Text style={[commonStyles.paragraphExtraBold, { color: colors.dark_blue }]}>
+                    {`${GOAL_BOXES_COUNT.toLocaleString()}`}{' '}
+                  </Text>
                 </Text>
               </View>
             </View>
@@ -118,7 +123,9 @@ export default function Index() {
               <Text style={commonStyles.header}>Your Contribution</Text>
             </View>
             <Text style={[commonStyles.paragraph, { color: colors.dark_blue }]}>
-              You have deposited a total of <Text style={commonStyles.paragraphExtraBold}> {userBoxesCount.totalBoxes} </Text>boxes
+              You have deposited a total of{' '}
+              <Text style={commonStyles.paragraphExtraBold}> {userBoxesCount.totalBoxes} </Text>
+              boxes
             </Text>
             {/* Gender Categories */}
             <View
@@ -137,7 +144,9 @@ export default function Index() {
                   borderTopLeftRadius: 10,
                   borderBottomLeftRadius: 10,
                 }}>
-                <Text style={[commonStyles.header, { color: colors.white }]}>{userBoxesCount?.maleBoxes || 0}</Text>
+                <Text style={[commonStyles.header, { color: colors.white }]}>
+                  {userBoxesCount?.maleBoxes || 0}
+                </Text>
               </View>
               {/* Female Container */}
               <View
@@ -147,7 +156,9 @@ export default function Index() {
                   flex: 1,
                   alignItems: 'center',
                 }}>
-                <Text style={[commonStyles.header, { color: colors.white }]}>{userBoxesCount.femaleBoxes || 0}</Text>
+                <Text style={[commonStyles.header, { color: colors.white }]}>
+                  {userBoxesCount.femaleBoxes || 0}
+                </Text>
               </View>
               {/* Unlabeled Container */}
               <View
@@ -159,14 +170,20 @@ export default function Index() {
                   borderTopRightRadius: 10,
                   borderBottomRightRadius: 10,
                 }}>
-                <Text style={[commonStyles.header, { color: colors.dark_gray }]}>{userBoxesCount.unlabeledBoxes || 0}</Text>
+                <Text style={[commonStyles.header, { color: colors.dark_gray }]}>
+                  {userBoxesCount.unlabeledBoxes || 0}
+                </Text>
               </View>
             </View>
 
             {/* View Activity Button */}
             <Text style={commonStyles.paragraph}>Great job! Keep it going!</Text>
-            <TouchableOpacity style={[commonStyles.buttonNoShadow, { backgroundColor: colors.dark_blue }]} onPress={() => router.replace('/transactions')}>
-              <Text style={[commonStyles.paragraphBold, { color: colors.white }]}>View Activity</Text>
+            <TouchableOpacity
+              style={[commonStyles.buttonNoShadow, { backgroundColor: colors.dark_blue }]}
+              onPress={() => router.replace('/transactions')}>
+              <Text style={[commonStyles.paragraphBold, { color: colors.white }]}>
+                View Activity
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -179,15 +196,21 @@ export default function Index() {
               </View>
               {/* Bible Verse */}
               <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>
-                Rejoice in the Lord always: and again I say, Rejoice. <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>(Philippians 4:4) </Text>
+                Rejoice in the Lord always: and again I say, Rejoice.{' '}
+                <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>(Philippians 4:4) </Text>
               </Text>
             </View>
             <Text style={[commonStyles.paragraph, { color: colors.dark_blue }]}>
-              Iglesia Cristiana Bethlehem has collected <Text style={commonStyles.paragraphExtraBold}>{recollectionCenterBoxesCount}</Text> boxes
+              Iglesia Cristiana Bethlehem has collected{' '}
+              <Text style={commonStyles.paragraphExtraBold}>{recollectionCenterBoxesCount}</Text>{' '}
+              boxes
             </Text>
             {/* See details button */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-end', gap: 6 }}>
-              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>See details</Text>
+            <View
+              style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-end', gap: 6 }}>
+              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
+                See details
+              </Text>
               <BackArrow height={25} width={25} style={{ transform: [{ scaleX: -1 }] }}></BackArrow>
             </View>
           </View>

@@ -14,9 +14,7 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import OtpInput from '../components/auth/OtpInput';
 import { getPendingRegistrationEmail, deletePendingRegistrationEmail } from '../helpers/helpers';
-
-const extra = Constants.expoConfig?.extra;
-const API_URL = extra?.URL || 'https://blessedbox.org';
+import { resendOTP, verifyOTP } from '../services/services';
 
 const OTP_LENGTH = 6;
 
@@ -46,14 +44,10 @@ export default function VerificationScreen() {
     if (!finalEmail || otp.length !== OTP_LENGTH) {
       return;
     }
-
     setIsLoading(true);
 
     try {
-      const response = await axios.post(`${API_URL}/api/auth/verify-email`, {
-        email: finalEmail,
-        otp,
-      });
+      const response = await verifyOTP(finalEmail, otp);
 
       if (response.data?.success) {
         await deletePendingRegistrationEmail();
@@ -78,7 +72,7 @@ export default function VerificationScreen() {
     }
 
     try {
-      await axios.post(`${API_URL}/api/auth/send-verification-code`, { email: pendingEmail });
+      await resendOTP(pendingEmail);
       alert('A new verification code has been sent.');
     } catch (error: any) {
       alert(error?.response?.data?.message || 'Unable to resend the code.');
@@ -94,7 +88,7 @@ export default function VerificationScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           <View style={styles.headerWrap}>
             <Pressable onPress={() => router.back()} style={styles.backButton}>
-              <Text style={styles.backText}>← Volver</Text>
+              <Text style={styles.backText}>← Back</Text>
             </Pressable>
 
             <View style={styles.titleRow}>
@@ -102,14 +96,14 @@ export default function VerificationScreen() {
                 <Text style={styles.icon}>✓</Text>
               </View>
               <View style={styles.titleBlock}>
-                <Text style={styles.title}>Verificación</Text>
-                <Text style={styles.subtitle}>Código de seguridad</Text>
+                <Text style={styles.title}>Verification</Text>
+                <Text style={styles.subtitle}>Security code</Text>
               </View>
             </View>
           </View>
 
           <View style={styles.body}>
-            <Text style={styles.label}>Envíamos un código de 6 dígitos a</Text>
+            <Text style={styles.label}>We sent a 6-digit code to</Text>
             <Text style={styles.email}>{maskedEmail}</Text>
 
             <OtpInput value={otp} length={OTP_LENGTH} onChangeText={handleChangeOtp} autoFocus />
@@ -123,17 +117,17 @@ export default function VerificationScreen() {
                 (isLoading || otp.length !== OTP_LENGTH) && styles.submitButtonDisabled,
               ]}>
               <Text style={styles.submitText}>
-                {isLoading ? 'Verificando...' : 'Ingresa los 6 dígitos restantes'}
+                {isLoading ? 'Verifying...' : 'Enter the remaining 6 digits'}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.resendButton} onPress={handleResend}>
               <Text style={styles.resendIcon}>↻</Text>
-              <Text style={styles.resendText}>Reenviar en 0:43</Text>
+              <Text style={styles.resendText}>Resend code</Text>
             </TouchableOpacity>
 
             <Text style={styles.footerText}>
-              ¿No recibiste el correo? Revisa tu carpeta de spam.
+              ¿Didn't receive the email? Check your spam folder.
             </Text>
           </View>
         </KeyboardAvoidingView>

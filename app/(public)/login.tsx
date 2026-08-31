@@ -11,9 +11,9 @@ import LoadingOverlay from '../components/LoadingSpinner';
 import { saveAccessToken } from '../helpers/helpers';
 import { initSocket } from '../socketService';
 import { authStyles } from '../baseStyles/authStyles';
+import { login } from '../services/services';
 
 const extra = Constants.expoConfig?.extra;
-const API_URL = extra?.URL || 'https://blessedbox.org';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -24,7 +24,7 @@ export default function LoginScreen() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(`${API_URL}/api/auth/login`, { email, password });
+      const response = await login(email, password);
 
       if (!response.data.success) {
         setErrorVisible(true);
