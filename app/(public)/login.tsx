@@ -1,4 +1,3 @@
-import Constants from 'expo-constants';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, View } from 'react-native';
@@ -8,11 +7,9 @@ import AuthErrorModal from '../components/auth/AuthErrorModal';
 import AuthHeader from '../components/auth/AuthHeader';
 import LoginForm from '../components/auth/LoginForm';
 import LoadingOverlay from '../components/LoadingSpinner';
-import { saveAccessToken } from '../helpers/helpers';
+import { saveAccessToken, saveRefreshToken } from '../helpers/helpers';
 import { login } from '../services/services';
 import { initSocket } from '../socketService';
-
-const extra = Constants.expoConfig?.extra;
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -24,13 +21,12 @@ export default function LoginScreen() {
 
     try {
       const response = await login(email, password);
-
       if (!response.data.success) {
         setErrorVisible(true);
         return;
       }
-
       await saveAccessToken(response.data.accessToken);
+      await saveRefreshToken(response.data.refreshToken);
       await initSocket();
       router.replace('/home');
     } catch (error) {

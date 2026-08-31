@@ -1,6 +1,11 @@
 import axios from 'axios';
 import Constants from 'expo-constants';
-import { deleteAccessToken, deleteRefreshToken, getAccessToken } from '../helpers/helpers';
+import {
+  deleteAccessToken,
+  deleteRefreshToken,
+  getAccessToken,
+  getRefreshToken,
+} from '../helpers/helpers';
 import { disconnectSocket } from '../socketService';
 
 const extra = Constants.expoConfig?.extra;
@@ -10,8 +15,8 @@ const API_URL = extra?.URL || 'https://blessedbox.org';
  * @returns
  */
 export const logout = async () => {
-  const accessToken = await getAccessToken();
-  const { success } = (await axios.post(`${API_URL}/api/auth/logout`, { accessToken })).data;
+  const refreshToken = await getRefreshToken();
+  const { success } = (await axios.post(`${API_URL}/api/auth/logout`, { refreshToken })).data;
   if (success) {
     deleteAccessToken();
     deleteRefreshToken();
@@ -28,6 +33,22 @@ export const logout = async () => {
 export const login = async (email: string, password: string) => {
   return await axios.post(`${API_URL}/api/auth/login`, { email, password });
 };
+/**
+ *
+ * @param name
+ * @param lastName
+ * @param email
+ * @param password
+ * @returns
+ */
+export const register = async (name: string, lastName: string, email: string, password: string) => {
+  return await axios.post(`${API_URL}/api/auth/register`, { name, lastName, email, password });
+};
+/**
+ *
+ * @param refreshToken
+ * @returns
+ */
 export const refreshTokens = async (refreshToken: string) => {
   return await axios.post(`${API_URL}/api/auth/refresh`, { refreshToken });
 };

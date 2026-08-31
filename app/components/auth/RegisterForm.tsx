@@ -12,7 +12,7 @@ import { authColors, authStyles } from '../../baseStyles/authStyles';
 
 type RegisterFormProps = {
   onBackToLogin: () => void;
-  onCreateAccount: (email: string) => void;
+  onCreateAccount: (email: string, firstName: string, lastName: string, password: string) => void;
 };
 
 export default function RegisterForm({ onBackToLogin, onCreateAccount }: RegisterFormProps) {
@@ -188,7 +188,7 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
       <TouchableOpacity
         activeOpacity={0.85}
         disabled={!canSubmit}
-        onPress={() => onCreateAccount(email)}
+        onPress={() => onCreateAccount(email, firstName, lastName, password)}
         style={[
           authStyles.registerButton,
           compact && authStyles.registerButtonCompact,

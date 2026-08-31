@@ -6,13 +6,23 @@ import RegisterForm from '../components/auth/RegisterForm';
 import RegisterHeader from '../components/auth/RegisterHeader';
 import { authStyles } from '../baseStyles/authStyles';
 import { savePendingRegistrationEmail } from '../helpers/helpers';
+import { register } from '../services/services';
 
 export default function RegisterScreen() {
   const router = useRouter();
 
-  const handleCreateAccount = async (email: string) => {
-    await savePendingRegistrationEmail(email);
-    router.push({ pathname: '/verification', params: { email } });
+  const handleCreateAccount = async (
+    email: string,
+    firstName: string,
+    lastName: string,
+    password: string
+  ) => {
+    const { success } = (await register(firstName, lastName, email, password)).data;
+    console.log(success);
+    if (success) {
+      await savePendingRegistrationEmail(email);
+      router.push({ pathname: '/verification', params: { email } });
+    }
   };
 
   return (

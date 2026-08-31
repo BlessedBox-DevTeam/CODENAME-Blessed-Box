@@ -81,7 +81,7 @@ export default function Index() {
                 style={[commonStyles.paragraphExtraBold, { color: colors.green_label, gap: 0.5 }]}>
                 ICB{' '}
                 <Text style={[commonStyles.paragraphExtraBold, { color: colors.red_label }]}>
-                  2025
+                  2026
                 </Text>
               </Text>
               {/* Yearly Goal */}
