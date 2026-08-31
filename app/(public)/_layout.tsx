@@ -57,11 +57,15 @@ export default function LoginLayout() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: '#FFF8F1' },
+      }}>
       <Stack.Screen
         name="login"
         options={{
-          animation: 'none',
+          animation: 'slide_from_right',
         }}
       />
 
