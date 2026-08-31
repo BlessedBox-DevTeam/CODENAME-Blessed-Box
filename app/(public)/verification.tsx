@@ -55,7 +55,6 @@ export default function VerificationScreen() {
 
       alert(response.data?.message || 'The code is invalid. Please try again.');
     } catch (error: any) {
-      console.log('OTP validation error:', error);
       alert(error?.response?.data?.message || 'Unable to verify the code.');
     } finally {
       setIsLoading(false);

@@ -18,7 +18,6 @@ export default function RegisterScreen() {
     password: string
   ) => {
     const { success } = (await register(firstName, lastName, email, password)).data;
-    console.log(success);
     if (success) {
       await savePendingRegistrationEmail(email);
       router.push({ pathname: '/verification', params: { email } });

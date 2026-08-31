@@ -30,7 +30,6 @@ export default function LoginScreen() {
       await initSocket();
       router.replace('/home');
     } catch (error) {
-      console.log('Login error:', error);
       setErrorVisible(true);
     } finally {
       setIsLoading(false);
