@@ -1,6 +1,6 @@
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { authStyles } from '../baseStyles/authStyles';
 import AuthErrorModal from '../components/auth/AuthErrorModal';
@@ -45,15 +45,20 @@ export default function LoginScreen() {
 
         <KeyboardAvoidingView
           style={authStyles.keyboard}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <View style={authStyles.content}>
-            <AuthHeader />
-            <LoginForm
-              onSubmit={handleLogin}
-              onInvalid={() => setErrorVisible(true)}
-              onRegister={() => router.push('/register')}
-            />
-          </View>
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}>
+            <View style={authStyles.content}>
+              <AuthHeader />
+              <LoginForm
+                onSubmit={handleLogin}
+                onInvalid={() => setErrorVisible(true)}
+                onRegister={() => router.push('/register')}
+              />
+            </View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </SafeAreaProvider>
