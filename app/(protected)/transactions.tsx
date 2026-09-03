@@ -3,7 +3,17 @@ import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Animated, Easing, Modal, SectionList, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Animated,
+  Easing,
+  Modal,
+  SectionList,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
@@ -13,7 +23,15 @@ import BackArrow from '../components/icons/BackArrow';
 import Filter from '../components/icons/Filter';
 import LoadingOverlay from '../components/LoadingSpinner';
 import TransactionTile from '../components/TransactionTile';
-import { FEMALE_GENDER_ID, FIVE_TO_NINE_YEARS_ID, MALE_GENDER_ID, TEN_TO_FOURTEEN_YEARS_ID, TWO_TO_FOUR_YEARS_ID } from '../helpers/constants';
+import {
+  FEMALE_GENDER_ID,
+  FIVE_TO_NINE_YEARS_ID,
+  MALE_GENDER_ID,
+  SOCKET_EVENT_NEW_TRANSACTION,
+  SOCKET_EVENT_TRANSACTION_UPDATED,
+  TEN_TO_FOURTEEN_YEARS_ID,
+  TWO_TO_FOUR_YEARS_ID,
+} from '../helpers/constants';
 import { formatTransactionDate, groupByDate, sortByDateProp } from '../helpers/helpers';
 import CalendarIcon from '../components/icons/CalendarIcon';
 import { Calendar } from 'react-native-calendars';
@@ -63,7 +81,10 @@ export default function Index() {
   const API_PORT = extra?.PORT;
   const todayStr = new Date().toDateString();
   const ages = [
-    { label: 'All', value: [TWO_TO_FOUR_YEARS_ID, FIVE_TO_NINE_YEARS_ID, TEN_TO_FOURTEEN_YEARS_ID] },
+    {
+      label: 'All',
+      value: [TWO_TO_FOUR_YEARS_ID, FIVE_TO_NINE_YEARS_ID, TEN_TO_FOURTEEN_YEARS_ID],
+    },
     { label: '2-4', value: [TWO_TO_FOUR_YEARS_ID] },
     { label: '5-9', value: [FIVE_TO_NINE_YEARS_ID] },
     { label: '10-14', value: [TEN_TO_FOURTEEN_YEARS_ID] },
@@ -167,10 +188,17 @@ export default function Index() {
       const {
         data: { response },
       } = await axios.get(`${API_URL}/api/transactions/recollectionCenterTransactions`, {
-        params: { page: queryParams.page, selectedDay: selectedDay, filters: JSON.stringify(queryParams.filters) },
+        params: {
+          page: queryParams.page,
+          selectedDay: selectedDay,
+          filters: JSON.stringify(queryParams.filters),
+        },
       });
       setTotalCount(response.totalCount);
-      const updatedTransactions = queryParams.page === 1 ? response.transactions : [...allTransactions, ...response.transactions];
+      const updatedTransactions =
+        queryParams.page === 1
+          ? response.transactions
+          : [...allTransactions, ...response.transactions];
       setAllTransactions(updatedTransactions);
       const sortedTransactions = sortByDateProp(updatedTransactions, 'createdDate');
       const grouped = groupByDate(sortedTransactions, 'createdDate');
@@ -256,9 +284,9 @@ export default function Index() {
         return updated;
       });
     };
-    socket.on('transaction:new', handleNewTransaction);
+    socket.on(SOCKET_EVENT_NEW_TRANSACTION, handleNewTransaction);
     return () => {
-      socket.off('transaction:new', handleNewTransaction);
+      socket.off(SOCKET_EVENT_NEW_TRANSACTION, handleNewTransaction);
     };
   }, [todayStr]);
 
@@ -284,15 +312,17 @@ export default function Index() {
           if (section.title !== transactionDate) return section;
 
           const updatedData = section.data.map((transaction) =>
-            transaction.id === updatedTransaction.id ? { ...transaction, status: updatedTransaction.statusCode } : transaction
+            transaction.id === updatedTransaction.id
+              ? { ...transaction, status: updatedTransaction.statusCode }
+              : transaction
           );
           return { ...section, data: updatedData };
         })
       );
     };
-    socket.on('transaction:statusUpdated', handleUpdatedTransaction);
+    socket.on(SOCKET_EVENT_TRANSACTION_UPDATED, handleUpdatedTransaction);
     return () => {
-      socket.off('transaction:statusUpdated', handleUpdatedTransaction);
+      socket.off(SOCKET_EVENT_TRANSACTION_UPDATED, handleUpdatedTransaction);
     };
   }, []);
 
@@ -326,7 +356,9 @@ export default function Index() {
 
               {/* Main Container */}
               <View style={{ paddingHorizontal: 16, paddingVertical: 10, gap: 16 }}>
-                <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Recollection Center</Text>
+                <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>
+                  Filter by Recollection Center
+                </Text>
 
                 {/* Country Container */}
                 <View
@@ -339,7 +371,9 @@ export default function Index() {
                     borderBottomWidth: 2,
                     borderBottomColor: colors.dark_gray,
                   }}>
-                  <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Country</Text>
+                  <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
+                    Country
+                  </Text>
                   <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Puerto Rico</Text>
                 </View>
 
@@ -355,12 +389,16 @@ export default function Index() {
                     borderBottomColor: colors.dark_gray,
                   }}>
                   <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>RC</Text>
-                  <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Iglesia Cristiana Bethlehem</Text>
+                  <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>
+                    Iglesia Cristiana Bethlehem
+                  </Text>
                 </View>
 
                 {/* Number of Boxes Container */}
                 <View style={{ display: 'flex', gap: 16, paddingVertical: 4 }}>
-                  <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Number of Boxes</Text>
+                  <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>
+                    Filter by Number of Boxes
+                  </Text>
                   <DropDownPicker
                     open={openDropdown}
                     value={dropdownValue}
@@ -430,9 +468,18 @@ export default function Index() {
                 {/* Filter by Age Container */}
                 <View style={{ display: 'flex', gap: 16, width: '100%', paddingVertical: 4 }}>
                   <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Age</Text>
-                  <View style={{ alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
+                  <View
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexDirection: 'row',
+                    }}>
                     {ages.map((item) => (
-                      <FilterChip key={item.label} label={item.label} onPress={() => handleSelectedAge(item.label)} selected={selectedAges.includes(item.label)}></FilterChip>
+                      <FilterChip
+                        key={item.label}
+                        label={item.label}
+                        onPress={() => handleSelectedAge(item.label)}
+                        selected={selectedAges.includes(item.label)}></FilterChip>
                     ))}
                   </View>
                 </View>
@@ -440,9 +487,18 @@ export default function Index() {
                 {/* Filter by Gender Container */}
                 <View style={{ display: 'flex', gap: 16, width: '100%', paddingVertical: 4 }}>
                   <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>Filter by Gender</Text>
-                  <View style={{ alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
+                  <View
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexDirection: 'row',
+                    }}>
                     {genders.map((item) => (
-                      <FilterChip key={item.label} label={item.label} onPress={() => handleSelectedGender(item.label)} selected={selectedGenders.includes(item.label)}></FilterChip>
+                      <FilterChip
+                        key={item.label}
+                        label={item.label}
+                        onPress={() => handleSelectedGender(item.label)}
+                        selected={selectedGenders.includes(item.label)}></FilterChip>
                     ))}
                   </View>
                 </View>
@@ -452,16 +508,39 @@ export default function Index() {
             {/* Buttons Container */}
             <View style={{ width: '100%', position: 'relative' }}>
               {/* Shadow top */}
-              <LinearGradient colors={['rgba(0,0,0,0.15)', 'transparent']} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, zIndex: 10 }} />
+              <LinearGradient
+                colors={['rgba(0,0,0,0.15)', 'transparent']}
+                style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, zIndex: 10 }}
+              />
 
               {/* Row de botones */}
-              <View style={{ flexDirection: 'row', backgroundColor: colors.white, padding: 20, width: '100%', gap: 12 }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  backgroundColor: colors.white,
+                  padding: 20,
+                  width: '100%',
+                  gap: 12,
+                }}>
                 <TouchableOpacity
-                  style={[commonStyles.buttonNoShadow, { flex: 1, backgroundColor: colors.white, borderWidth: 2, borderColor: colors.dark_blue }]}
+                  style={[
+                    commonStyles.buttonNoShadow,
+                    {
+                      flex: 1,
+                      backgroundColor: colors.white,
+                      borderWidth: 2,
+                      borderColor: colors.dark_blue,
+                    },
+                  ]}
                   onPress={handleResetFilters}>
                   <Text style={[commonStyles.header, { color: colors.dark_blue }]}>Reset</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[commonStyles.buttonNoShadow, { flex: 1, backgroundColor: colors.dark_blue }]} onPress={handleApply}>
+                <TouchableOpacity
+                  style={[
+                    commonStyles.buttonNoShadow,
+                    { flex: 1, backgroundColor: colors.dark_blue },
+                  ]}
+                  onPress={handleApply}>
                   <Text style={[commonStyles.header, { color: colors.white }]}>Apply</Text>
                 </TouchableOpacity>
               </View>
@@ -469,7 +548,11 @@ export default function Index() {
           </SafeAreaView>
         </Modal>
 
-        <Modal visible={calendarModal} animationType="fade" transparent={true} onRequestClose={() => setCalendarModal(false)}>
+        <Modal
+          visible={calendarModal}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setCalendarModal(false)}>
           {/* Fondo semi-transparente */}
           <View
             style={{
@@ -532,7 +615,11 @@ export default function Index() {
                 onDayPress={(day) => {
                   setSelectedDay(day.dateString);
                 }}
-                markedDates={selectedDay ? { [selectedDay]: { selected: true, selectedColor: colors.green } } : {}}
+                markedDates={
+                  selectedDay
+                    ? { [selectedDay]: { selected: true, selectedColor: colors.green } }
+                    : {}
+                }
                 style={{
                   marginTop: 20,
                 }}
@@ -540,11 +627,25 @@ export default function Index() {
             </View>
           </View>
         </Modal>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 16, paddingHorizontal: 16, gap: 6 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingTop: 16,
+            paddingHorizontal: 16,
+            gap: 6,
+          }}>
           <View style={{ backgroundColor: colors.white, borderRadius: 10, flex: 1, padding: 6 }}>
             <Text style={commonStyles.paragraphItalic}>Coming soon</Text>
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: 12,
+            }}>
             <Filter size={20} onPress={handleFilterModal}></Filter>
             <CalendarIcon size={20} onPress={() => setCalendarModal(true)}></CalendarIcon>
           </View>
@@ -563,7 +664,9 @@ export default function Index() {
               }}
             />
           )}
-          renderSectionHeader={({ section: { title } }) => <Text style={[commonStyles.paragraph, { color: colors.dark_blue }]}>{title}</Text>}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text style={[commonStyles.paragraph, { color: colors.dark_blue }]}>{title}</Text>
+          )}
           onEndReached={() => {
             const totalLoaded = allTransactions.length;
             const hasMore = totalLoaded < totalCount;
@@ -575,7 +678,9 @@ export default function Index() {
           contentContainerStyle={{ gap: 16, padding: 18 }}
           ListEmptyComponent={() => (
             <View style={{ alignItems: 'center', marginTop: 50 }}>
-              <Text style={[commonStyles.paragraph, { color: colors.gray }]}>No se encontraron transacciones</Text>
+              <Text style={[commonStyles.paragraph, { color: colors.gray }]}>
+                No se encontraron transacciones
+              </Text>
             </View>
           )}
         />

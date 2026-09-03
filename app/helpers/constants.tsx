@@ -22,3 +22,8 @@ export const BOX_AGE_MAP: { [key: number]: string } = {
   [FIVE_TO_NINE_YEARS_ID]: '5-9',
   [TEN_TO_FOURTEEN_YEARS_ID]: '10-14',
 };
+
+// Socket events
+export const SOCKET_EVENT_NEW_TRANSACTION = 'transaction:new';
+export const SOCKET_EVENT_TRANSACTION_UPDATED = 'transaction:updated';
+export const SOCKET_EVENT_NEW_BOX_COUNT = 'boxCount:new';

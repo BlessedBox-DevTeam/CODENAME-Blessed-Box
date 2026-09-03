@@ -12,6 +12,7 @@ import Person from '../components/icons/Person';
 import TargetArrow from '../components/icons/TargetArrow';
 import { getRecollectionCenterBoxesCount, getUserBoxes } from '../services/services';
 import { getSocket } from '../socketService';
+import { SOCKET_EVENT_NEW_BOX_COUNT, SOCKET_EVENT_NEW_TRANSACTION } from '../helpers/constants';
 
 export default function Index() {
   const GOAL_BOXES_COUNT = 3000;
@@ -58,11 +59,9 @@ export default function Index() {
     const handleFetch = () => {
       fetchData();
     };
-    socket.on('transaction:statusUpdated', handleFetch);
-    socket.on('transaction:new', handleFetch);
+    socket.on(SOCKET_EVENT_NEW_BOX_COUNT, handleFetch);
     return () => {
-      socket.off('transaction:statusUpdated', handleFetch);
-      socket.off('transaction:new', handleFetch);
+      socket.off(SOCKET_EVENT_NEW_BOX_COUNT, handleFetch);
     };
   }, []);
 
