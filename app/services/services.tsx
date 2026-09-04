@@ -1,29 +1,17 @@
-import axios from 'axios';
-import Constants from 'expo-constants';
-import {
-  deleteAccessToken,
-  deleteRefreshToken,
-  getAccessToken,
-  getRefreshToken,
-} from '../helpers/helpers';
-import { disconnectSocket } from '../socketService';
+import { getRefreshToken } from '../helpers/helpers';
+import api from './api';
+import publicApi from './publicApi';
 
-const extra = Constants.expoConfig?.extra;
-const API_URL = extra?.URL || 'https://blessedbox.org';
+// Public API calls
 /**
  *
  * @returns
  */
 export const logout = async () => {
   const refreshToken = await getRefreshToken();
-  const { success } = (await axios.post(`${API_URL}/api/auth/logout`, { refreshToken })).data;
-  if (success) {
-    deleteAccessToken();
-    deleteRefreshToken();
-    disconnectSocket();
-  }
-  return success;
+  return await publicApi.post(`/api/auth/logout`, { refreshToken });
 };
+// Private API calls
 /**
  *
  * @param email
@@ -31,7 +19,7 @@ export const logout = async () => {
  * @returns
  */
 export const login = async (email: string, password: string) => {
-  return await axios.post(`${API_URL}/api/auth/login`, { email, password });
+  return await publicApi.post(`/api/auth/login`, { email, password });
 };
 /**
  *
@@ -42,15 +30,7 @@ export const login = async (email: string, password: string) => {
  * @returns
  */
 export const register = async (name: string, lastName: string, email: string, password: string) => {
-  return await axios.post(`${API_URL}/api/auth/register`, { name, lastName, email, password });
-};
-/**
- *
- * @param refreshToken
- * @returns
- */
-export const refreshTokens = async (refreshToken: string) => {
-  return await axios.post(`${API_URL}/api/auth/refresh`, { refreshToken });
+  return await publicApi.post(`/api/auth/register`, { name, lastName, email, password });
 };
 /**
  *
@@ -58,7 +38,7 @@ export const refreshTokens = async (refreshToken: string) => {
  * @returns
  */
 export const forgotPassword = async (email: string) => {
-  return await axios.post(`${API_URL}/api/auth/forgot-password`, { email });
+  return await publicApi.post(`/api/auth/forgot-password`, { email });
 };
 /**
  *
@@ -67,7 +47,7 @@ export const forgotPassword = async (email: string) => {
  * @returns
  */
 export const verifyOTP = async (email: string, otp: number | string) => {
-  return await axios.post(`${API_URL}/api/auth/verify-otp`, {
+  return await publicApi.post(`/api/auth/verify-otp`, {
     email,
     otp,
   });
@@ -78,29 +58,32 @@ export const verifyOTP = async (email: string, otp: number | string) => {
  * @returns
  */
 export const resendOTP = async (email: string) => {
-  return await axios.post(`${API_URL}/api/auth/resend-otp`, { email });
+  return await publicApi.post(`/api/auth/resend-otp`, { email });
 };
+// Private API calls
 /**
  *
  * @returns
  */
 export const getUserBoxes = async () => {
-  const token = await getAccessToken();
-  return await axios.get(`${API_URL}/api/boxes/userBoxes`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return await api.get(`/api/boxes/userBoxes`);
+};
+/**
+ *
+ * @returns
+ */
+export const getRecollectionCenterBoxesCount = async () => {
+  return await api.get(`/api/boxes/countRCBoxes`);
 };
 /**
  *
  * @param codeValue
  * @returns
  */
-export const getRecollectionCenterBoxesCount = async () => {
-  const token = await getAccessToken();
-  return await axios.get(`${API_URL}/api/boxes/countRCBoxes`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-};
 export const scanQRCode = async (codeValue: string) => {
-  return await axios.post(`${API_URL}/api/qrCodes/isQRCode`, { qrCodeValue: codeValue });
+  return await api.post(`/api/qrCodes/isQRCode`, { accessCode: codeValue });
+};
+
+export const getRecollectionCenterTransactions = async (params: object) => {
+  return await api.get(`/api/transactions/recollectionCenterTransactions`, { params });
 };
