@@ -9,7 +9,6 @@ export default ({ config }) => {
     name: 'blessedboxapp',
     slug: 'blessedboxapp',
     version: '1.0.0',
-    sdkVersion: '54.0.0',
     platforms: ['android', 'ios', 'web'],
     extra: {
       eas: {
