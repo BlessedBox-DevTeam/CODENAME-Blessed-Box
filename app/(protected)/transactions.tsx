@@ -36,6 +36,7 @@ import { formatTransactionDate, groupByDate, sortByDateProp } from '../helpers/h
 import CalendarIcon from '../components/icons/CalendarIcon';
 import { Calendar } from 'react-native-calendars';
 import { getSocket } from '../socketService';
+import { getRecollectionCenterTransactions } from '../services/services';
 
 export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
@@ -187,12 +188,10 @@ export default function Index() {
       setIsLoading(true);
       const {
         data: { response },
-      } = await axios.get(`${API_URL}/api/transactions/recollectionCenterTransactions`, {
-        params: {
-          page: queryParams.page,
-          selectedDay: selectedDay,
-          filters: JSON.stringify(queryParams.filters),
-        },
+      } = await getRecollectionCenterTransactions({
+        page: queryParams.page,
+        selectedDay: selectedDay,
+        filters: JSON.stringify(queryParams.filters),
       });
       setTotalCount(response.totalCount);
       const updatedTransactions =

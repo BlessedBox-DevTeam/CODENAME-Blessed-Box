@@ -81,5 +81,9 @@ export const getRecollectionCenterBoxesCount = async () => {
  * @returns
  */
 export const scanQRCode = async (codeValue: string) => {
-  return await api.post(`/api/qrCodes/isQRCode`, { qrCodeValue: codeValue });
+  return await api.post(`/api/qrCodes/isQRCode`, { accessCode: codeValue });
+};
+
+export const getRecollectionCenterTransactions = async (params: object) => {
+  return await api.get(`/api/transactions/recollectionCenterTransactions`, { params });
 };
