@@ -327,7 +327,7 @@ export default function Index() {
   }, []);
 
   if (isLoading) {
-    return <LoadingOverlay />;
+    return <LoadingOverlay visible />;
   }
 
   return (
