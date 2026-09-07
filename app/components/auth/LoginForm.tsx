@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { validateLoginInputs } from '../../helpers/authValidation';
 import { authColors, authStyles } from '../../baseStyles/authStyles';
+import { forgotPassword } from '@/app/services/services';
 
 type LoginFormProps = {
   onSubmit: (email: string, password: string) => void;
@@ -30,6 +31,9 @@ export default function LoginForm({ onSubmit, onInvalid, onRegister }: LoginForm
     } else {
       onInvalid();
     }
+  };
+  const handleForgotPassword = async () => {
+    const { success } = (await forgotPassword(email)).data;
   };
 
   return (
@@ -125,6 +129,7 @@ export default function LoginForm({ onSubmit, onInvalid, onRegister }: LoginForm
 
       <TouchableOpacity
         activeOpacity={0.7}
+        onPress={handleForgotPassword}
         style={[authStyles.forgotPassword, { marginBottom: veryCompact ? 11 : compact ? 15 : 20 }]}>
         <Text style={[authStyles.forgotPasswordText, { fontSize: veryCompact ? 13 : 15 }]}>
           Forgot your password?

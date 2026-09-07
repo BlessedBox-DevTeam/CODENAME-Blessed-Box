@@ -1,19 +1,24 @@
+import axios from 'axios';
 import { Camera, CameraView } from 'expo-camera';
 import { router, Stack } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import SwitchSelector from 'react-native-switch-selector';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import BackArrow from '../components/icons/BackArrow';
-import axios from 'axios';
-import Constants from 'expo-constants';
 import LoadingOverlay from '../components/LoadingSpinner';
-
-const extra = Constants.expoConfig?.extra;
-const API_URL = extra?.URL || 'https://blessedbox.org';
-const API_PORT = extra?.PORT;
+import { scanQRCode } from '../services/services';
 
 export default function Index() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -59,7 +64,7 @@ export default function Index() {
       setIsLoading(true);
       setScanned(true);
       const codeValue = data;
-      const { response, message } = (await axios.post(`${API_URL}/api/qrCodes/isQRCode`, { qrCodeValue: codeValue })).data;
+      const { response, message } = (await scanQRCode(codeValue)).data;
       console.log(response);
       setIsLoading(false);
       if (response) {
@@ -140,7 +145,12 @@ export default function Index() {
         <View style={{ flex: 1 }}>
           {isScanTabActive ? (
             <View style={{ flex: 1 }}>
-              <CameraView style={{ flex: 1 }} facing={facing} onBarcodeScanned={scanned ? undefined : handleBarCodeScanned} barcodeScannerSettings={{ barcodeTypes: ['qr'] }} />
+              <CameraView
+                style={{ flex: 1 }}
+                facing={facing}
+                onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+                barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+              />
               <TouchableOpacity
                 style={{
                   position: 'absolute',
@@ -151,7 +161,9 @@ export default function Index() {
                   borderRadius: 25,
                 }}
                 onPress={() => setFacing((prev) => (prev === 'back' ? 'front' : 'back'))}>
-                <Text style={{ color: 'white', fontWeight: 'bold' }}>{facing === 'back' ? 'Front' : 'Rear'}</Text>
+                <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                  {facing === 'back' ? 'Front' : 'Rear'}
+                </Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -171,13 +183,27 @@ export default function Index() {
                     borderColor: colors.gray,
                     paddingBottom: 10,
                   }}>
-                  <Image source={require('../../assets/images/test-qr.png')} style={{ width: 125, height: 125, resizeMode: 'contain' }} />
-                  <Text style={[commonStyles.paragraph, { alignSelf: 'center', letterSpacing: 4 }]}>1234ABCD</Text>
+                  <Image
+                    source={require('../../assets/images/test-qr.png')}
+                    style={{ width: 125, height: 125, resizeMode: 'contain' }}
+                  />
+                  <Text style={[commonStyles.paragraph, { alignSelf: 'center', letterSpacing: 4 }]}>
+                    1234ABCD
+                  </Text>
                 </View>
 
-                <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue, alignSelf: 'center' }]}>Trouble Scanning the QR Code?</Text>
+                <Text
+                  style={[
+                    commonStyles.paragraphBold,
+                    { color: colors.dark_blue, alignSelf: 'center' },
+                  ]}>
+                  Trouble Scanning the QR Code?
+                </Text>
 
-                <KeyboardAvoidingView style={{ gap: 5 }} keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                <KeyboardAvoidingView
+                  style={{ gap: 5 }}
+                  keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+                  behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
                   <Text style={commonStyles.paragraph}>Enter the #id of the RC</Text>
                   <TouchableWithoutFeedback onPress={() => inputRef.current?.focus()}>
                     <View
@@ -230,7 +256,9 @@ export default function Index() {
                     return showAlert('Please enter a valid 8-character code.');
                   }
                   setIsLoading(true);
-                  const { response, message } = (await axios.post(`${API_URL}/api/backupKeys/isKey`, { keyValue: code })).data;
+                  const { response, message } = (
+                    await axios.post(`${API_URL}/api/backupKeys/isKey`, { keyValue: code })
+                  ).data;
                   setIsLoading(false);
                   if (response) {
                     router.push('/orders/order');

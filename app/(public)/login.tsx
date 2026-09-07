@@ -1,19 +1,15 @@
-import axios from 'axios';
-import Constants from 'expo-constants';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { authStyles } from '../baseStyles/authStyles';
 import AuthErrorModal from '../components/auth/AuthErrorModal';
 import AuthHeader from '../components/auth/AuthHeader';
 import LoginForm from '../components/auth/LoginForm';
 import LoadingOverlay from '../components/LoadingSpinner';
-import { saveAccessToken } from '../helpers/helpers';
+import { saveAccessToken, saveRefreshToken } from '../helpers/helpers';
+import { login } from '../services/services';
 import { initSocket } from '../socketService';
-import { authStyles } from '../baseStyles/authStyles';
-
-const extra = Constants.expoConfig?.extra;
-const API_URL = extra?.URL || 'https://blessedbox.org';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -24,18 +20,16 @@ export default function LoginScreen() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(`${API_URL}/api/auth/login`, { email, password });
-
+      const response = await login(email, password);
       if (!response.data.success) {
         setErrorVisible(true);
         return;
       }
-
       await saveAccessToken(response.data.accessToken);
+      await saveRefreshToken(response.data.refreshToken);
       await initSocket();
       router.replace('/home');
     } catch (error) {
-      console.log('Login error:', error);
       setErrorVisible(true);
     } finally {
       setIsLoading(false);
@@ -51,15 +45,20 @@ export default function LoginScreen() {
 
         <KeyboardAvoidingView
           style={authStyles.keyboard}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <View style={authStyles.content}>
-            <AuthHeader />
-            <LoginForm
-              onSubmit={handleLogin}
-              onInvalid={() => setErrorVisible(true)}
-              onRegister={() => router.push('/register')}
-            />
-          </View>
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}>
+            <View style={authStyles.content}>
+              <AuthHeader />
+              <LoginForm
+                onSubmit={handleLogin}
+                onInvalid={() => setErrorVisible(true)}
+                onRegister={() => router.push('/register')}
+              />
+            </View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </SafeAreaProvider>
