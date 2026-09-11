@@ -142,3 +142,33 @@ export async function getPendingRegistrationEmail(): Promise<string | null> {
 export async function deletePendingRegistrationEmail() {
   await SecureStore.deleteItemAsync('pendingRegistrationEmail');
 }
+
+export type RegistrationDraft = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmation: string;
+  termsAccepted: boolean;
+};
+
+const registrationDraftKey = 'registrationDraft';
+
+export async function saveRegistrationDraft(draft: RegistrationDraft) {
+  await SecureStore.setItemAsync(registrationDraftKey, JSON.stringify(draft));
+}
+
+export async function getRegistrationDraft(): Promise<RegistrationDraft | null> {
+  const draft = await SecureStore.getItemAsync(registrationDraftKey);
+  if (!draft) return null;
+
+  try {
+    return JSON.parse(draft) as RegistrationDraft;
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteRegistrationDraft() {
+  await SecureStore.deleteItemAsync(registrationDraftKey);
+}

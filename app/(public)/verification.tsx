@@ -11,7 +11,11 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import OtpInput from '../components/auth/OtpInput';
-import { deletePendingRegistrationEmail, getPendingRegistrationEmail } from '../helpers/helpers';
+import {
+  deletePendingRegistrationEmail,
+  deleteRegistrationDraft,
+  getPendingRegistrationEmail,
+} from '../helpers/helpers';
 import { resendOTP, verifyOTP } from '../services/services';
 
 const OTP_LENGTH = 6;
@@ -47,6 +51,7 @@ export default function VerificationScreen() {
       const response = await verifyOTP(finalEmail, otp);
       if (response.data?.success) {
         await deletePendingRegistrationEmail();
+        await deleteRegistrationDraft();
         router.replace('/login');
         return;
       }
