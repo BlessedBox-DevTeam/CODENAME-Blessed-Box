@@ -43,9 +43,16 @@ export default ({ config }) => {
       [
         'expo-build-properties',
         {
-          android: { usesCleartextTraffic: true },
+          android: {
+            usesCleartextTraffic: true,
+          },
         },
       ],
+      'expo-image',
+      'expo-router',
+      'expo-secure-store',
+      'expo-splash-screen',
+      'expo-web-browser',
     ],
   };
 };
