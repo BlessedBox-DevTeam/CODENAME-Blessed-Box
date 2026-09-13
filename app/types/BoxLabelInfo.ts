@@ -1,7 +1,7 @@
 export type BoxLabelInfo = {
-  genderId: number | false;
+  genderId: number;
   quantity: number;
-  boxAgeId: number | false;
+  boxAgeId: number;
 };
 
 export type BoxLabelType = {

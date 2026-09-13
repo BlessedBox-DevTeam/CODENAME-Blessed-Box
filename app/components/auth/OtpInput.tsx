@@ -1,5 +1,6 @@
-import React, { useRef } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useRef } from 'react';
+import { InteractionManager, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 type OtpInputProps = {
   value: string;
@@ -16,13 +17,30 @@ export default function OtpInput({
 }: OtpInputProps) {
   const inputRef = useRef<TextInput>(null);
 
+  const focusInput = useCallback(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const task = InteractionManager.runAfterInteractions(focusInput);
+
+      return () => task.cancel();
+    }, [focusInput])
+  );
+
   const handleChangeText = (text: string) => {
     const cleaned = text.replace(/\D/g, '').slice(0, length);
     onChangeText(cleaned);
   };
 
+  const handlePress = () => {
+    inputRef.current?.blur();
+    requestAnimationFrame(focusInput);
+  };
+
   return (
-    <Pressable onPress={() => inputRef.current?.focus()} style={styles.container}>
+    <Pressable onPress={handlePress} style={styles.container}>
       <TextInput
         ref={inputRef}
         value={value}

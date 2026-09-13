@@ -59,15 +59,15 @@ export function formatTransactionDate(
  * @param {string} order - 'asc' para ascendente o 'desc' para descendente (por defecto 'desc').
  * @returns {Array} - Nuevo arreglo ordenado.
  */
-export const sortByDateProp = (array: [], dateProp: string, order = 'desc') => {
+export const sortByDateProp = <T extends object>(array: T[], dateProp: string, order = 'desc') => {
   return array.slice().sort((a, b) => {
-    const dateA = new Date(a[dateProp]);
-    const dateB = new Date(b[dateProp]);
+    const dateA = new Date(String((a as Record<string, unknown>)[dateProp]));
+    const dateB = new Date(String((b as Record<string, unknown>)[dateProp]));
 
     if (order === 'asc') {
-      return dateA - dateB;
+      return dateA.getTime() - dateB.getTime();
     }
-    return dateB - dateA;
+    return dateB.getTime() - dateA.getTime();
   });
 };
 export const groupByDate = (transactions: any[], dateProp: string) => {
@@ -116,9 +116,13 @@ export async function getUserFromToken(): Promise<TokenPayload | null> {
     return null;
   }
 }
-export async function getUserRoles(): Promise<string[] | null> {
+export type UserRole = {
+  roleId: number;
+};
+
+export async function getUserRoles(): Promise<UserRole[] | null> {
   const user = await getUserFromToken();
-  return user?.roles ?? null;
+  return user?.roles?.map((role) => ({ roleId: Number(role) })) ?? null;
 }
 // REFRESH TOKEN
 export async function saveRefreshToken(token: string) {
@@ -141,4 +145,34 @@ export async function getPendingRegistrationEmail(): Promise<string | null> {
 
 export async function deletePendingRegistrationEmail() {
   await SecureStore.deleteItemAsync('pendingRegistrationEmail');
+}
+
+export type RegistrationDraft = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmation: string;
+  termsAccepted: boolean;
+};
+
+const registrationDraftKey = 'registrationDraft';
+
+export async function saveRegistrationDraft(draft: RegistrationDraft) {
+  await SecureStore.setItemAsync(registrationDraftKey, JSON.stringify(draft));
+}
+
+export async function getRegistrationDraft(): Promise<RegistrationDraft | null> {
+  const draft = await SecureStore.getItemAsync(registrationDraftKey);
+  if (!draft) return null;
+
+  try {
+    return JSON.parse(draft) as RegistrationDraft;
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteRegistrationDraft() {
+  await SecureStore.deleteItemAsync(registrationDraftKey);
 }
