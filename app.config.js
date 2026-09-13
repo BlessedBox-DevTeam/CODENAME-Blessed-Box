@@ -36,6 +36,9 @@ export default ({ config }) => {
       useCleartextTraffic: true,
     },
     ios: {
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+      },
       bundleIdentifier: 'com.kennepo23.blessedboxapp',
       buildNumber: '1.0.0',
     },
