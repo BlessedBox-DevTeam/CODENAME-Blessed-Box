@@ -124,7 +124,7 @@ export default function VerificationScreen() {
             </TouchableOpacity>
 
             <Text style={styles.footerText}>
-              ¿Didn't receive the email? Check your spam folder.
+              ¿Didn&apos;t receive the email? Check your spam folder.
             </Text>
           </View>
         </KeyboardAvoidingView>

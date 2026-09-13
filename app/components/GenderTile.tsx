@@ -71,7 +71,9 @@ const GenderTile = forwardRef<any, GenderTileProps>((props, ref) => {
   return (
     <View style={[genderTileStyles.categoryContainer, { backgroundColor }]}>
       <Text style={[commonStyles.paragraphExtraBold, genderTileStyles.categoryText]}>{text}</Text>
-      <Slider ref={sliderRef} onValueChange={(number) => setGender(!number ? MALE_GENDER_ID : FEMALE_GENDER_ID)}></Slider>
+      <Slider
+        ref={sliderRef}
+        onValueChange={(number) => setGender(!number ? MALE_GENDER_ID : FEMALE_GENDER_ID)}></Slider>
     </View>
   );
 });
@@ -99,5 +101,5 @@ const genderTileStyles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
+GenderTile.displayName = 'GenderTile';
 export default GenderTile;

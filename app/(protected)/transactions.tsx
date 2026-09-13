@@ -100,18 +100,18 @@ export default function Index() {
   ];
 
   const [selectedGenders, setSelectedGenders] = useState([]);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0));
 
   useEffect(() => {
     if (dropdownValue) {
-      Animated.timing(fadeAnim, {
+      Animated.timing(fadeAnim.current, {
         toValue: 1,
         duration: 250,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
       }).start();
     } else {
-      fadeAnim.setValue(0);
+      fadeAnim.current.setValue(0);
     }
   }, [dropdownValue]);
   const handleSetBoxNumberMin = (value: string) => {
@@ -416,7 +416,7 @@ export default function Index() {
                     arrowIconStyle={{ tintColor: colors.dark_blue }}
                   />
 
-                  <Animated.View style={{ opacity: fadeAnim, width: '100%' }}>
+                  <Animated.View style={{ opacity: fadeAnim.current, width: '100%' }}>
                     {dropdownValue && (
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                         {/* Input Min or Exact */}

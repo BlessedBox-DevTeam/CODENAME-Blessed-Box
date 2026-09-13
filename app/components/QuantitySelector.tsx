@@ -183,5 +183,5 @@ const styles = StyleSheet.create({
     minHeight: 32,
   },
 });
-
+QuantitySelector.displayName = 'QuantitySelector';
 export default QuantitySelector;

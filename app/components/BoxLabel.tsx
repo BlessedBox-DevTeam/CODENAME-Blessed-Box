@@ -5,7 +5,11 @@ import colors from '../baseStyles/colors';
 import GenderTile from './GenderTile';
 import QuantitySelector from './QuantitySelector';
 import { BoxLabelInfo } from '../types/BoxLabelInfo';
-import { TWO_TO_FOUR_YEARS_ID, FIVE_TO_NINE_YEARS_ID, TEN_TO_FOURTEEN_YEARS_ID } from '../helpers/constants';
+import {
+  TWO_TO_FOUR_YEARS_ID,
+  FIVE_TO_NINE_YEARS_ID,
+  TEN_TO_FOURTEEN_YEARS_ID,
+} from '../helpers/constants';
 
 /**
  * Props for the BoxLabel component.
@@ -23,7 +27,10 @@ export type BoxLabelType = {
 /**
  * Valid age ranges available in the component.
  */
-type AgeRange = typeof TWO_TO_FOUR_YEARS_ID | typeof FIVE_TO_NINE_YEARS_ID | typeof TEN_TO_FOURTEEN_YEARS_ID;
+type AgeRange =
+  | typeof TWO_TO_FOUR_YEARS_ID
+  | typeof FIVE_TO_NINE_YEARS_ID
+  | typeof TEN_TO_FOURTEEN_YEARS_ID;
 
 /**
  * Shoebox Label component.
@@ -146,11 +153,15 @@ const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete, error }, r
 
       {/* Action Buttons */}
       <View style={styles.actionContainer}>
-        <TouchableOpacity style={[styles.actionButton, { borderColor: colors.dark_blue }]} onPress={handleReset}>
+        <TouchableOpacity
+          style={[styles.actionButton, { borderColor: colors.dark_blue }]}
+          onPress={handleReset}>
           <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Reset</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.actionButton, { borderColor: colors.red }]} onPress={onDelete}>
+        <TouchableOpacity
+          style={[styles.actionButton, { borderColor: colors.red }]}
+          onPress={onDelete}>
           <Text style={[commonStyles.paragraphBold, { color: colors.red }]}>Delete</Text>
         </TouchableOpacity>
       </View>
@@ -229,4 +240,5 @@ const styles = StyleSheet.create({
   },
 });
 
+BoxLabel.displayName = 'BoxLabel';
 export default BoxLabel;
