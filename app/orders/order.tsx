@@ -1,6 +1,17 @@
 import { router, Stack } from 'expo-router';
 import React, { useRef, useState } from 'react';
-import { Alert, LayoutAnimation, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, UIManager, View } from 'react-native';
+import {
+  Alert,
+  LayoutAnimation,
+  Modal,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  UIManager,
+  View,
+} from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
@@ -8,7 +19,7 @@ import BoxLabel, { BoxLabelType } from '../components/BoxLabel';
 import BackArrow from '../components/icons/BackArrow';
 import PlusSign from '../components/icons/PlusSign';
 import { BoxLabelInfo } from '../types/BoxLabelInfo';
-import { UNLABELED_GENDER_ID } from '../helpers/constants';
+import { TWO_TO_FOUR_YEARS_ID, UNLABELED_GENDER_ID } from '../helpers/constants';
 import BlessedBox from '../components/icons/BlessedBox';
 
 /**
@@ -170,7 +181,11 @@ export default function Index() {
         </View>
 
         {/* Modal for unlabeled boxes */}
-        <Modal visible={modal} transparent animationType="fade" onRequestClose={() => setModal(false)}>
+        <Modal
+          visible={modal}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setModal(false)}>
           <View
             style={{
               flex: 1,
@@ -211,12 +226,15 @@ export default function Index() {
                   <Text style={[commonStyles.header, { color: colors.dark_gray }]}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[commonStyles.buttonNoShadow, { backgroundColor: colors.green_label, flex: 1 }]}
+                  style={[
+                    commonStyles.buttonNoShadow,
+                    { backgroundColor: colors.green_label, flex: 1 },
+                  ]}
                   onPress={async () => {
                     const updated = [
                       ...(mergedBoxData ?? []),
                       {
-                        boxAgeId: false,
+                        boxAgeId: TWO_TO_FOUR_YEARS_ID,
                         genderId: UNLABELED_GENDER_ID,
                         quantity: unlabeledAmount,
                       },
@@ -250,7 +268,9 @@ export default function Index() {
                 marginHorizontal: 16,
               },
             ]}>
-            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Enter total boxes</Text>
+            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
+              Enter total boxes
+            </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View
                 style={{
@@ -296,8 +316,16 @@ export default function Index() {
           </View>
 
           {/* Enable Shoebox Controller */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20 }}>
-            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Enable Shoebox Label</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingHorizontal: 20,
+            }}>
+            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
+              Enable Shoebox Label
+            </Text>
           </View>
 
           {/* ScrollView of Box Labels */}
@@ -336,7 +364,11 @@ export default function Index() {
               shadowRadius: 3,
               elevation: 3,
             }}>
-            <PlusSign width={28} height={28} onPress={boxLabels.length >= 6 ? undefined : handleAddBoxLabel} />
+            <PlusSign
+              width={28}
+              height={28}
+              onPress={boxLabels.length >= 6 ? undefined : handleAddBoxLabel}
+            />
           </View>
 
           {/* Continue Button */}

@@ -23,8 +23,25 @@ import {
   SOCKET_EVENT_TRANSACTION_UPDATED,
   UNLABELED_GENDER_ID,
 } from '../helpers/constants';
-import { formatTransactionDate, getUserRoles } from '../helpers/helpers';
+import { formatTransactionDate, getUserRoles, UserRole } from '../helpers/helpers';
 import { getSocket } from '../socketService';
+
+type TransactionDetails = {
+  transactionId: number;
+  statusCode: number;
+  name: string;
+  lastName: string;
+  secondLastName: string;
+  email: string;
+  transactionDate: string;
+  recollectionCenterName: string;
+};
+
+type BoxSummary = {
+  age: string | number | false;
+  genderId: number;
+  quantity: number;
+};
 
 /**
  * Deposit Details Screen
@@ -38,12 +55,12 @@ export default function Index() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'information' | 'summary'>('information');
   const [isLoading, setIsLoading] = useState(true);
-  const [transactionDetails, setTransactionDetails] = useState(null);
-  const [boxes, setBoxes] = useState(null);
-  const [roles, setRoles] = useState(null);
+  const [transactionDetails, setTransactionDetails] = useState<TransactionDetails | null>(null);
+  const [boxes, setBoxes] = useState<BoxSummary[]>([]);
+  const [roles, setRoles] = useState<UserRole[]>([]);
   const canValidateDeposit = roles?.some(
     (role) =>
-      role.roleId === ADMIN_ROLE_TYPE_ID && transactionDetails.statusCode === PENDING_STATUS_ID
+      role.roleId === ADMIN_ROLE_TYPE_ID && transactionDetails?.statusCode === PENDING_STATUS_ID
   );
 
   // Obtain transactionId from query parameters
@@ -60,24 +77,26 @@ export default function Index() {
           })
         ).data,
       ]);
-      setRoles(roles);
+      setRoles(roles ?? []);
       setTransactionDetails(response.transactionDetails);
-      const mergedData = Array.from(
-        response.boxes.reduce((map, item) => {
+      const groupedBoxes = response.boxes.reduce(
+        (map: Map<string, BoxSummary>, item: BoxSummary | null) => {
           if (!item) return map;
 
           const age = item.age ?? false;
-          const genderId = item.genderId ?? false;
+          const genderId = item.genderId ?? UNLABELED_GENDER_ID;
           const key = `${age}-${genderId}`;
 
           if (!map.has(key)) {
             map.set(key, { age, genderId, quantity: 1 });
           } else {
-            map.get(key).quantity += 1;
+            map.get(key)!.quantity += 1;
           }
           return map;
-        }, new Map())
-      ).map(([_, value]) => value);
+        },
+        new Map<string, BoxSummary>()
+      );
+      const mergedData: BoxSummary[] = [...groupedBoxes.values()];
       setBoxes(mergedData);
     } catch (err) {
       console.error(err);
@@ -113,7 +132,7 @@ export default function Index() {
       // Solo actualizar si es la misma transacción
       if (transactionDetails?.transactionId === updatedTransaction.id) {
         setTransactionDetails((prev) =>
-          prev ? { ...prev, statusCode: updatedTransaction.statusCode } : prev
+          prev ? { ...prev, statusCode: Number(updatedTransaction.statusCode) } : prev
         );
       }
     };
@@ -153,7 +172,7 @@ export default function Index() {
             style={[
               commonStyles.paragraphBold,
               { color: colors.dark_blue },
-            ]}>{`${transactionDetails.name} ${transactionDetails.lastName} ${transactionDetails.secondLastName}`}</Text>
+            ]}>{`${transactionDetails!.name} ${transactionDetails!.lastName} ${transactionDetails!.secondLastName}`}</Text>
         </View>
 
         {/* Email Container */}
@@ -170,7 +189,7 @@ export default function Index() {
           {/* SVG */}
           <Mail width={30} height={30}></Mail>
           <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
-            {transactionDetails.email}
+            {transactionDetails!.email}
           </Text>
         </View>
 
@@ -189,13 +208,13 @@ export default function Index() {
           <Clock height={30} width={30}></Clock>
           <View>
             <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
-              {formatTransactionDate(transactionDetails.transactionDate).toLocaleString()}
+              {formatTransactionDate(transactionDetails!.transactionDate).toLocaleString()}
             </Text>
             <Text
               style={[
                 commonStyles.paragraph,
                 { fontSize: 12 },
-              ]}>{`Order #${transactionDetails.transactionId}`}</Text>
+              ]}>{`Order #${transactionDetails!.transactionId}`}</Text>
           </View>
         </View>
 
@@ -213,7 +232,7 @@ export default function Index() {
           <View>
             <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Church</Text>
             <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>
-              {transactionDetails.recollectionCenterName}
+              {transactionDetails!.recollectionCenterName}
             </Text>
           </View>
         </View>
@@ -319,7 +338,7 @@ export default function Index() {
             gap: 2,
             marginBottom: 16,
           }}>
-          {transactionDetails.statusCode === PENDING_STATUS_ID && (
+          {transactionDetails!.statusCode === PENDING_STATUS_ID && (
             <>
               <Text
                 style={[
@@ -332,7 +351,7 @@ export default function Index() {
             </>
           )}
 
-          {transactionDetails.statusCode === COMPLETED_STATUS_ID && (
+          {transactionDetails!.statusCode === COMPLETED_STATUS_ID && (
             <Text
               style={[
                 commonStyles.paragraphBold,
@@ -342,7 +361,7 @@ export default function Index() {
             </Text>
           )}
 
-          {transactionDetails.statusCode === DECLINED_STATUS_ID && (
+          {transactionDetails!.statusCode === DECLINED_STATUS_ID && (
             <Text
               style={[
                 commonStyles.paragraphBold,
@@ -479,7 +498,7 @@ export default function Index() {
             </View>
           ) : (
             <View style={{ marginTop: 'auto', paddingBottom: 20, alignItems: 'center' }}>
-              {transactionDetails.statusCode === PENDING_STATUS_ID && !canValidateDeposit && (
+              {transactionDetails!.statusCode === PENDING_STATUS_ID && !canValidateDeposit && (
                 <Text
                   style={[
                     commonStyles.paragraphItalic,

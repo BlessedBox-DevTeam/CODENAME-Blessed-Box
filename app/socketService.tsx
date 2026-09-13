@@ -1,10 +1,10 @@
 import Constants from 'expo-constants';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { getAccessToken } from './helpers/helpers';
 
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL || 'https://blessedbox.org';
-let socket = null;
+let socket: Socket | null = null;
 
 export const initSocket = async () => {
   if (socket && socket.connected) return socket;
@@ -20,7 +20,7 @@ export const initSocket = async () => {
     reconnectionDelay: 2000,
   });
 
-  socket.on('connect', () => console.log('✅ Socket connected:', socket.id));
+  socket.on('connect', () => console.log('✅ Socket connected:', socket?.id));
   socket.on('disconnect', (reason) => console.log('❌ Socket disconnected:', reason));
   socket.on('connect_error', (err) => console.log('⚠️ Socket error:', err.message));
   return socket;

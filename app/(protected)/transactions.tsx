@@ -37,18 +37,23 @@ import CalendarIcon from '../components/icons/CalendarIcon';
 import { Calendar } from 'react-native-calendars';
 import { getSocket } from '../socketService';
 import { getRecollectionCenterTransactions } from '../services/services';
+import { TransactionTileInfo } from '../types/TransactionTileInfo';
+
+type Transaction = TransactionTileInfo & { createdDate: string };
+type TransactionSection = { title: string; data: Transaction[] };
+type DropdownValue = 'exact' | 'minimum' | 'maximum' | 'range' | null;
 
 export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
-  const [allTransactions, setAllTransactions] = useState([]);
-  const [sections, setSections] = useState([]);
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
+  const [sections, setSections] = useState<TransactionSection[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [modal, setModal] = useState(false);
   const [calendarModal, setCalendarModal] = useState(false);
   const [boxNumberMax, setBoxNumberMax] = useState('');
   const [boxNumberMin, setBoxNumberMin] = useState('');
   const [openDropdown, setOpenDropdown] = useState(false);
-  const [dropdownValue, setDropdownValue] = useState(null);
+  const [dropdownValue, setDropdownValue] = useState<DropdownValue>(null);
   const [selectedDay, setSelectedDay] = useState('');
   const [queryParams, setQueryParams] = useState<{
     page: number;
@@ -91,7 +96,7 @@ export default function Index() {
     { label: '10-14', value: [TEN_TO_FOURTEEN_YEARS_ID] },
   ];
 
-  const [selectedAges, setSelectedAges] = useState([]);
+  const [selectedAges, setSelectedAges] = useState<string[]>([]);
   const genders = [
     { label: 'All', value: [MALE_GENDER_ID, FEMALE_GENDER_ID] },
     { label: 'Female', value: [FEMALE_GENDER_ID] },
@@ -99,7 +104,7 @@ export default function Index() {
     { label: 'Unlabeled', value: [] },
   ];
 
-  const [selectedGenders, setSelectedGenders] = useState([]);
+  const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
   const fadeAnim = useRef(new Animated.Value(0));
 
   useEffect(() => {
@@ -153,7 +158,8 @@ export default function Index() {
     setModal(false);
   };
   const buildFilters = () => {
-    const isSingleDropdownValue = ['exact', 'minimum', 'maximum'].includes(dropdownValue);
+    const isSingleDropdownValue =
+      dropdownValue !== null && ['exact', 'minimum', 'maximum'].includes(dropdownValue);
     if (isSingleDropdownValue) {
       if (!boxNumberMin) {
         Alert.alert('Validation Error', 'Please enter a value.');
@@ -268,7 +274,7 @@ export default function Index() {
     const socket = getSocket();
     if (!socket) return;
 
-    const handleNewTransaction = (newTransaction) => {
+    const handleNewTransaction = (newTransaction: Transaction) => {
       console.log('Nueva transacción recibida:', newTransaction);
       setTotalCount(totalCount + 1);
       setAllTransactions((prev) => {
@@ -298,7 +304,7 @@ export default function Index() {
       setAllTransactions((prevTransactions) =>
         prevTransactions.map((transaction) => {
           if (transaction.transactionId === updatedTransaction.id) {
-            updatedTx = { ...transaction, status: updatedTransaction.statusCode };
+            updatedTx = { ...transaction, statusCode: Number(updatedTransaction.statusCode) };
             return updatedTx;
           }
           return transaction;
@@ -311,8 +317,8 @@ export default function Index() {
           if (section.title !== transactionDate) return section;
 
           const updatedData = section.data.map((transaction) =>
-            transaction.id === updatedTransaction.id
-              ? { ...transaction, status: updatedTransaction.statusCode }
+            transaction.transactionId === updatedTransaction.id
+              ? { ...transaction, statusCode: Number(updatedTransaction.statusCode) }
               : transaction
           );
           return { ...section, data: updatedData };
@@ -413,7 +419,6 @@ export default function Index() {
                     }}
                     textStyle={[commonStyles.paragraph, { color: colors.dark_blue }]}
                     dropDownContainerStyle={{ borderColor: colors.light_gray, borderRadius: 10 }}
-                    arrowIconStyle={{ tintColor: colors.dark_blue }}
                   />
 
                   <Animated.View style={{ opacity: fadeAnim.current, width: '100%' }}>

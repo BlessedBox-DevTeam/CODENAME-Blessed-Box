@@ -2,8 +2,8 @@ import React, { useRef, useState, forwardRef, useImperativeHandle } from 'react'
 import { Keyboard, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
-import GenderTile from './GenderTile';
-import QuantitySelector from './QuantitySelector';
+import GenderTile, { GenderTileRef } from './GenderTile';
+import QuantitySelector, { QuantitySelectorRef } from './QuantitySelector';
 import { BoxLabelInfo } from '../types/BoxLabelInfo';
 import {
   TWO_TO_FOUR_YEARS_ID,
@@ -45,9 +45,9 @@ const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete, error }, r
   /** Current selected age range */
   const [selected, setSelected] = useState<number>(TWO_TO_FOUR_YEARS_ID);
   /** Ref to control the QuantitySelector child component */
-  const quantitySelectorRef = useRef<{ getQuantity: () => number; reset: () => void }>(null);
+  const quantitySelectorRef = useRef<QuantitySelectorRef>(null);
   /** Ref to control the GenderTile child component */
-  const genderTileRef = useRef<{ getGender: () => number; reset: () => void }>(null);
+  const genderTileRef = useRef<GenderTileRef>(null);
 
   /**
    * Get the button style for a given age range.
@@ -87,7 +87,7 @@ const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete, error }, r
     getData: (): BoxLabelInfo => ({
       boxAgeId: selected,
       quantity: Number(quantitySelectorRef.current?.getQuantity() ?? 0),
-      genderId: genderTileRef.current?.getGender?.() ?? false,
+      genderId: genderTileRef.current?.getGender?.() ?? 0,
     }),
   }));
   return (
