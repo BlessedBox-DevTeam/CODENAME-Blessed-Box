@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Constants from 'expo-constants';
 import { Camera, CameraView } from 'expo-camera';
 import { router, Stack } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
@@ -20,8 +21,10 @@ import BackArrow from '../components/icons/BackArrow';
 import LoadingOverlay from '../components/LoadingSpinner';
 import { scanQRCode } from '../services/services';
 
+const API_URL = Constants.expoConfig?.extra?.URL || 'https://blessedbox.org';
+
 export default function Index() {
-  const [hasPermission, setHasPermission] = useState(null);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [facing, setFacing] = useState<'front' | 'back'>('back');
   const [maxCameraWidth, setMaxCameraWidth] = useState<number | `${number}%`>('100%');
   const [maxManualWidth, setManualWidth] = useState<number | `${number}%`>(0);

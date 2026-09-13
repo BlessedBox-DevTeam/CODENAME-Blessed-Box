@@ -9,7 +9,6 @@ export default ({ config }) => {
     name: 'blessedboxapp',
     slug: 'blessedboxapp',
     version: '1.0.0',
-    sdkVersion: '54.0.0',
     platforms: ['android', 'ios', 'web'],
     extra: {
       eas: {
@@ -47,9 +46,16 @@ export default ({ config }) => {
       [
         'expo-build-properties',
         {
-          android: { usesCleartextTraffic: true },
+          android: {
+            usesCleartextTraffic: true,
+          },
         },
       ],
+      'expo-image',
+      'expo-router',
+      'expo-secure-store',
+      'expo-splash-screen',
+      'expo-web-browser',
     ],
   };
 };

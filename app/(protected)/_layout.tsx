@@ -11,7 +11,7 @@ import Home from '../components/icons/Home';
 import Newspaper from '../components/icons/NewsPaper';
 import QRCode from '../components/icons/QRCode';
 import SignOut from '../components/icons/SignOut';
-import { getAccessToken } from '../helpers/helpers';
+import { deleteAccessToken, deleteRefreshToken, getAccessToken } from '../helpers/helpers';
 import { logout } from '../services/services';
 import { disconnectSocket, initSocket } from '../socketService';
 
@@ -28,8 +28,13 @@ export default function ProtectedLayout() {
     }
   };
   const exit = async () => {
-    const success = await logout();
-    if (success) router.replace('/login');
+    const { success } = (await logout()).data;
+    if (success) {
+      deleteAccessToken();
+      deleteRefreshToken();
+      disconnectSocket();
+      router.replace('/login');
+    }
   };
   useEffect(() => {
     const init = async () => {

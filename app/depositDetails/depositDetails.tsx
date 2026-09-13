@@ -15,9 +15,33 @@ import Clock from '../components/icons/Clock';
 import Mail from '../components/icons/Mail';
 import UserAvatar from '../components/icons/UserAvatar';
 import LoadingOverlay from '../components/LoadingSpinner';
-import { ADMIN_ROLE_TYPE_ID, COMPLETED_STATUS_ID, DECLINED_STATUS_ID, PENDING_STATUS_ID, UNLABELED_GENDER_ID } from '../helpers/constants';
-import { formatTransactionDate, getUserRoles } from '../helpers/helpers';
+import {
+  ADMIN_ROLE_TYPE_ID,
+  COMPLETED_STATUS_ID,
+  DECLINED_STATUS_ID,
+  PENDING_STATUS_ID,
+  SOCKET_EVENT_TRANSACTION_UPDATED,
+  UNLABELED_GENDER_ID,
+} from '../helpers/constants';
+import { formatTransactionDate, getUserRoles, UserRole } from '../helpers/helpers';
 import { getSocket } from '../socketService';
+
+type TransactionDetails = {
+  transactionId: number;
+  statusCode: number;
+  name: string;
+  lastName: string;
+  secondLastName: string;
+  email: string;
+  transactionDate: string;
+  recollectionCenterName: string;
+};
+
+type BoxSummary = {
+  age: string | number | false;
+  genderId: number;
+  quantity: number;
+};
 
 /**
  * Deposit Details Screen
@@ -31,10 +55,13 @@ export default function Index() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'information' | 'summary'>('information');
   const [isLoading, setIsLoading] = useState(true);
-  const [transactionDetails, setTransactionDetails] = useState(null);
-  const [boxes, setBoxes] = useState(null);
-  const [roles, setRoles] = useState(null);
-  const canValidateDeposit = roles?.some((role) => role.roleId === ADMIN_ROLE_TYPE_ID && transactionDetails.statusCode === PENDING_STATUS_ID);
+  const [transactionDetails, setTransactionDetails] = useState<TransactionDetails | null>(null);
+  const [boxes, setBoxes] = useState<BoxSummary[]>([]);
+  const [roles, setRoles] = useState<UserRole[]>([]);
+  const canValidateDeposit = roles?.some(
+    (role) =>
+      role.roleId === ADMIN_ROLE_TYPE_ID && transactionDetails?.statusCode === PENDING_STATUS_ID
+  );
 
   // Obtain transactionId from query parameters
   let { transactionId } = useLocalSearchParams<{ transactionId: string }>();
@@ -42,25 +69,34 @@ export default function Index() {
 
   const fetchData = async () => {
     try {
-      const [roles, { response }] = await Promise.all([getUserRoles(), (await axios.get(`${API_URL}/api/transactions/transactionDetails`, { params: { transactionId } })).data]);
-      setRoles(roles);
+      const [roles, { response }] = await Promise.all([
+        getUserRoles(),
+        (
+          await axios.get(`${API_URL}/api/transactions/transactionDetails`, {
+            params: { transactionId },
+          })
+        ).data,
+      ]);
+      setRoles(roles ?? []);
       setTransactionDetails(response.transactionDetails);
-      const mergedData = Array.from(
-        response.boxes.reduce((map, item) => {
+      const groupedBoxes = response.boxes.reduce(
+        (map: Map<string, BoxSummary>, item: BoxSummary | null) => {
           if (!item) return map;
 
           const age = item.age ?? false;
-          const genderId = item.genderId ?? false;
+          const genderId = item.genderId ?? UNLABELED_GENDER_ID;
           const key = `${age}-${genderId}`;
 
           if (!map.has(key)) {
             map.set(key, { age, genderId, quantity: 1 });
           } else {
-            map.get(key).quantity += 1;
+            map.get(key)!.quantity += 1;
           }
           return map;
-        }, new Map())
-      ).map(([_, value]) => value);
+        },
+        new Map<string, BoxSummary>()
+      );
+      const mergedData: BoxSummary[] = [...groupedBoxes.values()];
       setBoxes(mergedData);
     } catch (err) {
       console.error(err);
@@ -95,12 +131,14 @@ export default function Index() {
     const handleStatusUpdate = (updatedTransaction: { id: number; statusCode: string }) => {
       // Solo actualizar si es la misma transacción
       if (transactionDetails?.transactionId === updatedTransaction.id) {
-        setTransactionDetails((prev) => (prev ? { ...prev, statusCode: updatedTransaction.statusCode } : prev));
+        setTransactionDetails((prev) =>
+          prev ? { ...prev, statusCode: Number(updatedTransaction.statusCode) } : prev
+        );
       }
     };
-    socket.on('transaction:statusUpdated', handleStatusUpdate);
+    socket.on(SOCKET_EVENT_TRANSACTION_UPDATED, handleStatusUpdate);
     return () => {
-      socket.off('transaction:statusUpdated', handleStatusUpdate);
+      socket.off(SOCKET_EVENT_TRANSACTION_UPDATED, handleStatusUpdate);
     };
   }, [transactionDetails]);
 
@@ -134,7 +172,7 @@ export default function Index() {
             style={[
               commonStyles.paragraphBold,
               { color: colors.dark_blue },
-            ]}>{`${transactionDetails.name} ${transactionDetails.lastName} ${transactionDetails.secondLastName}`}</Text>
+            ]}>{`${transactionDetails!.name} ${transactionDetails!.lastName} ${transactionDetails!.secondLastName}`}</Text>
         </View>
 
         {/* Email Container */}
@@ -150,7 +188,9 @@ export default function Index() {
           }}>
           {/* SVG */}
           <Mail width={30} height={30}></Mail>
-          <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{transactionDetails.email}</Text>
+          <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
+            {transactionDetails!.email}
+          </Text>
         </View>
 
         {/* DateContainer */}
@@ -167,8 +207,14 @@ export default function Index() {
           {/* SVG */}
           <Clock height={30} width={30}></Clock>
           <View>
-            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{formatTransactionDate(transactionDetails.transactionDate).toLocaleString()}</Text>
-            <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>{`Order #${transactionDetails.transactionId}`}</Text>
+            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
+              {formatTransactionDate(transactionDetails!.transactionDate).toLocaleString()}
+            </Text>
+            <Text
+              style={[
+                commonStyles.paragraph,
+                { fontSize: 12 },
+              ]}>{`Order #${transactionDetails!.transactionId}`}</Text>
           </View>
         </View>
 
@@ -185,7 +231,9 @@ export default function Index() {
           <Church width={30} height={30}></Church>
           <View>
             <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Church</Text>
-            <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>{transactionDetails.recollectionCenterName}</Text>
+            <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>
+              {transactionDetails!.recollectionCenterName}
+            </Text>
           </View>
         </View>
       </View>
@@ -214,14 +262,22 @@ export default function Index() {
             {/* First Column */}
             <View style={{ flex: 1, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
               <View style={{ width: 30 }}>
-                <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{`${box?.quantity || 2}x`}</Text>
+                <Text
+                  style={[
+                    commonStyles.paragraphBold,
+                    { color: colors.dark_blue },
+                  ]}>{`${box?.quantity || 2}x`}</Text>
               </View>
-              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>{'Blessed Box'}</Text>
+              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
+                {'Blessed Box'}
+              </Text>
             </View>
             {/* Second Column */}
             <View style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center' }}>
               {box.genderId === UNLABELED_GENDER_ID ? (
-                <Text style={[commonStyles.paragraphItalic, { color: colors.dark_gray }]}>Unlabeled</Text>
+                <Text style={[commonStyles.paragraphItalic, { color: colors.dark_gray }]}>
+                  Unlabeled
+                </Text>
               ) : (
                 <>
                   <GenderInitial genderCode={box.genderId} />
@@ -248,7 +304,7 @@ export default function Index() {
   };
 
   if (isLoading) {
-    return <LoadingOverlay />;
+    return <LoadingOverlay visible />;
   }
   return (
     <SafeAreaProvider>
@@ -265,7 +321,11 @@ export default function Index() {
         </View>
 
         {/* Logo */}
-        <View style={[commonStyles.card, { width: 100, alignSelf: 'center', alignItems: 'center', marginBottom: 16 }]}>
+        <View
+          style={[
+            commonStyles.card,
+            { width: 100, alignSelf: 'center', alignItems: 'center', marginBottom: 16 },
+          ]}>
           <Text style={commonStyles.paragraph}>Logo</Text>
         </View>
 
@@ -278,19 +338,37 @@ export default function Index() {
             gap: 2,
             marginBottom: 16,
           }}>
-          {transactionDetails.statusCode === PENDING_STATUS_ID && (
+          {transactionDetails!.statusCode === PENDING_STATUS_ID && (
             <>
-              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue, alignSelf: 'center' }]}>Requires Confirmation</Text>
+              <Text
+                style={[
+                  commonStyles.paragraphBold,
+                  { color: colors.dark_blue, alignSelf: 'center' },
+                ]}>
+                Requires Confirmation
+              </Text>
               <Alert width={25} height={25} />
             </>
           )}
 
-          {transactionDetails.statusCode === COMPLETED_STATUS_ID && (
-            <Text style={[commonStyles.paragraphBold, { color: colors.green_label, alignSelf: 'center' }]}>Deposit Confirmed</Text>
+          {transactionDetails!.statusCode === COMPLETED_STATUS_ID && (
+            <Text
+              style={[
+                commonStyles.paragraphBold,
+                { color: colors.green_label, alignSelf: 'center' },
+              ]}>
+              Deposit Confirmed
+            </Text>
           )}
 
-          {transactionDetails.statusCode === DECLINED_STATUS_ID && (
-            <Text style={[commonStyles.paragraphBold, { color: colors.red_label, alignSelf: 'center' }]}>Deposit Declined</Text>
+          {transactionDetails!.statusCode === DECLINED_STATUS_ID && (
+            <Text
+              style={[
+                commonStyles.paragraphBold,
+                { color: colors.red_label, alignSelf: 'center' },
+              ]}>
+              Deposit Declined
+            </Text>
           )}
         </View>
         {/* Main Container */}
@@ -327,7 +405,11 @@ export default function Index() {
           </View>
 
           {/* Warning Modal */}
-          <Modal visible={showWarning} transparent animationType="fade" onRequestClose={() => setShowWarning(false)}>
+          <Modal
+            visible={showWarning}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowWarning(false)}>
             <View
               style={{
                 flex: 1,
@@ -345,7 +427,9 @@ export default function Index() {
                   flexDirection: 'column',
                   alignSelf: 'center',
                 }}>
-                <Text style={[commonStyles.paragraph, { marginBottom: 32, textAlign: 'center' }]}>Are you sure you want to decline this deposit?</Text>
+                <Text style={[commonStyles.paragraph, { marginBottom: 32, textAlign: 'center' }]}>
+                  Are you sure you want to decline this deposit?
+                </Text>
                 <View style={{ flexDirection: 'row', gap: 32 }}>
                   <TouchableOpacity
                     style={[
@@ -361,7 +445,10 @@ export default function Index() {
                     <Text style={[commonStyles.header, { color: colors.dark_gray }]}>Cancel</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[commonStyles.buttonNoShadow, { backgroundColor: colors.red_label, flex: 1 }]}
+                    style={[
+                      commonStyles.buttonNoShadow,
+                      { backgroundColor: colors.red_label, flex: 1 },
+                    ]}
                     onPress={async () => {
                       setShowWarning(false);
                       setIsLoading(true);
@@ -411,8 +498,14 @@ export default function Index() {
             </View>
           ) : (
             <View style={{ marginTop: 'auto', paddingBottom: 20, alignItems: 'center' }}>
-              {transactionDetails.statusCode === PENDING_STATUS_ID && !canValidateDeposit && (
-                <Text style={[commonStyles.paragraphItalic, { color: colors.dark_gray, textAlign: 'center' }]}>You do not have permissions to validate this deposit.</Text>
+              {transactionDetails!.statusCode === PENDING_STATUS_ID && !canValidateDeposit && (
+                <Text
+                  style={[
+                    commonStyles.paragraphItalic,
+                    { color: colors.dark_gray, textAlign: 'center' },
+                  ]}>
+                  You do not have permissions to validate this deposit.
+                </Text>
               )}
             </View>
           )}
