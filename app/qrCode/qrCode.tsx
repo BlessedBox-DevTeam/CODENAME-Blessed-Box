@@ -1,5 +1,3 @@
-import axios from 'axios';
-import Constants from 'expo-constants';
 import { Camera, CameraView } from 'expo-camera';
 import { router, Stack } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
@@ -19,9 +17,7 @@ import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import BackArrow from '../components/icons/BackArrow';
 import LoadingOverlay from '../components/LoadingSpinner';
-import { scanQRCode } from '../services/services';
-
-const API_URL = Constants.expoConfig?.extra?.URL || 'https://blessedbox.org';
+import { isBackupKey, scanQRCode } from '../services/services';
 
 export default function Index() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -259,9 +255,7 @@ export default function Index() {
                     return showAlert('Please enter a valid 8-character code.');
                   }
                   setIsLoading(true);
-                  const { response, message } = (
-                    await axios.post(`${API_URL}/api/backupKeys/isKey`, { keyValue: code })
-                  ).data;
+                  const { response, message } = (await isBackupKey(code)).data;
                   setIsLoading(false);
                   if (response) {
                     router.push('/orders/order');
