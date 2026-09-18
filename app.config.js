@@ -57,6 +57,6 @@ export default ({ config }) => {
       'expo-splash-screen',
       'expo-web-browser',
     ],
-    icon: './assets/BB-icon.png',
+    icon: './assets/images/BB-icon.png',
   };
 };
