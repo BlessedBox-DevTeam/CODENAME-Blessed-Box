@@ -1,17 +1,25 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, GestureResponderEvent } from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  GestureResponderEvent,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 import colors from '../baseStyles/colors';
 
 interface FilterChipProps {
   label: string;
   selected: boolean;
   onPress: (event: GestureResponderEvent) => void;
+  chipStyle?: StyleProp<ViewStyle>;
 }
 
-export default function FilterChip({ label, selected, onPress }: FilterChipProps) {
+export default function FilterChip({ label, selected, onPress, chipStyle }: FilterChipProps) {
   return (
     <TouchableOpacity
-      style={[styles.chip, selected ? styles.selectedChip : styles.unselectedChip]}
+      style={[styles.chip, selected ? styles.selectedChip : styles.unselectedChip, chipStyle]}
       onPress={onPress}
       activeOpacity={0.7}>
       <Text style={[styles.text, selected ? styles.selectedText : styles.unselectedText]}>

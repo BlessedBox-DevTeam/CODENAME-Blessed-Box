@@ -13,6 +13,11 @@ export const PENDING_STATUS_ID = 1;
 export const COMPLETED_STATUS_ID = 2;
 export const DECLINED_STATUS_ID = 3;
 
+// TRANSACTION STATUS Codes
+export const PENDING_STATUS_CODE = 'PENDING';
+export const COMPLETED_STATUS_CODE = 'COMPLETED';
+export const DECLINED_STATUS_CODE = 'DECLINED';
+
 // ROLE TYPES IDS
 export const ADMIN_ROLE_TYPE_ID = 1;
 
