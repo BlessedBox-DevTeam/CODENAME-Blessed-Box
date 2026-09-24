@@ -91,3 +91,11 @@ export const isBackupKey = async (keyValue: string) => {
 export const getRecollectionCenterTransactions = async (params: object) => {
   return await api.get(`/api/transactions/recollectionCenterTransactions`, { params });
 };
+
+export const getTransactionDetails = async (transactionId: number | string) => {
+  return await api.get(`/api/transactions/transactionDetails`, { params: { transactionId } });
+};
+
+export const editTransactionStatus = async (transactionId: number | string, statusCode: number) => {
+  return await api.post(`/api/transactions/editTransactionStatus`, { transactionId, statusCode });
+};
