@@ -195,7 +195,7 @@ export default function Index() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.backgroundColor }}>
         <TransactionFiltersModal
           visible={modal}
           selectedStatus={selectedStatus}
@@ -292,6 +292,7 @@ export default function Index() {
             paddingTop: 16,
             paddingHorizontal: 16,
             gap: 6,
+            backgroundColor: colors.backgroundColor,
           }}>
           <TextInput
             value={transactionNumber}
@@ -324,6 +325,7 @@ export default function Index() {
           </View>
         </View>
         <SectionList
+          style={{ backgroundColor: colors.backgroundColor }}
           sections={sections}
           keyExtractor={(item) => item.transactionId.toString()}
           renderItem={({ item }) => (
@@ -331,7 +333,7 @@ export default function Index() {
               transaction={item}
               pressCallback={(transactionId) => {
                 router.push({
-                  pathname: '/depositDetails/depositDetails',
+                  pathname: '/(protected)/depositDetails',
                   params: { transactionId: JSON.stringify(transactionId) },
                 });
               }}

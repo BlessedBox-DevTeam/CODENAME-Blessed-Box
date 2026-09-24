@@ -18,6 +18,7 @@ import { disconnectSocket, initSocket } from '../socketService';
 export default function ProtectedLayout() {
   const router = useRouter();
   const pathname = usePathname();
+  const isOrderDetail = pathname === '/depositDetails';
 
   const handleNavigate = (path: string) => {
     if (pathname === path) return;
@@ -97,55 +98,57 @@ export default function ProtectedLayout() {
 
       {/* Bottom Tab Manual */}
 
-      <SafeAreaView
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-          backgroundColor: colors.white,
-          position: 'relative',
-        }}>
-        <LinearGradient
-          colors={['rgba(0,0,0,0.15)', 'transparent']}
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, zIndex: 10 }}
-        />
+      {!isOrderDetail && (
+        <SafeAreaView
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-around',
+            backgroundColor: colors.white,
+            position: 'relative',
+          }}>
+          <LinearGradient
+            colors={['rgba(0,0,0,0.15)', 'transparent']}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, zIndex: 10 }}
+          />
 
-        {/* Home */}
-        <Pressable
-          onPress={() => handleNavigate('/home')}
-          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Home width={24} height={24} />
-          <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>Home</Text>
-        </Pressable>
+          {/* Home */}
+          <Pressable
+            onPress={() => handleNavigate('/home')}
+            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Home width={24} height={24} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>Home</Text>
+          </Pressable>
 
-        {/* News */}
-        <Pressable style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Newspaper width={24} height={24} />
-          <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>News</Text>
-        </Pressable>
+          {/* News */}
+          <Pressable style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Newspaper width={24} height={24} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>News</Text>
+          </Pressable>
 
-        {/* QRCode */}
-        <Pressable
-          onPress={() => handleNavigate('/qrCode/qrCode')}
-          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <QRCode width={24} height={24} />
-          <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>QR</Text>
-        </Pressable>
+          {/* QRCode */}
+          <Pressable
+            onPress={() => handleNavigate('/qrCode/qrCode')}
+            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <QRCode width={24} height={24} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>QR</Text>
+          </Pressable>
 
-        {/* DepositHistory */}
-        <Pressable
-          onPress={() => handleNavigate('/transactions')}
-          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <DepositHistory width={24} height={24} />
-          <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>History</Text>
-        </Pressable>
+          {/* DepositHistory */}
+          <Pressable
+            onPress={() => handleNavigate('/transactions')}
+            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <DepositHistory width={24} height={24} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>History</Text>
+          </Pressable>
 
-        {/* Centers */}
-        <Pressable style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Church width={24} height={24} />
-          <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>Centers</Text>
-        </Pressable>
-      </SafeAreaView>
+          {/* Centers */}
+          <Pressable style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Church width={24} height={24} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>Centers</Text>
+          </Pressable>
+        </SafeAreaView>
+      )}
     </>
   );
 }

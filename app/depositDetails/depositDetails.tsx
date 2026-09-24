@@ -1,138 +1,141 @@
-import axios from 'axios';
-import Constants from 'expo-constants';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import SwitchSelector from 'react-native-switch-selector';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
-import GenderInitial from '../components/GenderInitial';
-import Alert from '../components/icons/Alert';
-import BackArrow from '../components/icons/BackArrow';
+import {
+  BoxSummaryTable,
+  DepositHeader,
+  DepositInfo,
+} from '../components/depositDetails/DepositDetailsContent';
 import Church from '../components/icons/Church';
-import Clock from '../components/icons/Clock';
 import Mail from '../components/icons/Mail';
 import UserAvatar from '../components/icons/UserAvatar';
 import LoadingOverlay from '../components/LoadingSpinner';
 import {
-  ADMIN_ROLE_TYPE_ID,
+  COMPLETED_STATUS_CODE,
   COMPLETED_STATUS_ID,
+  DECLINED_STATUS_CODE,
   DECLINED_STATUS_ID,
+  EDIT_TRANSACTION__PERMISSION,
+  FEMALE_GENDER_CODE,
+  GenderCode,
+  MALE_GENDER_CODE,
   PENDING_STATUS_ID,
+  UNLABELED_GENDER_CODE,
   SOCKET_EVENT_TRANSACTION_UPDATED,
-  UNLABELED_GENDER_ID,
 } from '../helpers/constants';
-import { formatTransactionDate, getUserRoles, UserRole } from '../helpers/helpers';
+import { getUserPermissions } from '../helpers/helpers';
+import { editTransactionStatus, getTransactionDetails } from '../services/services';
 import { getSocket } from '../socketService';
 
 type TransactionDetails = {
   transactionId: number;
-  statusCode: number;
-  name: string;
+  statusCode: string;
+  statusId: number;
+  firstName: string;
   lastName: string;
-  secondLastName: string;
   email: string;
   transactionDate: string;
   recollectionCenterName: string;
+  transactionNumber: string;
 };
 
-type BoxSummary = {
-  age: string | number | false;
-  genderId: number;
-  quantity: number;
+type BoxSummary = { ageCode: string; genderCode: GenderCode; quantity: number };
+type BoxResponse = {
+  ageCode: string;
+  genderCode: string;
 };
 
-/**
- * Deposit Details Screen
- * Displays deposit information and box summary with tab switching.
- * Shows a warning modal when declining the deposit.
- */
+const STATUS_ID_BY_CODE: Record<string, number> = {
+  [COMPLETED_STATUS_CODE]: COMPLETED_STATUS_ID,
+  [DECLINED_STATUS_CODE]: DECLINED_STATUS_ID,
+};
+
+const STATUS_STYLE_BY_CODE: Record<string, { color: string; backgroundColor: string }> = {
+  PENDING: { color: '#F08A00', backgroundColor: '#FFF4D7' },
+  [COMPLETED_STATUS_CODE]: { color: colors.green_label, backgroundColor: '#E2F4E6' },
+  [DECLINED_STATUS_CODE]: { color: colors.red_label, backgroundColor: '#FBE3E3' },
+};
+
+function getGenderCode(genderCode: string): GenderCode {
+  if (genderCode === MALE_GENDER_CODE) return MALE_GENDER_CODE;
+  if (genderCode === FEMALE_GENDER_CODE) return FEMALE_GENDER_CODE;
+  return UNLABELED_GENDER_CODE;
+}
+
 export default function Index() {
-  const extra = Constants.expoConfig?.extra;
-  const API_URL = extra?.URL || 'https://blessedbox.org';
-  const API_PORT = extra?.PORT;
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'information' | 'summary'>('information');
   const [isLoading, setIsLoading] = useState(true);
+  const [showWarning, setShowWarning] = useState(false);
   const [transactionDetails, setTransactionDetails] = useState<TransactionDetails | null>(null);
   const [boxes, setBoxes] = useState<BoxSummary[]>([]);
-  const [roles, setRoles] = useState<UserRole[]>([]);
-  const canValidateDeposit = roles?.some(
-    (role) =>
-      role.roleId === ADMIN_ROLE_TYPE_ID && transactionDetails?.statusCode === PENDING_STATUS_ID
-  );
+  const [permissions, setPermissions] = useState<string[]>([]);
+  const { transactionId: transactionParam } = useLocalSearchParams<{ transactionId: string }>();
+  const transactionId = JSON.parse(transactionParam);
+  const canValidateDeposit =
+    permissions.includes(EDIT_TRANSACTION__PERMISSION) &&
+    transactionDetails?.statusId === PENDING_STATUS_ID;
 
-  // Obtain transactionId from query parameters
-  let { transactionId } = useLocalSearchParams<{ transactionId: string }>();
-  transactionId = JSON.parse(transactionId);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const [roles, { response }] = await Promise.all([
-        getUserRoles(),
-        (
-          await axios.get(`${API_URL}/api/transactions/transactionDetails`, {
-            params: { transactionId },
-          })
-        ).data,
+      const [userPermissions, { response }] = await Promise.all([
+        getUserPermissions(),
+        getTransactionDetails(transactionId).then(({ data }) => data),
       ]);
-      setRoles(roles ?? []);
-      setTransactionDetails(response.transactionDetails);
+      setPermissions(userPermissions);
+      console.log('Transaction details response:', response);
+      const details = response.transactionDetails;
+      setTransactionDetails({
+        ...details,
+        firstName: details.firstName ?? details.name ?? '',
+        statusCode: details.statusCode,
+        statusId: details.statusId,
+      });
       const groupedBoxes = response.boxes.reduce(
-        (map: Map<string, BoxSummary>, item: BoxSummary | null) => {
+        (map: Map<string, BoxSummary>, item: BoxResponse | null) => {
           if (!item) return map;
-
-          const age = item.age ?? false;
-          const genderId = item.genderId ?? UNLABELED_GENDER_ID;
-          const key = `${age}-${genderId}`;
-
-          if (!map.has(key)) {
-            map.set(key, { age, genderId, quantity: 1 });
-          } else {
-            map.get(key)!.quantity += 1;
-          }
+          const genderCode = getGenderCode(item.genderCode);
+          const key = `${item.ageCode}-${genderCode}`;
+          const current = map.get(key);
+          map.set(
+            key,
+            current
+              ? { ...current, quantity: current.quantity + 1 }
+              : { ageCode: item.ageCode, genderCode, quantity: 1 }
+          );
           return map;
         },
         new Map<string, BoxSummary>()
       );
-      const mergedData: BoxSummary[] = [...groupedBoxes.values()];
-      setBoxes(mergedData);
-    } catch (err) {
-      console.error(err);
+      setBoxes([...groupedBoxes.values()]);
+    } catch (error) {
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [transactionId]);
 
   useEffect(() => {
     fetchData();
-  }, []);
-
-  /**
-   * Navigates back to the order screen.
-   */
-  const handleReturn = () => {
-    return router.replace('/(protected)/transactions');
-  };
-  /**
-   * Handles tab switching between deposit info and box summary.
-   * @param value - The selected tab value.
-   */
-  const handleTab = (value: string) => {
-    setActiveTab(value === 'information' ? 'information' : 'summary');
-  };
-  const [showWarning, setShowWarning] = useState(false);
+  }, [fetchData]);
 
   useEffect(() => {
     const socket = getSocket();
     if (!socket) return;
-
     const handleStatusUpdate = (updatedTransaction: { id: number; statusCode: string }) => {
-      // Solo actualizar si es la misma transacción
       if (transactionDetails?.transactionId === updatedTransaction.id) {
-        setTransactionDetails((prev) =>
-          prev ? { ...prev, statusCode: Number(updatedTransaction.statusCode) } : prev
+        setTransactionDetails((previous) =>
+          previous
+            ? {
+                ...previous,
+                statusCode: updatedTransaction.statusCode,
+                statusId: STATUS_ID_BY_CODE[updatedTransaction.statusCode] ?? previous.statusId,
+              }
+            : previous
         );
       }
     };
@@ -142,346 +145,102 @@ export default function Index() {
     };
   }, [transactionDetails]);
 
-  /**
-   * Renders the deposit information section.
-   * @returns {JSX.Element}
-   */
-  const appendDepositInfo = () => {
-    return (
-      <View
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}>
-        {/* Name Container */}
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 10,
-            alignItems: 'center',
-            borderBottomColor: colors.light_gray,
-            borderBottomWidth: 2,
-            paddingVertical: 10,
-          }}>
-          {/* SVG */}
-          <UserAvatar width={30} height={30}></UserAvatar>
-          <Text
-            style={[
-              commonStyles.paragraphBold,
-              { color: colors.dark_blue },
-            ]}>{`${transactionDetails!.name} ${transactionDetails!.lastName} ${transactionDetails!.secondLastName}`}</Text>
-        </View>
+  if (isLoading) return <LoadingOverlay visible />;
+  if (!transactionDetails) return null;
 
-        {/* Email Container */}
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 10,
-            alignItems: 'center',
-            borderBottomColor: colors.light_gray,
-            borderBottomWidth: 2,
-            paddingVertical: 10,
-          }}>
-          {/* SVG */}
-          <Mail width={30} height={30}></Mail>
-          <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
-            {transactionDetails!.email}
-          </Text>
-        </View>
-
-        {/* DateContainer */}
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 10,
-            alignItems: 'center',
-            borderBlockColor: colors.light_gray,
-            borderBottomWidth: 2,
-            paddingVertical: 10,
-          }}>
-          {/* SVG */}
-          <Clock height={30} width={30}></Clock>
-          <View>
-            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
-              {formatTransactionDate(transactionDetails!.transactionDate).toLocaleString()}
-            </Text>
-            <Text
-              style={[
-                commonStyles.paragraph,
-                { fontSize: 12 },
-              ]}>{`Order #${transactionDetails!.transactionId}`}</Text>
-          </View>
-        </View>
-
-        {/* Church Container */}
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 10,
-            alignItems: 'center',
-            paddingVertical: 10,
-          }}>
-          {/* SVG */}
-          <Church width={30} height={30}></Church>
-          <View>
-            <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Church</Text>
-            <Text style={[commonStyles.paragraph, { fontSize: 12 }]}>
-              {transactionDetails!.recollectionCenterName}
-            </Text>
-          </View>
-        </View>
-      </View>
-    );
+  const totalBoxes = boxes.reduce((sum, box) => sum + box.quantity, 0);
+  const boys = boxes
+    .filter((box) => box.genderCode === MALE_GENDER_CODE)
+    .reduce((sum, box) => sum + box.quantity, 0);
+  const girls = boxes
+    .filter((box) => box.genderCode === FEMALE_GENDER_CODE)
+    .reduce((sum, box) => sum + box.quantity, 0);
+  const unlabeled = boxes
+    .filter((box) => box.genderCode === UNLABELED_GENDER_CODE)
+    .reduce((sum, box) => sum + box.quantity, 0);
+  const statusStyle =
+    STATUS_STYLE_BY_CODE[transactionDetails.statusCode] ?? STATUS_STYLE_BY_CODE.DECLINED;
+  const updateStatus = async (statusCode: number) => {
+    setIsLoading(true);
+    await editTransactionStatus(transactionId, statusCode);
+    await fetchData();
   };
 
-  /**
-   * Renders the box summary section in two columns.
-   * @returns {JSX.Element}
-   */
-  const appendBoxSummary = () => {
-    return (
-      <View style={{ flexDirection: 'column' }}>
-        {boxes.map((box, idx) => (
-          <View
-            key={idx}
-            style={{
-              flexDirection: 'row',
-              borderBottomColor: colors.light_gray,
-              borderBottomWidth: idx === boxes.length - 1 ? 0 : 2,
-              justifyContent: 'space-between',
-              overflow: 'hidden',
-              paddingVertical: 10,
-              alignItems: 'center',
-            }}>
-            {/* First Column */}
-            <View style={{ flex: 1, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-              <View style={{ width: 30 }}>
-                <Text
-                  style={[
-                    commonStyles.paragraphBold,
-                    { color: colors.dark_blue },
-                  ]}>{`${box?.quantity || 2}x`}</Text>
-              </View>
-              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
-                {'Blessed Box'}
-              </Text>
-            </View>
-            {/* Second Column */}
-            <View style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-              {box.genderId === UNLABELED_GENDER_ID ? (
-                <Text style={[commonStyles.paragraphItalic, { color: colors.dark_gray }]}>
-                  Unlabeled
-                </Text>
-              ) : (
-                <>
-                  <GenderInitial genderCode={box.genderId} />
-                  <View
-                    style={{
-                      borderRadius: 5,
-                      width: 'auto',
-                      maxWidth: 60,
-                      backgroundColor: colors.light_gray,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flex: 1,
-                      padding: 2,
-                    }}>
-                    <Text style={[commonStyles.paragraph, { letterSpacing: 2 }]}>{box.age}</Text>
-                  </View>
-                </>
-              )}
-            </View>
-          </View>
-        ))}
-      </View>
-    );
-  };
-
-  if (isLoading) {
-    return <LoadingOverlay visible />;
-  }
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.backgroundColor }}>
         <Stack.Screen options={{ headerShown: false }} />
-
-        {/* Header Container */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', padding: 20 }}>
-          <BackArrow onPress={handleReturn} />
-          <View style={{ flex: 1, alignItems: 'center' }}>
-            <Text style={commonStyles.header}>Deposit Details</Text>
-          </View>
-          <View style={{ width: 25 }} />
-        </View>
-
-        {/* Logo */}
-        <View
-          style={[
-            commonStyles.card,
-            { width: 100, alignSelf: 'center', alignItems: 'center', marginBottom: 16 },
-          ]}>
-          <Text style={commonStyles.paragraph}>Logo</Text>
-        </View>
-
-        {/* Deposit Status Container */}
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 2,
-            marginBottom: 16,
-          }}>
-          {transactionDetails!.statusCode === PENDING_STATUS_ID && (
-            <>
-              <Text
-                style={[
-                  commonStyles.paragraphBold,
-                  { color: colors.dark_blue, alignSelf: 'center' },
-                ]}>
-                Requires Confirmation
-              </Text>
-              <Alert width={25} height={25} />
-            </>
-          )}
-
-          {transactionDetails!.statusCode === COMPLETED_STATUS_ID && (
-            <Text
-              style={[
-                commonStyles.paragraphBold,
-                { color: colors.green_label, alignSelf: 'center' },
-              ]}>
-              Deposit Confirmed
-            </Text>
-          )}
-
-          {transactionDetails!.statusCode === DECLINED_STATUS_ID && (
-            <Text
-              style={[
-                commonStyles.paragraphBold,
-                { color: colors.red_label, alignSelf: 'center' },
-              ]}>
-              Deposit Declined
-            </Text>
-          )}
-        </View>
-        {/* Main Container */}
-        <View style={{ flex: 1, paddingHorizontal: 16, paddingBottom: 16 }}>
-          {/* Tab Container */}
-          <SwitchSelector
-            options={[
-              { label: 'Deposit Info', value: 'information' },
-              { label: 'Box Summary', value: 'summary' },
-            ]}
-            initial={activeTab === 'information' ? 0 : 1}
-            onPress={handleTab}
-            textColor={colors.dark_gray}
-            selectedColor={colors.white}
-            buttonColor={colors.dark_green}
-            borderColor={colors.white}
-            buttonMargin={4}
+        <DepositHeader
+          transaction={transactionDetails}
+          totalBoxes={totalBoxes}
+          boys={boys}
+          girls={girls}
+          unlabeled={unlabeled}
+          statusLabel={transactionDetails.statusCode}
+          statusColor={statusStyle.color}
+          statusBackgroundColor={statusStyle.backgroundColor}
+          onBack={() => router.replace('/(protected)/transactions')}
+        />
+        <View style={{ flex: 1 }}>
+          <View
             style={{
-              height: 50,
-              marginBottom: 16,
-            }}
-            textStyle={{
-              fontFamily: commonStyles.paragraph.fontFamily,
-            }}
-            selectedTextStyle={{
-              fontFamily: commonStyles.paragraphBold.fontFamily,
-            }}></SwitchSelector>
-
-          {/* Main Container */}
-          <View style={[commonStyles.card, { width: '100%', height: 250, paddingVertical: 14 }]}>
-            <ScrollView showsVerticalScrollIndicator={true} style={{ flexGrow: 1 }}>
-              {activeTab === 'information' ? appendDepositInfo() : appendBoxSummary()}
-            </ScrollView>
-          </View>
-
-          {/* Warning Modal */}
-          <Modal
-            visible={showWarning}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setShowWarning(false)}>
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: 'rgba(0,0,0,0.4)',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <View
+              flexDirection: 'row',
+              backgroundColor: colors.white,
+              borderBottomWidth: 1,
+              borderBottomColor: '#D4DCE9',
+            }}>
+            {(['information', 'summary'] as const).map((tab) => (
+              <TouchableOpacity
+                key={tab}
+                onPress={() => setActiveTab(tab)}
                 style={{
-                  width: '90%',
-                  maxWidth: 400,
-                  borderRadius: 10,
-                  backgroundColor: colors.white,
-                  padding: 32,
-                  flexDirection: 'column',
-                  alignSelf: 'center',
+                  flex: 1,
+                  alignItems: 'center',
+                  paddingVertical: 17,
+                  borderBottomWidth: 2,
+                  borderBottomColor: activeTab === tab ? colors.dark_blue : 'transparent',
                 }}>
-                <Text style={[commonStyles.paragraph, { marginBottom: 32, textAlign: 'center' }]}>
-                  Are you sure you want to decline this deposit?
+                <Text
+                  style={[
+                    commonStyles.paragraph,
+                    { color: activeTab === tab ? colors.dark_blue : '#58719B', fontSize: 12 },
+                  ]}>
+                  {tab === 'information' ? 'Order Info' : 'Box Summary'}
                 </Text>
-                <View style={{ flexDirection: 'row', gap: 32 }}>
-                  <TouchableOpacity
-                    style={[
-                      commonStyles.buttonNoShadow,
-                      {
-                        backgroundColor: colors.white,
-                        borderColor: colors.dark_gray,
-                        borderWidth: 2,
-                        flex: 1,
-                      },
-                    ]}
-                    onPress={async () => setShowWarning(false)}>
-                    <Text style={[commonStyles.header, { color: colors.dark_gray }]}>Cancel</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      commonStyles.buttonNoShadow,
-                      { backgroundColor: colors.red_label, flex: 1 },
-                    ]}
-                    onPress={async () => {
-                      setShowWarning(false);
-                      setIsLoading(true);
-                      await axios.post(`${API_URL}/api/transactions/editTransactionStatus`, {
-                        transactionId: transactionId,
-                        statusCode: DECLINED_STATUS_ID,
-                      });
-                      await fetchData();
-                    }}>
-                    <Text style={[commonStyles.header, { color: colors.white }]}>Decline</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </Modal>
-
-          {/* Buttons Container */}
-          {canValidateDeposit ? (
-            <View style={{ marginTop: 'auto', paddingBottom: 20 }}>
-              {/* Confirm Button */}
+              </TouchableOpacity>
+            ))}
+          </View>
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
+            {activeTab === 'information' ? (
+              <DepositInfo
+                transaction={transactionDetails}
+                icons={{
+                  contact: <UserAvatar width={18} height={18} />,
+                  email: <Mail width={18} height={18} />,
+                  date: (
+                    <MaterialCommunityIcons
+                      name="calendar-outline"
+                      size={18}
+                      color={colors.dark_blue}
+                    />
+                  ),
+                  order: <Text style={{ color: colors.dark_blue, fontSize: 17 }}>#</Text>,
+                  church: <Church width={18} height={18} />,
+                }}
+              />
+            ) : (
+              <BoxSummaryTable boxes={boxes} />
+            )}
+          </ScrollView>
+          {canValidateDeposit && (
+            <View style={{ paddingHorizontal: 16, paddingBottom: 20 }}>
               <TouchableOpacity
                 style={commonStyles.buttonNoShadow}
-                onPress={async () => {
-                  setIsLoading(true);
-                  await axios.post(`${API_URL}/api/transactions/editTransactionStatus`, {
-                    transactionId: transactionId,
-                    statusCode: COMPLETED_STATUS_ID,
-                  });
-                  await fetchData();
-                }}>
+                onPress={() => updateStatus(COMPLETED_STATUS_ID)}>
                 <Text style={[commonStyles.header, { color: colors.white }]}>Confirm Deposit</Text>
               </TouchableOpacity>
-              {/* Decline Button */}
               <TouchableOpacity
                 style={[
                   commonStyles.buttonNoShadow,
@@ -496,20 +255,69 @@ export default function Index() {
                 <Text style={[commonStyles.header, { color: colors.red_label }]}>Decline</Text>
               </TouchableOpacity>
             </View>
-          ) : (
-            <View style={{ marginTop: 'auto', paddingBottom: 20, alignItems: 'center' }}>
-              {transactionDetails!.statusCode === PENDING_STATUS_ID && !canValidateDeposit && (
-                <Text
-                  style={[
-                    commonStyles.paragraphItalic,
-                    { color: colors.dark_gray, textAlign: 'center' },
-                  ]}>
-                  You do not have permissions to validate this deposit.
-                </Text>
-              )}
-            </View>
+          )}
+          {!canValidateDeposit && transactionDetails.statusId === PENDING_STATUS_ID && (
+            <Text
+              style={[
+                commonStyles.paragraphItalic,
+                { color: colors.dark_gray, textAlign: 'center', padding: 16 },
+              ]}>
+              You do not have permissions to validate this deposit.
+            </Text>
           )}
         </View>
+        <Modal
+          visible={showWarning}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowWarning(false)}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0,0,0,0.4)',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <View
+              style={{
+                width: '90%',
+                maxWidth: 400,
+                borderRadius: 10,
+                backgroundColor: colors.white,
+                padding: 32,
+              }}>
+              <Text style={[commonStyles.paragraph, { marginBottom: 32, textAlign: 'center' }]}>
+                Are you sure you want to decline this deposit?
+              </Text>
+              <View style={{ flexDirection: 'row', gap: 32 }}>
+                <TouchableOpacity
+                  style={[
+                    commonStyles.buttonNoShadow,
+                    {
+                      backgroundColor: colors.white,
+                      borderColor: colors.dark_gray,
+                      borderWidth: 2,
+                      flex: 1,
+                    },
+                  ]}
+                  onPress={() => setShowWarning(false)}>
+                  <Text style={[commonStyles.header, { color: colors.dark_gray }]}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    commonStyles.buttonNoShadow,
+                    { backgroundColor: colors.red_label, flex: 1 },
+                  ]}
+                  onPress={() => {
+                    setShowWarning(false);
+                    updateStatus(DECLINED_STATUS_ID);
+                  }}>
+                  <Text style={[commonStyles.header, { color: colors.white }]}>Decline</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </SafeAreaProvider>
   );

@@ -1,4 +1,13 @@
-// GENDER IDS
+// GENDER CODES
+export const MALE_GENDER_CODE = 'MALE' as const;
+export const FEMALE_GENDER_CODE = 'FEMALE' as const;
+export const UNLABELED_GENDER_CODE = 'UNLABELED' as const;
+export type GenderCode =
+  | typeof MALE_GENDER_CODE
+  | typeof FEMALE_GENDER_CODE
+  | typeof UNLABELED_GENDER_CODE;
+
+// Legacy IDs used by box creation flows
 export const MALE_GENDER_ID = 1;
 export const FEMALE_GENDER_ID = 2;
 export const UNLABELED_GENDER_ID = 3;
@@ -20,6 +29,7 @@ export const DECLINED_STATUS_CODE = 'DECLINED';
 
 // ROLE TYPES IDS
 export const ADMIN_ROLE_TYPE_ID = 1;
+export const EDIT_TRANSACTION__PERMISSION = 'EDIT_TRANSACTION_DETAILS' as const;
 
 // BOX AGE MAP
 export const BOX_AGE_MAP: { [key: number]: string } = {

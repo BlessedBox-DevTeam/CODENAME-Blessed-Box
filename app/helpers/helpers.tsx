@@ -87,6 +87,7 @@ interface TokenPayload {
   userId: number;
   email: string;
   roles: string[];
+  permissions?: string[];
   exp: number;
 }
 export async function saveAccessToken(token: string) {
@@ -123,6 +124,11 @@ export type UserRole = {
 export async function getUserRoles(): Promise<UserRole[] | null> {
   const user = await getUserFromToken();
   return user?.roles?.map((role) => ({ roleId: Number(role) })) ?? null;
+}
+
+export async function getUserPermissions(): Promise<string[]> {
+  const user = await getUserFromToken();
+  return user?.permissions ?? [];
 }
 // REFRESH TOKEN
 export async function saveRefreshToken(token: string) {

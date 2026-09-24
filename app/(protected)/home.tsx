@@ -10,9 +10,9 @@ import BackArrow from '../components/icons/BackArrow';
 import Church from '../components/icons/Church';
 import Person from '../components/icons/Person';
 import TargetArrow from '../components/icons/TargetArrow';
+import { SOCKET_EVENT_NEW_BOX_COUNT } from '../helpers/constants';
 import { getRecollectionCenterBoxesCount, getUserBoxes } from '../services/services';
 import { getSocket } from '../socketService';
-import { SOCKET_EVENT_NEW_BOX_COUNT, SOCKET_EVENT_NEW_TRANSACTION } from '../helpers/constants';
 
 export default function Index() {
   const GOAL_BOXES_COUNT = 3000;
