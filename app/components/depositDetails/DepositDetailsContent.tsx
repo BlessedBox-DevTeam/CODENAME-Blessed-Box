@@ -1,38 +1,38 @@
 import React, { ReactNode } from 'react';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import colors from '../../baseStyles/colors';
 import {
-  BOX_AGE_MAP,
-  FEMALE_GENDER_ID,
-  MALE_GENDER_ID,
-  UNLABELED_GENDER_ID,
+  FEMALE_GENDER_CODE,
+  GenderCode,
+  MALE_GENDER_CODE,
+  UNLABELED_GENDER_CODE,
 } from '../../helpers/constants';
 import { formatTransactionDate } from '../../helpers/helpers';
 
 type TransactionDetails = {
   transactionId: number;
-  statusCode: number;
-  name: string;
+  statusCode: string;
+  statusId: number;
+  firstName: string;
   lastName: string;
-  secondLastName: string;
   email: string;
   transactionDate: string;
   recollectionCenterName: string;
+  transactionNumber: string;
 };
 
-type BoxSummary = {
-  age: string | number | false;
-  genderId: number;
-  quantity: number;
-};
+type BoxSummary = { ageCode: string; genderCode: GenderCode; quantity: number };
 
 interface DepositHeaderProps {
   transaction: TransactionDetails;
   totalBoxes: number;
   boys: number;
   girls: number;
+  unlabeled: number;
   statusLabel: string;
   statusColor: string;
+  statusBackgroundColor: string;
   onBack: () => void;
 }
 
@@ -41,8 +41,10 @@ export function DepositHeader({
   totalBoxes,
   boys,
   girls,
+  unlabeled,
   statusLabel,
   statusColor,
+  statusBackgroundColor,
   onBack,
 }: DepositHeaderProps) {
   return (
@@ -58,15 +60,13 @@ export function DepositHeader({
 
       <View style={styles.orderRow}>
         <View style={styles.logoCircle}>
-          <Text style={styles.logoMark}>{'✚'}</Text>
+          <MaterialCommunityIcons name="gift" size={25} color={colors.dark_green} />
         </View>
         <View style={styles.orderIdentity}>
           <Text style={styles.orderLabel}>Order #</Text>
-          <Text style={styles.orderNumber}>
-            BBX-{String(transaction.transactionId).padStart(8, '0')}
-          </Text>
+          <Text style={styles.orderNumber}>{transaction.transactionNumber}</Text>
         </View>
-        <View style={[styles.statusPill, { backgroundColor: colors.white }]}>
+        <View style={[styles.statusPill, { backgroundColor: statusBackgroundColor }]}>
           <Text style={[styles.statusText, { color: statusColor }]}>{statusLabel}</Text>
         </View>
       </View>
@@ -75,14 +75,23 @@ export function DepositHeader({
         <Stat value={totalBoxes} label="Total boxes" />
         <Stat value={boys} label="Boys" />
         <Stat value={girls} label="Girls" />
+        <Stat value={unlabeled} label="Unlabeled" isLast />
       </View>
     </View>
   );
 }
 
-function Stat({ value, label }: { value: number; label: string }) {
+function Stat({
+  value,
+  label,
+  isLast = false,
+}: {
+  value: number;
+  label: string;
+  isLast?: boolean;
+}) {
   return (
-    <View style={styles.stat}>
+    <View style={[styles.stat, isLast && styles.lastStat]}>
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
@@ -101,8 +110,7 @@ interface DepositInfoProps {
 }
 
 export function DepositInfo({ transaction, icons }: DepositInfoProps) {
-  const fullName =
-    `${transaction.name} ${transaction.lastName} ${transaction.secondLastName}`.trim();
+  const fullName = `${transaction.firstName} ${transaction.lastName}`.trim();
   const rows = [
     { label: 'Contact', value: fullName, icon: icons.contact },
     { label: 'Email', value: transaction.email, icon: icons.email },
@@ -113,7 +121,7 @@ export function DepositInfo({ transaction, icons }: DepositInfoProps) {
     },
     {
       label: 'Order #',
-      value: `BBX-${String(transaction.transactionId).padStart(8, '0')}`,
+      value: transaction.transactionNumber,
       icon: icons.order,
     },
     { label: 'Church', value: transaction.recollectionCenterName, icon: icons.church },
@@ -137,13 +145,13 @@ export function DepositInfo({ transaction, icons }: DepositInfoProps) {
 }
 
 export function BoxSummaryTable({ boxes }: { boxes: BoxSummary[] }) {
-  const ages = Array.from(new Set(boxes.map((box) => String(box.age))));
-  const rows = ages.map((age) => {
-    const ageBoxes = boxes.filter((box) => String(box.age) === age);
-    const boys = getQuantity(ageBoxes, MALE_GENDER_ID);
-    const girls = getQuantity(ageBoxes, FEMALE_GENDER_ID);
-    const unlabeled = getQuantity(ageBoxes, UNLABELED_GENDER_ID);
-    return { age, boys, girls, unlabeled, total: boys + girls + unlabeled };
+  const ages = Array.from(new Set(boxes.map((box) => box.ageCode)));
+  const rows = ages.map((ageCode) => {
+    const ageBoxes = boxes.filter((box) => box.ageCode === ageCode);
+    const boys = getQuantity(ageBoxes, MALE_GENDER_CODE);
+    const girls = getQuantity(ageBoxes, FEMALE_GENDER_CODE);
+    const unlabeled = getQuantity(ageBoxes, UNLABELED_GENDER_CODE);
+    return { ageCode, boys, girls, unlabeled, total: boys + girls + unlabeled };
   });
   const totals = rows.reduce(
     (result, row) => ({
@@ -165,20 +173,26 @@ export function BoxSummaryTable({ boxes }: { boxes: BoxSummary[] }) {
         <Text style={styles.totalHeader}>Total</Text>
       </View>
       {rows.map((row) => (
-        <View key={row.age} style={styles.summaryRow}>
-          <Text style={[styles.summaryValue, styles.ageColumn]}>{formatAge(row.age)}</Text>
+        <View key={row.ageCode} style={styles.summaryRow}>
+          <Text style={[styles.summaryValue, styles.summaryCell, styles.ageColumn]}>
+            {formatAge(row.ageCode)}
+          </Text>
           <Count value={row.boys} color={colors.dark_blue} />
           <Count value={row.girls} color={colors.red_label} />
-          <Text style={styles.summaryValue}>{row.unlabeled}</Text>
-          <Text style={styles.summaryValue}>{row.total}</Text>
+          <Text style={[styles.summaryValue, styles.summaryCell]}>{row.unlabeled}</Text>
+          <Text style={[styles.summaryValue, styles.summaryCell]}>{row.total}</Text>
         </View>
       ))}
       <View style={[styles.summaryRow, styles.totalRow]}>
-        <Text style={[styles.summaryValue, styles.ageColumn]}>Total</Text>
-        <Text style={[styles.summaryValue, styles.boysHeader]}>{totals.boys}</Text>
-        <Text style={[styles.summaryValue, styles.girlsHeader]}>{totals.girls}</Text>
-        <Text style={styles.summaryValue}>{totals.unlabeled}</Text>
-        <Text style={styles.summaryValue}>{totals.total}</Text>
+        <Text style={[styles.summaryValue, styles.summaryCell, styles.ageColumn]}>Total</Text>
+        <Text style={[styles.summaryValue, styles.summaryCell, styles.totalBoysValue]}>
+          {totals.boys}
+        </Text>
+        <Text style={[styles.summaryValue, styles.summaryCell, styles.totalGirlsValue]}>
+          {totals.girls}
+        </Text>
+        <Text style={[styles.summaryValue, styles.summaryCell]}>{totals.unlabeled}</Text>
+        <Text style={[styles.summaryValue, styles.summaryCell]}>{totals.total}</Text>
       </View>
     </View>
   );
@@ -186,33 +200,34 @@ export function BoxSummaryTable({ boxes }: { boxes: BoxSummary[] }) {
 
 function Count({ value, color }: { value: number; color: string }) {
   return (
-    <View
-      style={[
-        styles.countBadge,
-        { backgroundColor: color === colors.red_label ? '#FDE9E9' : '#E8EEF9' },
-      ]}>
-      <Text style={[styles.summaryValue, { color }]}>{value}</Text>
+    <View style={styles.countCell}>
+      <View
+        style={[
+          styles.countBadge,
+          { backgroundColor: color === colors.red_label ? '#FDE9E9' : '#E8EEF9' },
+        ]}>
+        <Text style={[styles.summaryValue, { color }]}>{value}</Text>
+      </View>
     </View>
   );
 }
 
-function getQuantity(boxes: BoxSummary[], genderId: number) {
+function getQuantity(boxes: BoxSummary[], genderCode: GenderCode) {
   return boxes
-    .filter((box) => box.genderId === genderId)
+    .filter((box) => box.genderCode === genderCode)
     .reduce((sum, box) => sum + box.quantity, 0);
 }
 
 function formatAge(age: string) {
-  if (age === 'false') return 'Unlabeled';
-  const ageLabel = BOX_AGE_MAP[Number(age)] ?? age;
-  return ageLabel.includes('-') ? `${ageLabel} yrs` : ageLabel;
+  if (age === 'UNLABELED') return 'Unlabeled';
+  return `${age} yrs`;
 }
 
 const styles = StyleSheet.create({
   headerArea: {
     backgroundColor: colors.dark_blue,
     paddingHorizontal: 20,
-    paddingTop: 12,
+    paddingTop: 20,
     paddingBottom: 20,
   },
   headerRow: {
@@ -222,8 +237,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   backButton: { flexDirection: 'row', alignItems: 'center', width: 76 },
-  backArrow: { color: colors.white, fontSize: 26, lineHeight: 20, marginRight: 4 },
-  backText: { color: colors.white, fontFamily: 'OpenSans-SemiBold', fontSize: 12 },
+  backArrow: { color: colors.white, fontSize: 24, lineHeight: 24, marginRight: 4 },
+  backText: {
+    color: colors.white,
+    fontFamily: 'OpenSans-SemiBold',
+    fontSize: 12,
+    lineHeight: 16,
+  },
   headerTitle: { color: colors.white, fontFamily: 'OpenSans-Bold', fontSize: 14 },
   headerSpacer: { width: 76 },
   orderRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 18 },
@@ -249,6 +269,7 @@ const styles = StyleSheet.create({
     borderRightColor: '#60739B',
     borderRightWidth: 1,
   },
+  lastStat: { borderRightWidth: 0 },
   statValue: { color: colors.white, fontFamily: 'OpenSans-Bold', fontSize: 20 },
   statLabel: { color: '#B5C1DC', fontFamily: 'OpenSans-SemiBold', fontSize: 10 },
   infoList: { gap: 10 },
@@ -274,29 +295,29 @@ const styles = StyleSheet.create({
   infoLabel: { color: '#58719B', fontFamily: 'OpenSans-SemiBold', fontSize: 10 },
   infoValue: { color: '#101A2D', fontFamily: 'OpenSans-SemiBold', fontSize: 12 },
   summaryTable: { gap: 10 },
-  summaryHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 },
-  summaryHeaderText: { color: '#58719B', fontFamily: 'OpenSans-SemiBold', fontSize: 10 },
-  ageColumn: { flex: 1.4, textAlign: 'left' },
+  summaryHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8 },
+  summaryHeaderText: { color: '#58719B', fontFamily: 'OpenSans-SemiBold', fontSize: 9 },
+  ageColumn: { flex: 1.15, textAlign: 'left' },
   boysHeader: {
-    flex: 0.8,
+    flex: 0.72,
     textAlign: 'center',
     color: colors.dark_blue,
     fontFamily: 'OpenSans-SemiBold',
-    fontSize: 10,
+    fontSize: 9,
   },
   girlsHeader: {
-    flex: 0.8,
+    flex: 0.72,
     textAlign: 'center',
     color: colors.red_label,
     fontFamily: 'OpenSans-SemiBold',
-    fontSize: 10,
+    fontSize: 9,
   },
   totalHeader: {
-    flex: 0.9,
+    flex: 0.95,
     textAlign: 'center',
     color: '#58719B',
     fontFamily: 'OpenSans-SemiBold',
-    fontSize: 10,
+    fontSize: 9,
   },
   summaryRow: {
     minHeight: 42,
@@ -306,20 +327,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F6F8',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
   },
   summaryValue: {
-    flex: 0.8,
     textAlign: 'center',
     color: '#101A2D',
     fontFamily: 'OpenSans-SemiBold',
-    fontSize: 12,
+    fontSize: 11,
+  },
+  summaryCell: { flex: 0.72 },
+  totalBoysValue: { color: colors.dark_blue },
+  totalGirlsValue: { color: colors.red_label },
+  countCell: {
+    flex: 0.72,
+    alignItems: 'center',
   },
   countBadge: {
-    flex: 0.8,
-    alignItems: 'center',
+    minWidth: 30,
     justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 12,
+    paddingHorizontal: 5,
     paddingVertical: 3,
   },
   totalRow: { backgroundColor: '#E8EEF9', borderColor: '#C7D4EC' },

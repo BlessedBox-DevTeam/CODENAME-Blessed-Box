@@ -1,5 +1,6 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from '../baseStyles/baseStyles';
@@ -9,37 +10,61 @@ import {
   DepositHeader,
   DepositInfo,
 } from '../components/depositDetails/DepositDetailsContent';
-import CalendarIcon from '../components/icons/CalendarIcon';
 import Church from '../components/icons/Church';
 import Mail from '../components/icons/Mail';
 import UserAvatar from '../components/icons/UserAvatar';
 import LoadingOverlay from '../components/LoadingSpinner';
 import {
-  ADMIN_ROLE_TYPE_ID,
+  COMPLETED_STATUS_CODE,
   COMPLETED_STATUS_ID,
+  DECLINED_STATUS_CODE,
   DECLINED_STATUS_ID,
-  FEMALE_GENDER_ID,
-  MALE_GENDER_ID,
+  EDIT_TRANSACTION__PERMISSION,
+  FEMALE_GENDER_CODE,
+  GenderCode,
+  MALE_GENDER_CODE,
   PENDING_STATUS_ID,
+  UNLABELED_GENDER_CODE,
   SOCKET_EVENT_TRANSACTION_UPDATED,
-  UNLABELED_GENDER_ID,
 } from '../helpers/constants';
-import { getUserRoles, UserRole } from '../helpers/helpers';
+import { getUserPermissions } from '../helpers/helpers';
 import { editTransactionStatus, getTransactionDetails } from '../services/services';
 import { getSocket } from '../socketService';
 
 type TransactionDetails = {
   transactionId: number;
-  statusCode: number;
-  name: string;
+  statusCode: string;
+  statusId: number;
+  firstName: string;
   lastName: string;
-  secondLastName: string;
   email: string;
   transactionDate: string;
   recollectionCenterName: string;
+  transactionNumber: string;
 };
 
-type BoxSummary = { age: string | number | false; genderId: number; quantity: number };
+type BoxSummary = { ageCode: string; genderCode: GenderCode; quantity: number };
+type BoxResponse = {
+  ageCode: string;
+  genderCode: string;
+};
+
+const STATUS_ID_BY_CODE: Record<string, number> = {
+  [COMPLETED_STATUS_CODE]: COMPLETED_STATUS_ID,
+  [DECLINED_STATUS_CODE]: DECLINED_STATUS_ID,
+};
+
+const STATUS_STYLE_BY_CODE: Record<string, { color: string; backgroundColor: string }> = {
+  PENDING: { color: '#F08A00', backgroundColor: '#FFF4D7' },
+  [COMPLETED_STATUS_CODE]: { color: colors.green_label, backgroundColor: '#E2F4E6' },
+  [DECLINED_STATUS_CODE]: { color: colors.red_label, backgroundColor: '#FBE3E3' },
+};
+
+function getGenderCode(genderCode: string): GenderCode {
+  if (genderCode === MALE_GENDER_CODE) return MALE_GENDER_CODE;
+  if (genderCode === FEMALE_GENDER_CODE) return FEMALE_GENDER_CODE;
+  return UNLABELED_GENDER_CODE;
+}
 
 export default function Index() {
   const router = useRouter();
@@ -48,34 +73,39 @@ export default function Index() {
   const [showWarning, setShowWarning] = useState(false);
   const [transactionDetails, setTransactionDetails] = useState<TransactionDetails | null>(null);
   const [boxes, setBoxes] = useState<BoxSummary[]>([]);
-  const [roles, setRoles] = useState<UserRole[]>([]);
+  const [permissions, setPermissions] = useState<string[]>([]);
   const { transactionId: transactionParam } = useLocalSearchParams<{ transactionId: string }>();
   const transactionId = JSON.parse(transactionParam);
-  const canValidateDeposit = roles.some(
-    (role) =>
-      role.roleId === ADMIN_ROLE_TYPE_ID && transactionDetails?.statusCode === PENDING_STATUS_ID
-  );
+  const canValidateDeposit =
+    permissions.includes(EDIT_TRANSACTION__PERMISSION) &&
+    transactionDetails?.statusId === PENDING_STATUS_ID;
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const [userRoles, { response }] = await Promise.all([
-        getUserRoles(),
+      const [userPermissions, { response }] = await Promise.all([
+        getUserPermissions(),
         getTransactionDetails(transactionId).then(({ data }) => data),
       ]);
-      setRoles(userRoles ?? []);
-      setTransactionDetails(response.transactionDetails);
+      setPermissions(userPermissions);
+      console.log('Transaction details response:', response);
+      const details = response.transactionDetails;
+      setTransactionDetails({
+        ...details,
+        firstName: details.firstName ?? details.name ?? '',
+        statusCode: details.statusCode,
+        statusId: details.statusId,
+      });
       const groupedBoxes = response.boxes.reduce(
-        (map: Map<string, BoxSummary>, item: BoxSummary | null) => {
+        (map: Map<string, BoxSummary>, item: BoxResponse | null) => {
           if (!item) return map;
-          const age = item.age ?? false;
-          const genderId = item.genderId ?? UNLABELED_GENDER_ID;
-          const key = `${age}-${genderId}`;
+          const genderCode = getGenderCode(item.genderCode);
+          const key = `${item.ageCode}-${genderCode}`;
           const current = map.get(key);
           map.set(
             key,
             current
               ? { ...current, quantity: current.quantity + 1 }
-              : { age, genderId, quantity: 1 }
+              : { ageCode: item.ageCode, genderCode, quantity: 1 }
           );
           return map;
         },
@@ -87,11 +117,11 @@ export default function Index() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [transactionId]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   useEffect(() => {
     const socket = getSocket();
@@ -99,7 +129,13 @@ export default function Index() {
     const handleStatusUpdate = (updatedTransaction: { id: number; statusCode: string }) => {
       if (transactionDetails?.transactionId === updatedTransaction.id) {
         setTransactionDetails((previous) =>
-          previous ? { ...previous, statusCode: Number(updatedTransaction.statusCode) } : previous
+          previous
+            ? {
+                ...previous,
+                statusCode: updatedTransaction.statusCode,
+                statusId: STATUS_ID_BY_CODE[updatedTransaction.statusCode] ?? previous.statusId,
+              }
+            : previous
         );
       }
     };
@@ -114,19 +150,16 @@ export default function Index() {
 
   const totalBoxes = boxes.reduce((sum, box) => sum + box.quantity, 0);
   const boys = boxes
-    .filter((box) => box.genderId === MALE_GENDER_ID)
+    .filter((box) => box.genderCode === MALE_GENDER_CODE)
     .reduce((sum, box) => sum + box.quantity, 0);
   const girls = boxes
-    .filter((box) => box.genderId === FEMALE_GENDER_ID)
+    .filter((box) => box.genderCode === FEMALE_GENDER_CODE)
     .reduce((sum, box) => sum + box.quantity, 0);
-  const statusLabel =
-    transactionDetails.statusCode === DECLINED_STATUS_ID
-      ? 'Cancelled'
-      : transactionDetails.statusCode === COMPLETED_STATUS_ID
-        ? 'Confirmed'
-        : 'Pending';
-  const statusColor =
-    transactionDetails.statusCode === DECLINED_STATUS_ID ? colors.red_label : colors.dark_green;
+  const unlabeled = boxes
+    .filter((box) => box.genderCode === UNLABELED_GENDER_CODE)
+    .reduce((sum, box) => sum + box.quantity, 0);
+  const statusStyle =
+    STATUS_STYLE_BY_CODE[transactionDetails.statusCode] ?? STATUS_STYLE_BY_CODE.DECLINED;
   const updateStatus = async (statusCode: number) => {
     setIsLoading(true);
     await editTransactionStatus(transactionId, statusCode);
@@ -142,8 +175,10 @@ export default function Index() {
           totalBoxes={totalBoxes}
           boys={boys}
           girls={girls}
-          statusLabel={statusLabel}
-          statusColor={statusColor}
+          unlabeled={unlabeled}
+          statusLabel={transactionDetails.statusCode}
+          statusColor={statusStyle.color}
+          statusBackgroundColor={statusStyle.backgroundColor}
           onBack={() => router.replace('/(protected)/transactions')}
         />
         <View style={{ flex: 1 }}>
@@ -170,19 +205,27 @@ export default function Index() {
                     commonStyles.paragraph,
                     { color: activeTab === tab ? colors.dark_blue : '#58719B', fontSize: 12 },
                   ]}>
-                  {tab === 'information' ? 'Deposit Info' : 'Box Summary'}
+                  {tab === 'information' ? 'Order Info' : 'Box Summary'}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
-          <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
             {activeTab === 'information' ? (
               <DepositInfo
                 transaction={transactionDetails}
                 icons={{
                   contact: <UserAvatar width={18} height={18} />,
                   email: <Mail width={18} height={18} />,
-                  date: <CalendarIcon size={18} />,
+                  date: (
+                    <MaterialCommunityIcons
+                      name="calendar-outline"
+                      size={18}
+                      color={colors.dark_blue}
+                    />
+                  ),
                   order: <Text style={{ color: colors.dark_blue, fontSize: 17 }}>#</Text>,
                   church: <Church width={18} height={18} />,
                 }}
@@ -213,7 +256,7 @@ export default function Index() {
               </TouchableOpacity>
             </View>
           )}
-          {!canValidateDeposit && transactionDetails.statusCode === PENDING_STATUS_ID && (
+          {!canValidateDeposit && transactionDetails.statusId === PENDING_STATUS_ID && (
             <Text
               style={[
                 commonStyles.paragraphItalic,
