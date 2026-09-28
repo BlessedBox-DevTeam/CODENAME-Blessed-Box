@@ -18,6 +18,11 @@
       },
       "ios": {
         "simulator": false
+      },
+      "env": {
+        "APP_ENV": "preview",
+        "EXPO_PUBLIC_URL": "http://18.191.103.46:4000",
+        "EXPO_PUBLIC_PORT": "4000"
       }
     },
     "production": {
