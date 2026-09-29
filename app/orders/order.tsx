@@ -352,10 +352,12 @@
 // }
 
 import { router, Stack } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import {
   Alert,
   Modal,
+  Platform,
   SafeAreaView,
   Text,
   TouchableOpacity,
@@ -363,9 +365,6 @@ import {
   useWindowDimensions,
 } from 'react-native';
 
-import colors from '../baseStyles/colors';
-import commonStyles from '../baseStyles/baseStyles';
-import BackArrow from '../components/icons/BackArrow';
 import { BoxLabelInfo } from '../types/BoxLabelInfo';
 import { UNLABELED_GENDER_ID } from '../helpers/constants';
 
@@ -403,11 +402,67 @@ type BoxValues = {
   [key in BoxKey]: number;
 };
 
+type GenderConfig = {
+  key: Gender;
+  emoji: string;
+  label: string;
+  title: string;
+  text: string;
+  border: string;
+  selectedBg: string;
+  plusBg: string;
+  amountBg: string;
+  amountBorder: string;
+  amountText: string;
+};
+
 /**
  * ============================================================
- * INITIAL VALUES
+ * CONSTANTS
  * ============================================================
  */
+
+const GENDERS: GenderConfig[] = [
+  {
+    key: 'girl',
+    emoji: '👧',
+    label: 'GIRL',
+    title: 'Girl',
+    text: '#ff9aaa',
+    border: '#a5224c',
+    selectedBg: '#3b1f2b',
+    plusBg: '#e53e3e',
+    amountBg: '#3a2430',
+    amountBorder: '#5a2b3b',
+    amountText: '#ff7a88',
+  },
+  {
+    key: 'boy',
+    emoji: '👦',
+    label: 'BOY',
+    title: 'Boy',
+    text: '#75c9ff',
+    border: '#07517d',
+    selectedBg: '#172c48',
+    plusBg: '#2d6cb5',
+    amountBg: '#1b2b45',
+    amountBorder: '#28426a',
+    amountText: '#7ab8ea',
+  },
+  {
+    key: 'unlabeled',
+    emoji: '🎁',
+    label: 'UNLABELED',
+    title: 'Unlabeled',
+    text: '#b8a0ff',
+    border: '#5120a6',
+    selectedBg: '#242044',
+    plusBg: '#7046c7',
+    amountBg: '#25234b',
+    amountBorder: '#3e3476',
+    amountText: '#b8a0ff',
+  },
+];
 
 const initialValues: BoxValues = {
   'girl-0': 0,
@@ -426,6 +481,9 @@ const initialValues: BoxValues = {
 const ageLabels = ['2–4', '5–9', '10–14'];
 
 const ageIds = [AGE_2_4_ID, AGE_5_9_ID, AGE_10_14_ID];
+
+// Hex alpha appended to a 7-char hex color (e.g. '#a5224c' + '66')
+const DIM_ALPHA = 'B3';
 
 /**
  * ============================================================
@@ -453,11 +511,16 @@ export default function Index() {
 
   const titleFontSize = isVerySmallScreen ? 18 : isSmallScreen ? 20 : 22;
 
-  const totalCardHeight = isVerySmallScreen ? 100 : isSmallScreen ? 112 : 138;
+  const totalCardMinHeight = isVerySmallScreen ? 64 : 76;
 
-  const totalNumberSize = isVerySmallScreen ? 34 : isSmallScreen ? 38 : 44;
+  const totalNumberSize = isVerySmallScreen ? 32 : isSmallScreen ? 36 : 40;
 
-  const cellHeight = isVerySmallScreen ? 68 : isSmallScreen ? 78 : 100;
+  const cellGap = 8;
+
+  // Square cells: the width depends on the screen
+  const cellSize = (width - horizontalPadding * 2 - cellGap * 3) / 4;
+
+  const cellHeight = Math.min(cellSize, isVerySmallScreen ? 68 : 100);
 
   const rowGap = isVerySmallScreen ? 7 : isSmallScreen ? 9 : 12;
 
@@ -467,9 +530,9 @@ export default function Index() {
 
   const controllerMarginTop = isVerySmallScreen ? 10 : isSmallScreen ? 14 : 20;
 
-  const controllerPadding = isVerySmallScreen ? 10 : isSmallScreen ? 12 : 16;
+  const controllerPadding = 12;
 
-  const controllerHeight = isVerySmallScreen ? 105 : isSmallScreen ? 112 : 126;
+  const controllerHeight = isVerySmallScreen ? 98 : 108;
 
   const continueHeight = isVerySmallScreen ? 52 : isSmallScreen ? 58 : 66;
 
@@ -482,10 +545,6 @@ export default function Index() {
   const screenBackground = '#101725';
   const cardBackground = '#192231';
 
-  const girlColor = '#ff9aaa';
-  const boyColor = '#75c9ff';
-  const unlabeledColor = '#b8a0ff';
-
   /**
    * ==========================================================
    * STATE
@@ -494,7 +553,8 @@ export default function Index() {
 
   const [values, setValues] = useState<BoxValues>(initialValues);
 
-  const [selectedBox, setSelectedBox] = useState<BoxKey>('unlabeled-1');
+  // null = nothing selected (empty initial state)
+  const [selectedBox, setSelectedBox] = useState<BoxKey | null>(null);
 
   const [modal, setModal] = useState(false);
 
@@ -512,17 +572,11 @@ export default function Index() {
     return Object.values(values).reduce((sum, value) => sum + value, 0);
   }, [values]);
 
-  const girlTotal = useMemo(() => {
-    return values['girl-0'] + values['girl-1'] + values['girl-2'];
-  }, [values]);
+  const girlTotal = values['girl-0'] + values['girl-1'] + values['girl-2'];
+  const boyTotal = values['boy-0'] + values['boy-1'] + values['boy-2'];
+  const unlabeledTotal = values['unlabeled-0'] + values['unlabeled-1'] + values['unlabeled-2'];
 
-  const boyTotal = useMemo(() => {
-    return values['boy-0'] + values['boy-1'] + values['boy-2'];
-  }, [values]);
-
-  const unlabeledTotal = useMemo(() => {
-    return values['unlabeled-0'] + values['unlabeled-1'] + values['unlabeled-2'];
-  }, [values]);
+  const isEmpty = totalBoxes === 0;
 
   /**
    * ==========================================================
@@ -530,18 +584,13 @@ export default function Index() {
    * ==========================================================
    */
 
-  const selectedValue = values[selectedBox];
+  const selectedGenderKey = selectedBox ? (selectedBox.split('-')[0] as Gender) : null;
 
-  const selectedGender = selectedBox.split('-')[0] as Gender;
+  const selectedAgeIndex = selectedBox ? (Number(selectedBox.split('-')[1]) as AgeIndex) : null;
 
-  const selectedAgeIndex = Number(selectedBox.split('-')[1]) as AgeIndex;
+  const selectedConfig = GENDERS.find((g) => g.key === selectedGenderKey) ?? null;
 
-  const selectedAge = ageLabels[selectedAgeIndex];
-
-  const selectedGenderLabel =
-    selectedGender === 'girl' ? 'Girl' : selectedGender === 'boy' ? 'Boy' : 'Unlabeled';
-
-  const selectedEmoji = selectedGender === 'girl' ? '👧' : selectedGender === 'boy' ? '👦' : '🎁';
+  const selectedValue = selectedBox ? values[selectedBox] : 0;
 
   /**
    * ==========================================================
@@ -550,6 +599,8 @@ export default function Index() {
    */
 
   const updateSelectedBox = (amount: number) => {
+    if (!selectedBox) return;
+
     setValues((prev) => ({
       ...prev,
       [selectedBox]: Math.max(0, prev[selectedBox] + amount),
@@ -560,7 +611,7 @@ export default function Index() {
    * ==========================================================
    * BOX PRESS
    *
-   * Selecciona el cuadro y suma +1.
+   * Selects the cell and adds +1.
    * ==========================================================
    */
 
@@ -581,7 +632,7 @@ export default function Index() {
 
   const handleReset = () => {
     setValues(initialValues);
-    setSelectedBox('unlabeled-1');
+    setSelectedBox(null);
   };
 
   /**
@@ -593,9 +644,7 @@ export default function Index() {
   const createBoxData = (): BoxLabelInfo[] => {
     const result: BoxLabelInfo[] = [];
 
-    const genders: Gender[] = ['girl', 'boy', 'unlabeled'];
-
-    genders.forEach((gender) => {
+    GENDERS.forEach(({ key: gender }) => {
       ageIds.forEach((ageId, ageIndex) => {
         const key = `${gender}-${ageIndex}` as BoxKey;
 
@@ -626,7 +675,7 @@ export default function Index() {
    */
 
   const handleContinue = () => {
-    if (!totalBoxes || totalBoxes < 1 || totalBoxes > 100) {
+    if (totalBoxes < 1 || totalBoxes > 100) {
       Alert.alert('Error', 'The total number of boxes must be between 1 and 100.');
 
       return;
@@ -635,8 +684,6 @@ export default function Index() {
     const boxData = createBoxData();
 
     setMergedBoxData(boxData);
-
-    console.log(boxData);
 
     router.push({
       pathname: '/orders/orderSummary',
@@ -692,7 +739,7 @@ export default function Index() {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <BackArrow />
+            <Feather name="chevron-left" size={isVerySmallScreen ? 22 : 26} color="#ffffff" />
           </TouchableOpacity>
 
           {/* TITLE */}
@@ -724,13 +771,7 @@ export default function Index() {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Text
-              style={{
-                color: '#aeb5c0',
-                fontSize: isVerySmallScreen ? 21 : 24,
-              }}>
-              ↶
-            </Text>
+            <Feather name="rotate-ccw" size={isVerySmallScreen ? 18 : 20} color="#aeb5c0" />
           </TouchableOpacity>
         </View>
 
@@ -749,11 +790,11 @@ export default function Index() {
 
           <View
             style={{
-              height: totalCardHeight,
+              minHeight: totalCardMinHeight,
               borderRadius: isSmallScreen ? 18 : 22,
               backgroundColor: '#147b38',
               paddingHorizontal: isSmallScreen ? 18 : 24,
-              paddingVertical: isSmallScreen ? 10 : 18,
+              paddingVertical: 14,
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -783,40 +824,42 @@ export default function Index() {
               </Text>
             </View>
 
-            {/* SUMMARY */}
+            {/* SUMMARY (or empty message) */}
 
-            <View
-              style={{
-                gap: isVerySmallScreen ? 2 : 5,
-                alignItems: 'flex-start',
-              }}>
+            {isEmpty ? (
               <Text
                 style={{
-                  color: '#ffffff',
-                  fontSize: isVerySmallScreen ? 14 : 16,
-                  fontWeight: '600',
+                  color: '#52b174',
+                  fontSize: isVerySmallScreen ? 13 : 15,
+                  fontWeight: '400',
                 }}>
-                👧 {girlTotal}
+                No boxes yet
               </Text>
-
-              <Text
+            ) : (
+              <View
                 style={{
-                  color: '#ffffff',
-                  fontSize: isVerySmallScreen ? 14 : 16,
-                  fontWeight: '600',
+                  gap: isVerySmallScreen ? 2 : 5,
+                  alignItems: 'flex-start',
                 }}>
-                👦 {boyTotal}
-              </Text>
-
-              <Text
-                style={{
-                  color: '#ffffff',
-                  fontSize: isVerySmallScreen ? 14 : 16,
-                  fontWeight: '600',
-                }}>
-                🎁 {unlabeledTotal}
-              </Text>
-            </View>
+                {[
+                  { emoji: '👧', total: girlTotal },
+                  { emoji: '👦', total: boyTotal },
+                  { emoji: '🎁', total: unlabeledTotal },
+                ]
+                  .filter((item) => item.total > 0)
+                  .map((item) => (
+                    <Text
+                      key={item.emoji}
+                      style={{
+                        color: '#ffffff',
+                        fontSize: isVerySmallScreen ? 14 : 16,
+                        fontWeight: '600',
+                      }}>
+                      {item.emoji} {item.total}
+                    </Text>
+                  ))}
+              </View>
+            )}
           </View>
 
           {/* ==================================================
@@ -826,13 +869,13 @@ export default function Index() {
           <View
             style={{
               flexDirection: 'row',
+              gap: cellGap,
               marginTop: ageHeaderMarginTop,
               marginBottom: ageHeaderMarginBottom,
             }}>
             <View
               style={{
                 flex: 1,
-                marginRight: 8,
               }}
             />
 
@@ -841,7 +884,6 @@ export default function Index() {
                 key={age}
                 style={{
                   flex: 1,
-                  marginRight: 8,
                   alignItems: 'center',
                 }}>
                 <Text
@@ -866,84 +908,39 @@ export default function Index() {
           </View>
 
           {/* ==================================================
-              GIRL ROW
+              GENDER ROWS (girl / boy / unlabeled)
           ================================================== */}
 
-          <View
-            style={{
-              flexDirection: 'row',
-              marginBottom: rowGap,
-            }}>
-            <GenderCell gender="girl" emoji="👧" label="GIRL" cellHeight={cellHeight} />
+          {GENDERS.map((g, rowIndex) => (
+            <View
+              key={g.key}
+              style={{
+                flexDirection: 'row',
+                gap: cellGap,
+                marginBottom: rowIndex < GENDERS.length - 1 ? rowGap : 0,
+              }}>
+              <GenderCell config={g} cellHeight={cellHeight} />
 
-            {[0, 1, 2].map((ageIndex) => {
-              const key = `girl-${ageIndex}` as BoxKey;
+              {([0, 1, 2] as AgeIndex[]).map((ageIndex) => {
+                const key = `${g.key}-${ageIndex}` as BoxKey;
 
-              return (
-                <NumberCell
-                  key={key}
-                  value={values[key]}
-                  selected={selectedBox === key}
-                  gender="girl"
-                  cellHeight={cellHeight}
-                  onPress={() => handleBoxPress(key)}
-                />
-              );
-            })}
-          </View>
+                return (
+                  <NumberCell
+                    key={key}
+                    value={values[key]}
+                    selected={selectedBox === key}
+                    config={g}
+                    cellHeight={cellHeight}
+                    onPress={() => handleBoxPress(key)}
+                  />
+                );
+              })}
+            </View>
+          ))}
 
-          {/* ==================================================
-              BOY ROW
-          ================================================== */}
+          {/* Spacer: empuja el controlador y Continue hacia abajo */}
 
-          <View
-            style={{
-              flexDirection: 'row',
-              marginBottom: rowGap,
-            }}>
-            <GenderCell gender="boy" emoji="👦" label="BOY" cellHeight={cellHeight} />
-
-            {[0, 1, 2].map((ageIndex) => {
-              const key = `boy-${ageIndex}` as BoxKey;
-
-              return (
-                <NumberCell
-                  key={key}
-                  value={values[key]}
-                  selected={selectedBox === key}
-                  gender="boy"
-                  cellHeight={cellHeight}
-                  onPress={() => handleBoxPress(key)}
-                />
-              );
-            })}
-          </View>
-
-          {/* ==================================================
-              UNLABELED ROW
-          ================================================== */}
-
-          <View
-            style={{
-              flexDirection: 'row',
-            }}>
-            <GenderCell gender="unlabeled" emoji="🎁" label="UNLABELED" cellHeight={cellHeight} />
-
-            {[0, 1, 2].map((ageIndex) => {
-              const key = `unlabeled-${ageIndex}` as BoxKey;
-
-              return (
-                <NumberCell
-                  key={key}
-                  value={values[key]}
-                  selected={selectedBox === key}
-                  gender="unlabeled"
-                  cellHeight={cellHeight}
-                  onPress={() => handleBoxPress(key)}
-                />
-              );
-            })}
-          </View>
+          <View style={{ flex: 1, minHeight: controllerMarginTop }} />
 
           {/* ==================================================
               SELECTED BOX CONTROLLER
@@ -951,125 +948,119 @@ export default function Index() {
 
           <View
             style={{
-              height: controllerHeight,
-              marginTop: controllerMarginTop,
+              height: selectedConfig ? controllerHeight : continueHeight,
               borderRadius: isSmallScreen ? 18 : 22,
               backgroundColor: cardBackground,
               borderWidth: 1,
               borderColor: '#2b3545',
               padding: controllerPadding,
+              justifyContent: 'center',
             }}>
-            {/* TOP CONTROLLER */}
+            {selectedConfig && selectedAgeIndex !== null ? (
+              <>
+                {/* TOP CONTROLLER */}
 
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              {/* SELECTED LABEL */}
-
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={{
-                  flex: 1,
-                  color:
-                    selectedGender === 'girl'
-                      ? girlColor
-                      : selectedGender === 'boy'
-                        ? boyColor
-                        : unlabeledColor,
-                  fontSize: isVerySmallScreen ? 13 : isSmallScreen ? 15 : 18,
-                  fontWeight: '700',
-                  marginRight: 8,
-                }}>
-                {selectedEmoji} {selectedGenderLabel} · {selectedAge} yrs
-              </Text>
-
-              {/* MINUS */}
-
-              <TouchableOpacity
-                onPress={() => updateSelectedBox(-1)}
-                style={{
-                  width: isVerySmallScreen ? 34 : 40,
-                  height: isVerySmallScreen ? 34 : 40,
-                  borderRadius: isVerySmallScreen ? 17 : 20,
-                  backgroundColor: '#293242',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <Text
+                <View
                   style={{
-                    color: '#929aaa',
-                    fontSize: isVerySmallScreen ? 20 : 23,
+                    flex: 1,
+                    flexDirection: 'row',
+                    alignItems: 'center',
                   }}>
-                  −
-                </Text>
-              </TouchableOpacity>
+                  {/* SELECTED LABEL */}
 
-              {/* SELECTED VALUE */}
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{
+                      flex: 1,
+                      color: selectedConfig.text,
+                      fontSize: isVerySmallScreen ? 13 : isSmallScreen ? 15 : 18,
+                      fontWeight: '700',
+                      marginRight: 8,
+                    }}>
+                    {selectedConfig.emoji} {selectedConfig.title} · {ageLabels[selectedAgeIndex]}{' '}
+                    yrs
+                  </Text>
 
+                  {/* MINUS */}
+
+                  <TouchableOpacity
+                    onPress={() => updateSelectedBox(-1)}
+                    style={{
+                      width: isVerySmallScreen ? 30 : 34,
+                      height: isVerySmallScreen ? 30 : 34,
+                      borderRadius: isVerySmallScreen ? 15 : 17,
+                      backgroundColor: '#293242',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <PlusMinusIcon
+                      type="minus"
+                      color="#929aaa"
+                      size={isVerySmallScreen ? 12 : 14}
+                    />
+                  </TouchableOpacity>
+
+                  {/* SELECTED VALUE */}
+
+                  <Text
+                    style={{
+                      color: '#ffffff',
+                      fontSize: isVerySmallScreen ? 19 : 22,
+                      fontWeight: '700',
+                      width: isVerySmallScreen ? 42 : 52,
+                      textAlign: 'center',
+                    }}>
+                    {selectedValue}
+                  </Text>
+
+                  {/* PLUS */}
+
+                  <TouchableOpacity
+                    onPress={() => updateSelectedBox(1)}
+                    style={{
+                      width: isVerySmallScreen ? 30 : 34,
+                      height: isVerySmallScreen ? 30 : 34,
+                      borderRadius: isVerySmallScreen ? 15 : 17,
+                      backgroundColor: selectedConfig.plusBg,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <PlusMinusIcon type="plus" color="#ffffff" size={isVerySmallScreen ? 12 : 14} />
+                  </TouchableOpacity>
+                </View>
+
+                {/* ==================================================
+                    +5 / +10 / +20
+                ================================================== */}
+
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    gap: isVerySmallScreen ? 8 : 10,
+                    marginTop: isVerySmallScreen ? 6 : 10,
+                  }}>
+                  {[5, 10, 20].map((amount) => (
+                    <AmountButton
+                      key={amount}
+                      amount={amount}
+                      config={selectedConfig}
+                      small={isVerySmallScreen}
+                      onPress={() => updateSelectedBox(amount)}
+                    />
+                  ))}
+                </View>
+              </>
+            ) : (
               <Text
                 style={{
-                  color: '#ffffff',
-                  fontSize: isVerySmallScreen ? 19 : 22,
-                  fontWeight: '700',
-                  width: isVerySmallScreen ? 42 : 52,
+                  color: '#5a6272',
+                  fontSize: isVerySmallScreen ? 14 : 16,
                   textAlign: 'center',
                 }}>
-                {selectedValue}
+                Tap a cell to select it
               </Text>
-
-              {/* PLUS */}
-
-              <TouchableOpacity
-                onPress={() => updateSelectedBox(1)}
-                style={{
-                  width: isVerySmallScreen ? 34 : 40,
-                  height: isVerySmallScreen ? 34 : 40,
-                  borderRadius: isVerySmallScreen ? 17 : 20,
-                  backgroundColor: '#7046c7',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <Text
-                  style={{
-                    color: '#ffffff',
-                    fontSize: isVerySmallScreen ? 22 : 25,
-                  }}>
-                  +
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* ==================================================
-                +5 / +10 / +20
-            ================================================== */}
-
-            <View
-              style={{
-                flexDirection: 'row',
-                gap: isVerySmallScreen ? 8 : 10,
-              }}>
-              <AmountButton
-                amount={5}
-                small={isVerySmallScreen}
-                onPress={() => updateSelectedBox(5)}
-              />
-
-              <AmountButton
-                amount={10}
-                small={isVerySmallScreen}
-                onPress={() => updateSelectedBox(10)}
-              />
-
-              <AmountButton
-                amount={20}
-                small={isVerySmallScreen}
-                onPress={() => updateSelectedBox(20)}
-              />
-            </View>
+            )}
           </View>
 
           {/* ==================================================
@@ -1078,12 +1069,20 @@ export default function Index() {
 
           <TouchableOpacity
             onPress={handleContinue}
+            disabled={isEmpty}
+            activeOpacity={0.8}
             style={{
               height: continueHeight,
               borderRadius: isSmallScreen ? 18 : 22,
-              backgroundColor: '#18a346',
+              backgroundColor: isEmpty ? '#1c2433' : '#18a346',
+              shadowColor: '#18a346',
+              shadowOpacity: isEmpty ? 0 : 0.45,
+              shadowRadius: 18,
+              shadowOffset: { width: 0, height: 6 },
+              elevation: isEmpty ? 0 : 8,
               marginTop: isVerySmallScreen ? 8 : 12,
-              marginBottom: 8,
+              // iOS already adds the safe area (home indicator); web/Android need more margin
+              marginBottom: Platform.OS === 'ios' ? 12 : 28,
               alignItems: 'center',
               justifyContent: 'center',
               flexDirection: 'row',
@@ -1091,32 +1090,34 @@ export default function Index() {
             }}>
             <Text
               style={{
-                color: '#ffffff',
+                color: isEmpty ? '#4a5263' : '#ffffff',
                 fontSize: isVerySmallScreen ? 18 : 20,
                 fontWeight: '800',
               }}>
               Continue
             </Text>
 
-            <View
-              style={{
-                minWidth: isVerySmallScreen ? 28 : 32,
-                height: isVerySmallScreen ? 28 : 32,
-                paddingHorizontal: 7,
-                borderRadius: isVerySmallScreen ? 14 : 16,
-                backgroundColor: 'rgba(255,255,255,0.25)',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Text
+            {!isEmpty && (
+              <View
                 style={{
-                  color: '#ffffff',
-                  fontSize: isVerySmallScreen ? 14 : 16,
-                  fontWeight: '800',
+                  minWidth: isVerySmallScreen ? 28 : 32,
+                  height: isVerySmallScreen ? 28 : 32,
+                  paddingHorizontal: 7,
+                  borderRadius: isVerySmallScreen ? 14 : 16,
+                  backgroundColor: 'rgba(255,255,255,0.25)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}>
-                {totalBoxes}
-              </Text>
-            </View>
+                <Text
+                  style={{
+                    color: '#ffffff',
+                    fontSize: isVerySmallScreen ? 14 : 16,
+                    fontWeight: '800',
+                  }}>
+                  {totalBoxes}
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
         </View>
 
@@ -1199,7 +1200,7 @@ export default function Index() {
                       },
                     ];
 
-                    setMergedBoxData(updated);
+                    setMergedBoxData(updated as BoxLabelInfo[]);
 
                     setModal(false);
 
@@ -1238,25 +1239,64 @@ export default function Index() {
 
 /**
  * ============================================================
+ * PLUS / MINUS ICON
+ *
+ * Drawn with Views so it is perfectly centered
+ * (the text glyphs − and + get misaligned depending on the font).
+ * ============================================================
+ */
+
+function PlusMinusIcon({
+  type,
+  color,
+  size,
+}: {
+  type: 'plus' | 'minus';
+  color: string;
+  size: number;
+}) {
+  const thickness = 2.5;
+
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <View
+        style={{
+          position: 'absolute',
+          width: size,
+          height: thickness,
+          borderRadius: thickness / 2,
+          backgroundColor: color,
+        }}
+      />
+
+      {type === 'plus' && (
+        <View
+          style={{
+            position: 'absolute',
+            width: thickness,
+            height: size,
+            borderRadius: thickness / 2,
+            backgroundColor: color,
+          }}
+        />
+      )}
+    </View>
+  );
+}
+
+/**
+ * ============================================================
  * GENDER CELL
  * ============================================================
  */
 
-function GenderCell({
-  gender,
-  emoji,
-  label,
-  cellHeight,
-}: {
-  gender: Gender;
-  emoji: string;
-  label: string;
-  cellHeight: number;
-}) {
-  const borderColor = gender === 'girl' ? '#a5224c' : gender === 'boy' ? '#07517d' : '#5120a6';
-
-  const textColor = gender === 'girl' ? '#ff9aaa' : gender === 'boy' ? '#75c9ff' : '#b8a0ff';
-
+function GenderCell({ config, cellHeight }: { config: GenderConfig; cellHeight: number }) {
   const isSmall = cellHeight < 90;
 
   return (
@@ -1264,10 +1304,9 @@ function GenderCell({
       style={{
         flex: 1,
         height: cellHeight,
-        marginRight: 8,
         borderRadius: isSmall ? 15 : 20,
         borderWidth: 1,
-        borderColor,
+        borderColor: config.border + DIM_ALPHA,
         backgroundColor: '#192231',
         alignItems: 'center',
         justifyContent: 'center',
@@ -1276,17 +1315,17 @@ function GenderCell({
         style={{
           fontSize: isSmall ? 22 : 28,
         }}>
-        {emoji}
+        {config.emoji}
       </Text>
 
       <Text
         style={{
-          color: textColor,
+          color: config.text,
           fontSize: isSmall ? 9 : 12,
           fontWeight: '800',
           marginTop: 2,
         }}>
-        {label}
+        {config.label}
       </Text>
     </View>
   );
@@ -1301,21 +1340,20 @@ function GenderCell({
 function NumberCell({
   value,
   selected,
-  gender,
+  config,
   onPress,
   cellHeight,
 }: {
   value: number;
   selected: boolean;
-  gender: Gender;
+  config: GenderConfig;
   onPress: () => void;
   cellHeight: number;
 }) {
-  const color = gender === 'girl' ? '#ff9aaa' : gender === 'boy' ? '#75c9ff' : '#b8a0ff';
-
-  const borderColor = gender === 'girl' ? '#a5224c' : gender === 'boy' ? '#07517d' : '#5120a6';
-
   const isSmall = cellHeight < 90;
+
+  // Dim border when the cell is 0 and not selected
+  const dim = value === 0 && !selected;
 
   return (
     <TouchableOpacity
@@ -1324,17 +1362,22 @@ function NumberCell({
       style={{
         flex: 1,
         height: cellHeight,
-        marginRight: 8,
         borderRadius: isSmall ? 15 : 20,
         borderWidth: selected ? 2 : 1,
-        borderColor,
-        backgroundColor: selected && gender === 'unlabeled' ? '#242044' : '#192231',
+        borderColor: dim ? config.border + DIM_ALPHA : config.border,
+        backgroundColor: selected ? config.selectedBg : '#192231',
+        transform: [{ scale: selected ? 1.04 : 1 }],
+        shadowColor: config.border,
+        shadowOpacity: selected ? 0.6 : 0,
+        shadowRadius: selected ? 10 : 0,
+        shadowOffset: { width: 0, height: 0 },
+        elevation: selected ? 6 : 0,
         alignItems: 'center',
         justifyContent: 'center',
       }}>
       <Text
         style={{
-          color,
+          color: config.text,
           fontSize: isSmall ? 29 : 38,
           fontWeight: '600',
         }}>
@@ -1363,10 +1406,12 @@ function NumberCell({
 
 function AmountButton({
   amount,
+  config,
   onPress,
   small,
 }: {
   amount: number;
+  config: GenderConfig;
   onPress: () => void;
   small: boolean;
 }) {
@@ -1376,17 +1421,17 @@ function AmountButton({
       activeOpacity={0.75}
       style={{
         flex: 1,
-        height: small ? 34 : 40,
-        borderRadius: small ? 11 : 14,
-        backgroundColor: '#25234b',
+        height: small ? 30 : 34,
+        borderRadius: small ? 10 : 12,
+        backgroundColor: config.amountBg,
         borderWidth: 1,
-        borderColor: '#3e3476',
+        borderColor: config.amountBorder,
         alignItems: 'center',
         justifyContent: 'center',
       }}>
       <Text
         style={{
-          color: '#b8a0ff',
+          color: config.amountText,
           fontSize: small ? 12 : 15,
           fontWeight: '800',
         }}>

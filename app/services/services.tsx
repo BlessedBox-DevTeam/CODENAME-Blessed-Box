@@ -104,3 +104,7 @@ export const getRecollectionCenterBoxesCount = async () => {
 export const scanQRCode = async (codeValue: string) => {
   return await axios.post(`${API_URL}/api/qrCodes/isQRCode`, { qrCodeValue: codeValue });
 };
+
+// export const newTransaction = async () => {
+//   return await api.post(`${API_URL}/api/transactions/newTransaction`, { });
+// };
