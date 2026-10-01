@@ -16,7 +16,6 @@ export default ({ config }) => {
       },
       APP_ENV,
       URL: process.env.EXPO_PUBLIC_URL,
-      PORT: process.env.EXPO_PUBLIC_PORT,
     },
     updates: {
       url: 'https://u.expo.dev/04925fcb-f1be-4ab1-bca4-116c6f23d04c',
