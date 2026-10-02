@@ -45,15 +45,15 @@ export default function Index() {
   const [selectedDay, setSelectedDay] = useState('');
   const [queryParams, setQueryParams] = useState<{
     page: number;
+    transactionNumber: string;
     filters: {
       statusCodes: StatusCode[];
-      transactionNumber: string;
     };
   }>({
     page: 1,
+    transactionNumber: '',
     filters: {
       statusCodes: [],
-      transactionNumber: '',
     },
   });
   const router = useRouter();
@@ -67,9 +67,9 @@ export default function Index() {
     setAllTransactions([]);
     setQueryParams((prev) => ({
       page: 1,
+      transactionNumber: transactionNumber.trim(),
       filters: {
         statusCodes: getStatusCodes(selectedStatus),
-        transactionNumber: transactionNumber.trim(),
       },
     }));
     setModal(false);
@@ -78,9 +78,9 @@ export default function Index() {
     setAllTransactions([]);
     setQueryParams((prev) => ({
       page: 1,
+      transactionNumber: transactionNumber.trim(),
       filters: {
         ...prev.filters,
-        transactionNumber: transactionNumber.trim(),
       },
     }));
   };
@@ -298,7 +298,7 @@ export default function Index() {
             value={transactionNumber}
             onChangeText={handleTransactionNumberChange}
             onSubmitEditing={handleTransactionSearch}
-            placeholder="Search transaction number"
+            placeholder="Search order number"
             placeholderTextColor={colors.gray}
             keyboardType="numeric"
             returnKeyType="search"
@@ -372,9 +372,7 @@ export default function Index() {
           contentContainerStyle={{ gap: 16, padding: 18 }}
           ListEmptyComponent={() => (
             <View style={{ alignItems: 'center', marginTop: 50 }}>
-              <Text style={[commonStyles.paragraph, { color: colors.gray }]}>
-                No se encontraron transacciones
-              </Text>
+              <Text style={[commonStyles.paragraph, { color: colors.gray }]}>No Orders Yet.</Text>
             </View>
           )}
         />

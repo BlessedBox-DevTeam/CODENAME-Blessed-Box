@@ -1,5 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import Constants from 'expo-constants';
+import { Alert } from 'react-native';
 import {
   getAccessToken,
   getRefreshToken,
@@ -70,6 +71,11 @@ api.interceptors.response.use(
       _retry?: boolean;
     };
     const errorCode = error.response?.data?.code;
+
+    if (error.response?.status === 403) {
+      Alert.alert('No autorizado', 'No tienes permisos para realizar esta acción.');
+      return Promise.reject(error);
+    }
 
     if (
       error.response?.status !== 401 ||
