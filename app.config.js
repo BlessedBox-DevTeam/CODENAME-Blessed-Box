@@ -6,10 +6,10 @@ export default ({ config }) => {
   return {
     ...config,
     owner: 'kennepo23',
-    name: 'blessedboxapp',
+    name: 'BlessedBox',
     slug: 'blessedboxapp',
+    scheme: 'blessedbox',
     version: '1.0.0',
-    sdkVersion: '54.0.0',
     platforms: ['android', 'ios', 'web'],
     extra: {
       eas: {
@@ -17,7 +17,6 @@ export default ({ config }) => {
       },
       APP_ENV,
       URL: process.env.EXPO_PUBLIC_URL,
-      PORT: process.env.EXPO_PUBLIC_PORT,
     },
     updates: {
       url: 'https://u.expo.dev/04925fcb-f1be-4ab1-bca4-116c6f23d04c',
@@ -26,7 +25,7 @@ export default ({ config }) => {
       fallbackToCacheTimeout: 0,
     },
     runtimeVersion: {
-      policy: 'sdkVersion',
+      policy: 'appVersion',
     },
     splash: {
       backgroundColor: '#F3B080',
@@ -37,6 +36,9 @@ export default ({ config }) => {
       useCleartextTraffic: true,
     },
     ios: {
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+      },
       bundleIdentifier: 'com.kennepo23.blessedboxapp',
       buildNumber: '1.0.0',
     },
@@ -44,9 +46,17 @@ export default ({ config }) => {
       [
         'expo-build-properties',
         {
-          android: { usesCleartextTraffic: true },
+          android: {
+            usesCleartextTraffic: true,
+          },
         },
       ],
+      'expo-image',
+      'expo-router',
+      'expo-secure-store',
+      'expo-splash-screen',
+      'expo-web-browser',
     ],
+    icon: './assets/images/BB-icon.png',
   };
 };

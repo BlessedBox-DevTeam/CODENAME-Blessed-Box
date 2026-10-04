@@ -33,7 +33,7 @@ export default function LoginForm({ onSubmit, onInvalid, onRegister }: LoginForm
     }
   };
   const handleForgotPassword = async () => {
-    const { success } = (await forgotPassword(email)).data;
+    // const { success } = (await forgotPassword(email)).data;
   };
 
   return (

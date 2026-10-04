@@ -1194,7 +1194,7 @@ export default function Index() {
                     const updated = [
                       ...(mergedBoxData ?? []),
                       {
-                        boxAgeId: false,
+                        boxAgeId: TWO_TO_FOUR_YEARS_ID,
                         genderId: UNLABELED_GENDER_ID,
                         quantity: unlabeledAmount,
                       },

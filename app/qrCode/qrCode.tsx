@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Camera, CameraView } from 'expo-camera';
 import { router, Stack } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
@@ -18,10 +17,10 @@ import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import BackArrow from '../components/icons/BackArrow';
 import LoadingOverlay from '../components/LoadingSpinner';
-import { scanQRCode } from '../services/services';
+import { isBackupKey, scanQRCode } from '../services/services';
 
 export default function Index() {
-  const [hasPermission, setHasPermission] = useState(null);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [facing, setFacing] = useState<'front' | 'back'>('back');
   const [maxCameraWidth, setMaxCameraWidth] = useState<number | `${number}%`>('100%');
   const [maxManualWidth, setManualWidth] = useState<number | `${number}%`>(0);
@@ -76,7 +75,7 @@ export default function Index() {
   };
 
   const handleChangeText = (text: string) => {
-    const formatted = text.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8);
+    const formatted = text.replace(/[^a-zA-Z0-9]/g, '').slice(0, 6);
     setCode(formatted);
   };
 
@@ -107,7 +106,7 @@ export default function Index() {
           }}>
           <BackArrow onPress={handleBackPress} />
           <View style={{ flex: 1, alignItems: 'center' }}>
-            <Text style={commonStyles.header}>Order Summary</Text>
+            <Text style={commonStyles.header}>Drop-off Center</Text>
           </View>
           <View style={{ width: 25 }} />
         </View>
@@ -188,7 +187,7 @@ export default function Index() {
                     style={{ width: 125, height: 125, resizeMode: 'contain' }}
                   />
                   <Text style={[commonStyles.paragraph, { alignSelf: 'center', letterSpacing: 4 }]}>
-                    1234ABCD
+                    123ABC
                   </Text>
                 </View>
 
@@ -204,7 +203,7 @@ export default function Index() {
                   style={{ gap: 5 }}
                   keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
                   behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-                  <Text style={commonStyles.paragraph}>Enter the #id of the RC</Text>
+                  <Text style={commonStyles.paragraph}>Enter Drop-off Code</Text>
                   <TouchableWithoutFeedback onPress={() => inputRef.current?.focus()}>
                     <View
                       style={{
@@ -220,7 +219,7 @@ export default function Index() {
                         value={code}
                         onChangeText={handleChangeText}
                         keyboardType="default"
-                        maxLength={8}
+                        maxLength={6}
                         style={{
                           position: 'absolute',
                           opacity: 0,
@@ -229,7 +228,7 @@ export default function Index() {
                         autoFocus={false}
                       />
                       <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 2 }}>
-                        {[...Array(8)].map((_, i) => (
+                        {[...Array(6)].map((_, i) => (
                           <View key={i} style={{ width: 30, alignItems: 'center', padding: 5 }}>
                             <Text style={commonStyles.header}>{code[i] || ''}</Text>
                             <View
@@ -252,13 +251,11 @@ export default function Index() {
                   const showAlert = (message: string) => {
                     alert(message);
                   };
-                  if (code.length < 8) {
-                    return showAlert('Please enter a valid 8-character code.');
+                  if (code.length < 6) {
+                    return showAlert('Please enter a valid 6-character code.');
                   }
                   setIsLoading(true);
-                  const { response, message } = (
-                    await axios.post(`${API_URL}/api/backupKeys/isKey`, { keyValue: code })
-                  ).data;
+                  const { response, message } = (await isBackupKey(code)).data;
                   setIsLoading(false);
                   if (response) {
                     router.push('/orders/order');

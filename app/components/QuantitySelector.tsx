@@ -11,9 +11,13 @@ interface QuantitySelectorProps {
    * Optional value that, when changed, triggers a reset of the quantity.
    * Can be any type, commonly a unique key from the parent.
    */
-  getQuantity: () => number;
   resetKey?: any;
 }
+
+export type QuantitySelectorRef = {
+  getQuantity: () => number;
+  reset: () => void;
+};
 
 /**
  * QuantitySelector component.
@@ -38,7 +42,7 @@ interface QuantitySelectorProps {
  * @param {React.Ref<{ reset: () => void }>} ref - Ref exposing a reset method.
  * @returns {JSX.Element} React component.
  */
-const QuantitySelector = forwardRef<unknown, QuantitySelectorProps>((props, ref) => {
+const QuantitySelector = forwardRef<QuantitySelectorRef, QuantitySelectorProps>((props, ref) => {
   const { resetKey } = props;
 
   /** Current quantity (string for TextInput compatibility) */
@@ -53,7 +57,7 @@ const QuantitySelector = forwardRef<unknown, QuantitySelectorProps>((props, ref)
   // Expose reset method to parent via ref
   useImperativeHandle(ref, () => ({
     reset: () => setQuantity('1'),
-    getQuantity: () => quantity,
+    getQuantity: () => Number(quantity || 0),
   }));
 
   // Automatically reset quantity when resetKey changes
@@ -183,5 +187,5 @@ const styles = StyleSheet.create({
     minHeight: 32,
   },
 });
-
+QuantitySelector.displayName = 'QuantitySelector';
 export default QuantitySelector;

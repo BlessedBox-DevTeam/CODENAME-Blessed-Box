@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Modal, StyleSheet } from 'react-native';
 
 /**
  * LoadingOverlay component
@@ -21,8 +21,8 @@ import { Animated, StyleSheet } from 'react-native';
  * <LoadingOverlay visible={isLoading} size={60} color="#4CAF50" />
  */
 export default function LoadingOverlay({ visible = false, size = 90, color = '#d3d3d3' }) {
-  const opacity = useRef(new Animated.Value(0)).current;
-  const rotate = useRef(new Animated.Value(0)).current;
+  const [opacity] = useState(() => new Animated.Value(0));
+  const [rotate] = useState(() => new Animated.Value(0));
   const spinning = useRef<Animated.CompositeAnimation | null>(null);
 
   // Fade in/out and spin behavior
@@ -60,26 +60,32 @@ export default function LoadingOverlay({ visible = false, size = 90, color = '#d
   if (!visible) return null;
 
   return (
-    <Animated.View style={[styles.overlay, { opacity }]}>
-      <Animated.View
-        style={[
-          styles.spinner,
-          {
-            width: size,
-            height: size,
-            borderColor: color,
-            borderTopColor: 'transparent',
-            transform: [{ rotate: spin }],
-          },
-        ]}
-      />
-    </Animated.View>
+    <Modal visible={visible} transparent statusBarTranslucent animationType="none">
+      <Animated.View style={[styles.overlay, { opacity }]}>
+        <Animated.View
+          style={[
+            styles.spinner,
+            {
+              width: size,
+              height: size,
+              borderColor: color,
+              borderTopColor: 'transparent',
+              transform: [{ rotate: spin }],
+            },
+          ]}
+        />
+      </Animated.View>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
     backgroundColor: 'rgba(10, 10, 10, 0.35)',
     justifyContent: 'center',
     alignItems: 'center',

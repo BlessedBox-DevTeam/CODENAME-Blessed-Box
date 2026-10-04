@@ -11,13 +11,16 @@ import Home from '../components/icons/Home';
 import Newspaper from '../components/icons/NewsPaper';
 import QRCode from '../components/icons/QRCode';
 import SignOut from '../components/icons/SignOut';
-import { getAccessToken } from '../helpers/helpers';
+import { deleteAccessToken, deleteRefreshToken, getAccessToken } from '../helpers/helpers';
 import { logout } from '../services/services';
 import { disconnectSocket, initSocket } from '../socketService';
 
 export default function ProtectedLayout() {
   const router = useRouter();
   const pathname = usePathname();
+  const isOrderDetail = pathname === '/depositDetails';
+
+  const isTabActive = (path: string) => pathname === path;
 
   const handleNavigate = (path: string) => {
     if (pathname === path) return;
@@ -28,8 +31,13 @@ export default function ProtectedLayout() {
     }
   };
   const exit = async () => {
-    const success = await logout();
-    if (success) router.replace('/login');
+    const { success } = (await logout()).data;
+    if (success) {
+      deleteAccessToken();
+      deleteRefreshToken();
+      disconnectSocket();
+      router.replace('/login');
+    }
   };
   useEffect(() => {
     const init = async () => {
@@ -92,55 +100,131 @@ export default function ProtectedLayout() {
 
       {/* Bottom Tab Manual */}
 
-      <SafeAreaView
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-          backgroundColor: colors.white,
-          position: 'relative',
-        }}>
-        <LinearGradient
-          colors={['rgba(0,0,0,0.15)', 'transparent']}
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, zIndex: 10 }}
-        />
+      {!isOrderDetail && (
+        <SafeAreaView
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-around',
+            backgroundColor: colors.white,
+            position: 'relative',
+            paddingTop: 0,
+            paddingBottom: 0,
+          }}>
+          <LinearGradient
+            colors={['rgba(0,0,0,0.15)', 'transparent']}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, zIndex: 10 }}
+          />
 
-        {/* Home */}
-        <Pressable
-          onPress={() => handleNavigate('/home')}
-          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Home width={24} height={24} />
-          <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>Home</Text>
-        </Pressable>
+          {/* Home */}
+          <Pressable
+            onPress={() => handleNavigate('/home')}
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: isTabActive('/home') ? 'rgba(33, 55, 88, 0.10)' : 'transparent',
+              borderRadius: 12,
+              paddingVertical: 4,
+              marginHorizontal: 4,
+            }}>
+            <Home
+              width={24}
+              height={24}
+              color={isTabActive('/home') ? colors.dark_blue : colors.dark_gray}
+            />
+            <Text
+              style={[
+                commonStyles.paragraph,
+                { fontSize: 10, color: isTabActive('/home') ? colors.dark_blue : colors.dark_gray },
+              ]}>
+              Home
+            </Text>
+          </Pressable>
 
-        {/* News */}
-        <Pressable style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Newspaper width={24} height={24} />
-          <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>News</Text>
-        </Pressable>
+          {/* News */}
+          <Pressable
+            disabled
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              opacity: 0.45,
+              borderRadius: 12,
+              paddingVertical: 2,
+              marginHorizontal: 4,
+            }}>
+            <Newspaper width={24} height={24} color={colors.dark_gray} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10, color: colors.dark_gray }]}>
+              News
+            </Text>
+          </Pressable>
 
-        {/* QRCode */}
-        <Pressable
-          onPress={() => handleNavigate('/qrCode/qrCode')}
-          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <QRCode width={24} height={24} />
-          <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>QR</Text>
-        </Pressable>
+          {/* QRCode */}
+          <Pressable
+            onPress={() => handleNavigate('/qrCode/qrCode')}
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 12,
+              paddingVertical: 4,
+              marginHorizontal: 4,
+            }}>
+            <QRCode width={24} height={24} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>QR</Text>
+          </Pressable>
 
-        {/* DepositHistory */}
-        <Pressable
-          onPress={() => handleNavigate('/transactions')}
-          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <DepositHistory width={24} height={24} />
-          <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>History</Text>
-        </Pressable>
+          {/* DepositHistory */}
+          <Pressable
+            onPress={() => handleNavigate('/transactions')}
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: isTabActive('/transactions')
+                ? 'rgba(33, 55, 88, 0.10)'
+                : 'transparent',
+              borderRadius: 12,
+              paddingVertical: 4,
+              marginHorizontal: 4,
+            }}>
+            <DepositHistory
+              width={24}
+              height={24}
+              color={isTabActive('/transactions') ? colors.dark_blue : colors.dark_gray}
+            />
+            <Text
+              style={[
+                commonStyles.paragraph,
+                {
+                  fontSize: 10,
+                  color: isTabActive('/transactions') ? colors.dark_blue : colors.dark_gray,
+                },
+              ]}>
+              History
+            </Text>
+          </Pressable>
 
-        {/* Centers */}
-        <Pressable style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Church width={24} height={24} />
-          <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>Centers</Text>
-        </Pressable>
-      </SafeAreaView>
+          {/* Centers */}
+          <Pressable
+            disabled
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              opacity: 0.45,
+              borderRadius: 12,
+              paddingVertical: 2,
+              marginHorizontal: 4,
+            }}>
+            <Church width={24} height={24} color={colors.dark_gray} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10, color: colors.dark_gray }]}>
+              Centers
+            </Text>
+          </Pressable>
+        </SafeAreaView>
+      )}
     </>
   );
 }

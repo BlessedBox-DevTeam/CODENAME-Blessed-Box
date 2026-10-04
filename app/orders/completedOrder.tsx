@@ -11,14 +11,31 @@ export default function Index({}) {
   return (
     <SafeAreaProvider>
       <Stack.Screen options={{ headerShown: false }} />
-      <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1, padding: 16, justifyContent: 'center' }}>
-        <View style={[commonStyles.card, { height: 'auto', gap: 16, justifyContent: 'center', alignItems: 'center' }]}>
-          <Image source={require('../../assets/images/favicon.png')} style={{ width: 80, height: 80, resizeMode: 'contain' }} />
+      <SafeAreaView
+        style={{
+          backgroundColor: colors.backgroundColor,
+          flex: 1,
+          padding: 16,
+          justifyContent: 'center',
+        }}>
+        <View
+          style={[
+            commonStyles.card,
+            { height: 'auto', gap: 16, justifyContent: 'center', alignItems: 'center' },
+          ]}>
+          <Image
+            source={require('../../assets/images/BB-icon.png')}
+            style={{ width: 80, height: 80, resizeMode: 'contain' }}
+          />
           <Text style={[commonStyles.header, { textAlign: 'center', fontSize: 22 }]}>
             Order #{transactionId} {'\n'}has been received
           </Text>
-          <Text style={[commonStyles.paragraph, { textAlign: 'center' }]}>Thank you for your donation. A child will be blessed because of your gift.</Text>
-          <Text style={[commonStyles.title, { fontSize: 20, textAlign: 'center' }]}>Blessed Box</Text>
+          <Text style={[commonStyles.paragraph, { textAlign: 'center' }]}>
+            Thank you for your donation. A child will be blessed because of your gift.
+          </Text>
+          <Text style={[commonStyles.title, { fontSize: 20, textAlign: 'center' }]}>
+            Blessed Box
+          </Text>
           <TouchableOpacity
             style={[commonStyles.buttonNoShadow]}
             onPress={() => {

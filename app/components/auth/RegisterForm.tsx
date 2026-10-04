@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ScrollView,
   Text,
@@ -9,6 +9,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { authColors, authStyles } from '../../baseStyles/authStyles';
+import { getRegistrationDraft, saveRegistrationDraft } from '../../helpers/helpers';
 
 type RegisterFormProps = {
   onBackToLogin: () => void;
@@ -26,6 +27,41 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const draftHydrated = useRef(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    getRegistrationDraft().then((draft) => {
+      if (isMounted && draft) {
+        setFirstName(draft.firstName);
+        setLastName(draft.lastName);
+        setEmail(draft.email);
+        setPassword(draft.password);
+        setConfirmation(draft.confirmation);
+        setTermsAccepted(draft.termsAccepted);
+      }
+      draftHydrated.current = true;
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!draftHydrated.current) return;
+
+    saveRegistrationDraft({
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmation,
+      termsAccepted,
+    });
+  }, [confirmation, email, firstName, lastName, password, termsAccepted]);
+
   const compact = height < 760;
   const veryCompact = height < 680;
   const horizontalPadding = width < 360 ? 22 : 30;

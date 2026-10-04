@@ -10,6 +10,7 @@ import BackArrow from '../components/icons/BackArrow';
 import Church from '../components/icons/Church';
 import Person from '../components/icons/Person';
 import TargetArrow from '../components/icons/TargetArrow';
+import { SOCKET_EVENT_NEW_BOX_COUNT } from '../helpers/constants';
 import { getRecollectionCenterBoxesCount, getUserBoxes } from '../services/services';
 import { getSocket } from '../socketService';
 
@@ -58,16 +59,14 @@ export default function Index() {
     const handleFetch = () => {
       fetchData();
     };
-    socket.on('transaction:statusUpdated', handleFetch);
-    socket.on('transaction:new', handleFetch);
+    socket.on(SOCKET_EVENT_NEW_BOX_COUNT, handleFetch);
     return () => {
-      socket.off('transaction:statusUpdated', handleFetch);
-      socket.off('transaction:new', handleFetch);
+      socket.off(SOCKET_EVENT_NEW_BOX_COUNT, handleFetch);
     };
   }, []);
 
   if (isLoading) {
-    return <LoadingOverlay></LoadingOverlay>;
+    return <LoadingOverlay visible />;
   }
   return (
     <SafeAreaProvider>
@@ -99,7 +98,7 @@ export default function Index() {
                 </Text>
                 {/* Reaching Point */}
                 <Text style={commonStyles.paragraph}>
-                  Reaching Point:{' '}
+                  Our Goal:{' '}
                   <Text style={[commonStyles.paragraphExtraBold, { color: colors.dark_blue }]}>
                     {`${GOAL_BOXES_COUNT.toLocaleString()}`}{' '}
                   </Text>

@@ -10,10 +10,12 @@ import { FEMALE_GENDER_ID, MALE_GENDER_ID } from '../helpers/constants';
  *
  * (Currently no props are required, but this type can be extended.)
  */
-interface GenderTileProps {
+interface GenderTileProps {}
+
+export type GenderTileRef = {
   getGender: () => number;
   reset: () => void;
-}
+};
 
 /**
  * GenderTile component.
@@ -40,7 +42,7 @@ interface GenderTileProps {
  * @param {React.Ref<{ reset: () => void }>} ref - Ref to expose reset method.
  * @returns {JSX.Element} React component.
  */
-const GenderTile = forwardRef<any, GenderTileProps>((props, ref) => {
+const GenderTile = forwardRef<GenderTileRef, GenderTileProps>((props, ref) => {
   /** Gender state (2 = Girl, 1 = Boy) */
   const [gender, setGender] = useState(MALE_GENDER_ID);
 
@@ -71,7 +73,9 @@ const GenderTile = forwardRef<any, GenderTileProps>((props, ref) => {
   return (
     <View style={[genderTileStyles.categoryContainer, { backgroundColor }]}>
       <Text style={[commonStyles.paragraphExtraBold, genderTileStyles.categoryText]}>{text}</Text>
-      <Slider ref={sliderRef} onValueChange={(number) => setGender(!number ? MALE_GENDER_ID : FEMALE_GENDER_ID)}></Slider>
+      <Slider
+        ref={sliderRef}
+        onValueChange={(number) => setGender(!number ? MALE_GENDER_ID : FEMALE_GENDER_ID)}></Slider>
     </View>
   );
 });
@@ -99,5 +103,5 @@ const genderTileStyles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
+GenderTile.displayName = 'GenderTile';
 export default GenderTile;

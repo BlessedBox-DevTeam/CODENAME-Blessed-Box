@@ -1,8 +1,12 @@
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React, { JSX } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import colors from '../baseStyles/colors';
-import { DECLINED_STATUS_ID, COMPLETED_STATUS_ID, PENDING_STATUS_ID } from '../helpers/constants';
-import BlessedBox from './icons/BlessedBox';
+import {
+  COMPLETED_STATUS_CODE,
+  DECLINED_STATUS_CODE,
+  PENDING_STATUS_CODE,
+} from '../helpers/constants';
 import { TransactionTileInfo } from '../types/TransactionTileInfo';
 
 interface TransactionTileProps {
@@ -10,44 +14,67 @@ interface TransactionTileProps {
   pressCallback?: (transactionId: number) => void;
 }
 
-const MAP_STATUS_CODE_COLOR: Record<number, { color: string; statusDescription: string }> = {
-  [PENDING_STATUS_ID]: { color: colors.yellow, statusDescription: 'Pending' },
-  [COMPLETED_STATUS_ID]: { color: colors.green_label, statusDescription: 'Completed' },
-  [DECLINED_STATUS_ID]: { color: colors.red_label, statusDescription: 'Declined' },
+const MAP_STATUS_CODE_COLOR: Record<
+  string,
+  { variant: 'pending' | 'completed' | 'declined'; statusDescription: string }
+> = {
+  [PENDING_STATUS_CODE]: {
+    variant: 'pending',
+    statusDescription: 'Pending',
+  },
+  [COMPLETED_STATUS_CODE]: {
+    variant: 'completed',
+    statusDescription: 'Completed',
+  },
+  [DECLINED_STATUS_CODE]: {
+    variant: 'declined',
+    statusDescription: 'Declined',
+  },
 };
 
 const TransactionTile = ({ transaction, pressCallback }: TransactionTileProps): JSX.Element => {
-  const { transactionId, recollectionCenterName, statusCode, statusDescription, boxCount } = transaction;
+  const { transactionId, statusCode, statusDescription, boxCount } = transaction;
+  const status = MAP_STATUS_CODE_COLOR[String(statusCode).toUpperCase()] ?? {
+    variant: 'declined' as const,
+    statusDescription: statusDescription || 'Unknown',
+  };
+  const statusContainerStyle = styles[`${status.variant}StatusContainer`];
+  const statusTextStyle = styles[`${status.variant}Status`];
+  const orderNumber = `BBX-${new Date().getFullYear()}-${String(transactionId).padStart(6, '0')}`;
+
   return (
     <Pressable
       onPress={() => {
         pressCallback?.(transactionId);
       }}
-      style={[styles.tileContainer]}>
-      <BlessedBox width={40} height={70} />
+      style={styles.tileContainer}>
+      <View style={styles.iconContainer}>
+        <MaterialCommunityIcons name="gift" size={24} color={styles.transactionIcon.color} />
+      </View>
       <View style={styles.informationContainer}>
-        <Text style={[styles.recollectionCenterTitle, { textAlign: 'center' }]}>{recollectionCenterName}</Text>
-        <View style={styles.orderContainer}>
-          <Text style={styles.orderNumber}>{`#Order: ${transactionId}`}</Text>
-          <View style={[styles.statusContainer, { backgroundColor: MAP_STATUS_CODE_COLOR[statusCode].color }]}>
-            <Text style={styles.status}>{MAP_STATUS_CODE_COLOR[statusCode].statusDescription}</Text>
-          </View>
+        <Text style={styles.orderNumber}>{orderNumber}</Text>
+        <View style={[styles.statusContainer, statusContainerStyle]}>
+          <Text style={[styles.status, statusTextStyle]}>
+            {statusDescription || status.statusDescription}
+          </Text>
         </View>
       </View>
-      <Text style={styles.amount}>{`x${boxCount}`}</Text>
+      <View style={styles.amountContainer}>
+        <Text style={styles.amount}>{boxCount}</Text>
+        <Text style={styles.amountLabel}>boxes</Text>
+      </View>
     </Pressable>
   );
 };
 const styles = StyleSheet.create({
   tileContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    flex: 1,
+    minHeight: 64,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     width: '100%',
-    display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 12,
     borderRadius: 10,
     backgroundColor: colors.white,
     // iOS
@@ -58,43 +85,71 @@ const styles = StyleSheet.create({
     // Android
     elevation: 4,
   },
-  informationContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    gap: 6,
-  },
-  recollectionCenterTitle: {
-    color: colors.dark_blue,
-    fontFamily: 'OpenSans-Bold',
-    fontSize: 14,
-    fontStyle: 'normal',
-  },
-  orderContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 8,
+  iconContainer: {
+    width: 38,
+    height: 38,
     alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: '#E9EEF9',
+    overflow: 'hidden',
+  },
+  transactionIcon: {
+    color: colors.dark_green,
+  },
+  informationContainer: {
+    flex: 1,
+    gap: 5,
   },
   orderNumber: {
-    color: colors.dark_gray,
-    fontFamily: 'OpenSans-SemiBold',
+    color: colors.dark_blue,
+    fontFamily: 'OpenSans-Bold',
     fontSize: 12,
-    fontStyle: 'normal',
   },
   statusContainer: {
-    paddingHorizontal: 8,
-    borderRadius: 10,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  pendingStatusContainer: {
+    backgroundColor: '#FFF4D7',
+  },
+  completedStatusContainer: {
+    backgroundColor: '#E2F4E6',
+  },
+  declinedStatusContainer: {
+    backgroundColor: '#FBE3E3',
   },
   status: {
     fontFamily: 'OpenSans-Bold',
-    fontSize: 12,
-    color: colors.white,
-    textTransform: 'uppercase',
+    fontSize: 10,
+  },
+  pendingStatus: {
+    color: '#F08A00',
+  },
+  completedStatus: {
+    color: colors.green_label,
+  },
+  declinedStatus: {
+    color: colors.red_label,
+  },
+  amountContainer: {
+    width: 45,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: '#E9EEF9',
   },
   amount: {
     fontFamily: 'OpenSans-SemiBold',
-    fontSize: 14,
+    fontSize: 16,
+    color: colors.dark_blue,
+  },
+  amountLabel: {
+    fontFamily: 'OpenSans-SemiBold',
+    fontSize: 8,
     color: colors.dark_gray,
   },
 });
