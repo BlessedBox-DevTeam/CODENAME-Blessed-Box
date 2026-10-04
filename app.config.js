@@ -6,8 +6,9 @@ export default ({ config }) => {
   return {
     ...config,
     owner: 'kennepo23',
-    name: 'blessedboxapp',
+    name: 'BlessedBox',
     slug: 'blessedboxapp',
+    scheme: 'blessedbox',
     version: '1.0.0',
     platforms: ['android', 'ios', 'web'],
     extra: {
