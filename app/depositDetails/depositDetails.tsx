@@ -27,7 +27,7 @@ import {
   UNLABELED_GENDER_CODE,
   SOCKET_EVENT_TRANSACTION_UPDATED,
 } from '../helpers/constants';
-import { getUserPermissions } from '../helpers/helpers';
+import { getUserPermissions, UserPermission } from '../helpers/helpers';
 import { editTransactionStatus, getTransactionDetails } from '../services/services';
 import { getSocket } from '../socketService';
 
@@ -73,11 +73,11 @@ export default function Index() {
   const [showWarning, setShowWarning] = useState(false);
   const [transactionDetails, setTransactionDetails] = useState<TransactionDetails | null>(null);
   const [boxes, setBoxes] = useState<BoxSummary[]>([]);
-  const [permissions, setPermissions] = useState<string[]>([]);
+  const [permissions, setPermissions] = useState<UserPermission[]>([]);
   const { transactionId: transactionParam } = useLocalSearchParams<{ transactionId: string }>();
   const transactionId = JSON.parse(transactionParam);
   const canValidateDeposit =
-    permissions.includes(EDIT_TRANSACTION__PERMISSION) &&
+    permissions.some((permission) => permission.code === EDIT_TRANSACTION__PERMISSION) &&
     transactionDetails?.statusId === PENDING_STATUS_ID;
 
   const fetchData = useCallback(async () => {
@@ -87,7 +87,6 @@ export default function Index() {
         getTransactionDetails(transactionId).then(({ data }) => data),
       ]);
       setPermissions(userPermissions);
-      console.log('Transaction details response:', response);
       const details = response.transactionDetails;
       setTransactionDetails({
         ...details,

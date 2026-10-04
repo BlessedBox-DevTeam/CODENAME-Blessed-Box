@@ -98,7 +98,7 @@ export default function Index() {
                 </Text>
                 {/* Reaching Point */}
                 <Text style={commonStyles.paragraph}>
-                  Reaching Point:{' '}
+                  Our Goal:{' '}
                   <Text style={[commonStyles.paragraphExtraBold, { color: colors.dark_blue }]}>
                     {`${GOAL_BOXES_COUNT.toLocaleString()}`}{' '}
                   </Text>

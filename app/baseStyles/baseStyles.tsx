@@ -18,7 +18,7 @@ const commonStyles = StyleSheet.create({
   },
   title: {
     color: colors.dark_green,
-    fontFamily: 'PlayfairDisplay-Black',
+    fontFamily: 'Nunito-Bold',
     fontSize: 36,
     fontStyle: 'normal',
   },

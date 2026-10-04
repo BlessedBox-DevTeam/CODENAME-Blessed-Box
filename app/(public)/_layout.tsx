@@ -38,7 +38,7 @@ export default function LoginLayout() {
       }
 
       if (authenticated) {
-        router.replace('../home');
+        router.replace('/home');
       } else {
         setCheckingAuth(false);
       }

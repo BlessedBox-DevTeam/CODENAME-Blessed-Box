@@ -87,9 +87,14 @@ interface TokenPayload {
   userId: number;
   email: string;
   roles: string[];
-  permissions?: string[];
+  permissions?: UserPermission[];
   exp: number;
 }
+
+export type UserPermission = {
+  code: string;
+  description?: string;
+};
 export async function saveAccessToken(token: string) {
   await SecureStore.setItemAsync('accessToken', token);
 }
@@ -126,7 +131,7 @@ export async function getUserRoles(): Promise<UserRole[] | null> {
   return user?.roles?.map((role) => ({ roleId: Number(role) })) ?? null;
 }
 
-export async function getUserPermissions(): Promise<string[]> {
+export async function getUserPermissions(): Promise<UserPermission[]> {
   const user = await getUserFromToken();
   return user?.permissions ?? [];
 }
