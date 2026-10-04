@@ -95,6 +95,7 @@ export default function Index() {
       } = await getRecollectionCenterTransactions({
         page: queryParams.page,
         selectedDay: selectedDay,
+        transactionNumber: queryParams.transactionNumber,
         filters: JSON.stringify(queryParams.filters),
       });
       setTotalCount(response.totalCount);
