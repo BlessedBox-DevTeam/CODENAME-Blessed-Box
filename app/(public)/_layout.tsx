@@ -13,17 +13,14 @@ export default function LoginLayout() {
   useEffect(() => {
     async function init() {
       let authenticated = false;
-      console.log('Before SecureStore');
 
       if (Platform.OS === 'web') {
         // return localStorage.getItem(key);
         setCheckingAuth(false);
       }
       const accessToken = await getAccessToken();
-      console.log('After SecureStore');
       if (accessToken) {
         try {
-          console.log('After getAccessToken');
           const decoded: any = jwtDecode(accessToken);
           const now = Math.floor(Date.now() / 1000);
           authenticated = decoded.exp > now;
@@ -33,7 +30,6 @@ export default function LoginLayout() {
       }
       if (!authenticated) {
         try {
-          console.log('After refreshAccessToken');
           await refreshAccessToken();
           authenticated = true;
         } catch {
@@ -42,8 +38,7 @@ export default function LoginLayout() {
       }
 
       if (authenticated) {
-        console.log('After both tokens');
-        router.replace('../home');
+        router.replace('/home');
       } else {
         setCheckingAuth(false);
       }
