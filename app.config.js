@@ -24,7 +24,7 @@ export default ({ config }) => {
       fallbackToCacheTimeout: 0,
     },
     runtimeVersion: {
-      policy: 'sdkVersion',
+      policy: 'appVersion',
     },
     splash: {
       backgroundColor: '#F3B080',
