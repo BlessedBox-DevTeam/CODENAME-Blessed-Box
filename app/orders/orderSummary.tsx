@@ -117,7 +117,7 @@ export default function Index() {
             <Text style={commonStyles.header}>Order Summary</Text>
           </View>
           {/* Empty Spacer */}
-          <View style={{ width: 25 }}></View>
+          <View style={{ width: 44 }} />
         </View>
         {/* Main Content */}
         <View style={{ flex: 1, paddingHorizontal: 16, paddingBottom: 16 }}>

@@ -3,7 +3,6 @@ import React, { useMemo, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import OtpInput from '../components/auth/OtpInput';
+import BackArrow from '../components/icons/BackArrow';
 import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import {
@@ -86,9 +86,12 @@ export default function VerificationScreen() {
           style={styles.container}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           <View style={styles.headerWrap}>
-            <Pressable onPress={() => router.back()} style={styles.backButton}>
-              <Text style={styles.backText}>← Back</Text>
-            </Pressable>
+            <BackArrow
+              onPress={() => router.back()}
+              label="Back"
+              color={colors.white}
+              style={{ marginBottom: 22 }}
+            />
 
             <View style={styles.titleRow}>
               <View style={styles.iconBadge}>
@@ -149,15 +152,6 @@ const styles = StyleSheet.create({
     paddingTop: 18,
     paddingBottom: 14,
     backgroundColor: colors.authVerificationHeader,
-  },
-  backButton: {
-    alignSelf: 'flex-start',
-    marginBottom: 22,
-  },
-  backText: {
-    color: colors.white,
-    fontSize: 18,
-    fontFamily: commonStyles.paragraphBold.fontFamily,
   },
   titleRow: {
     flexDirection: 'row',

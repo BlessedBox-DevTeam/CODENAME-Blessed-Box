@@ -85,11 +85,10 @@ export default function Index() {
 
   const fetchData = useCallback(async () => {
     try {
-      const [userPermissions, { response }] = await Promise.all([
-        getUserPermissions(),
-        getTransactionDetails(transactionId).then(({ data }) => data),
-      ]);
-      setPermissions(userPermissions);
+      const {
+        data: { response },
+      } = await getTransactionDetails(transactionId);
+      const userPermissions = await getUserPermissions();
       const details = response.transactionDetails;
       setTransactionDetails({
         ...details,
@@ -97,6 +96,7 @@ export default function Index() {
         statusCode: details.statusCode,
         statusId: details.statusId,
       });
+      setPermissions(userPermissions);
       const groupedBoxes = response.boxes.reduce(
         (map: Map<string, BoxSummary>, item: BoxResponse | null) => {
           if (!item) return map;

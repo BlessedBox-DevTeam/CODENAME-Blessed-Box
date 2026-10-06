@@ -1,8 +1,9 @@
 import React, { ReactNode } from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import commonStyles from '../../baseStyles/baseStyles';
 import colors from '../../baseStyles/colors';
+import BackArrow from '../icons/BackArrow';
 import {
   FEMALE_GENDER_CODE,
   GenderCode,
@@ -51,10 +52,7 @@ export function DepositHeader({
   return (
     <View style={styles.headerArea}>
       <View style={styles.headerRow}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton} accessibilityRole="button">
-          <Text style={styles.backArrow}>{'‹'}</Text>
-          <Text style={styles.backText}>Back</Text>
-        </TouchableOpacity>
+        <BackArrow onPress={onBack} label="Back" color={colors.white} />
         <Text style={styles.headerTitle}>Order Detail</Text>
         <View style={styles.headerSpacer} />
       </View>
@@ -239,14 +237,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 20,
-  },
-  backButton: { flexDirection: 'row', alignItems: 'center', width: 76 },
-  backArrow: { color: colors.white, fontSize: 24, lineHeight: 24, marginRight: 4 },
-  backText: {
-    color: colors.white,
-    fontFamily: commonStyles.paragraph.fontFamily,
-    fontSize: 12,
-    lineHeight: 16,
   },
   headerTitle: { color: colors.white, fontFamily: commonStyles.paragraphBold.fontFamily, fontSize: 14 },
   headerSpacer: { width: 76 },

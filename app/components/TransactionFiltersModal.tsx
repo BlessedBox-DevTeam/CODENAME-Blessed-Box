@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerSpacer: {
-    width: 25,
+    width: 44,
   },
   mainContainer: {
     paddingHorizontal: 16,
