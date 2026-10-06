@@ -29,7 +29,7 @@ export default function BackArrow({
         </G>
         <Defs>
           <ClipPath id="clip0">
-            <Rect width="40.018" height="25.1018" fill="white" transform="translate(0 0.449219)" />
+            <Rect width="40.018" height="25.1018" fill={colors.white} transform="translate(0 0.449219)" />
           </ClipPath>
         </Defs>
       </Svg>

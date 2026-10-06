@@ -112,7 +112,7 @@ export default function ProtectedLayout() {
             paddingBottom: 0,
           }}>
           <LinearGradient
-            colors={['rgba(0,0,0,0.15)', 'transparent']}
+            colors={[colors.overlayLight, colors.transparent]}
             style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, zIndex: 10 }}
           />
 
@@ -123,7 +123,7 @@ export default function ProtectedLayout() {
               flex: 1,
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: isTabActive('/home') ? 'rgba(33, 55, 88, 0.10)' : 'transparent',
+              backgroundColor: isTabActive('/home') ? colors.tabHighlight : colors.transparent,
               borderRadius: 12,
               paddingVertical: 4,
               marginHorizontal: 4,
@@ -183,8 +183,8 @@ export default function ProtectedLayout() {
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: isTabActive('/transactions')
-                ? 'rgba(33, 55, 88, 0.10)'
-                : 'transparent',
+                ? colors.tabHighlight
+                : colors.transparent,
               borderRadius: 12,
               paddingVertical: 4,
               marginHorizontal: 4,

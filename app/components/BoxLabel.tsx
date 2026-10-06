@@ -144,7 +144,7 @@ const BoxLabel = forwardRef<BoxLabelType, BoxLabelProps>(({ onDelete, error }, r
       {/* Quantity Label */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
         <Text style={[commonStyles.paragraphBold, styles.labelText]}>Quantity</Text>
-        {error ? <Text style={{ color: 'red', fontSize: 12 }}>{error}</Text> : null}
+        {error ? <Text style={{ color: colors.red, fontSize: 12 }}>{error}</Text> : null}
       </View>
 
       {/* Quantity Selector */}
@@ -234,9 +234,8 @@ const styles = StyleSheet.create({
   instructionText: {
     fontSize: 11,
     color: colors.dark_gray,
-    fontFamily: 'OpenSans-SemiBold',
+    fontFamily: commonStyles.paragraph.fontFamily,
     fontStyle: 'normal',
-    fontWeight: 600,
   },
 });
 

@@ -2,6 +2,7 @@ import { Stack, useRouter } from 'expo-router';
 import { jwtDecode } from 'jwt-decode';
 import React, { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
+import colors from '../baseStyles/colors';
 import AppLoadingScreen from '../components/auth/AppLoadingScreen';
 import { getAccessToken } from '../helpers/helpers';
 import { refreshAccessToken } from '../services/api';
@@ -55,7 +56,7 @@ export default function LoginLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: '#FFF8F1' },
+        contentStyle: { backgroundColor: colors.authBackground },
       }}>
       <Stack.Screen
         name="login"

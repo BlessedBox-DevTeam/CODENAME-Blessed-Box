@@ -113,7 +113,7 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
                 },
               ]}
               placeholder="Maria"
-              placeholderTextColor="#A99A90"
+              placeholderTextColor={authColors.placeholderSecondary}
               value={firstName}
               onChangeText={setFirstName}
               autoCapitalize="words"
@@ -135,7 +135,7 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
                 },
               ]}
               placeholder="Gonzalez"
-              placeholderTextColor="#A99A90"
+              placeholderTextColor={authColors.placeholderSecondary}
               value={lastName}
               onChangeText={setLastName}
               autoCapitalize="words"
@@ -157,7 +157,7 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
             },
           ]}
           placeholder="you@email.com"
-          placeholderTextColor="#A99A90"
+          placeholderTextColor={authColors.placeholderSecondary}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -313,7 +313,7 @@ function PasswordInput({
       <TextInput
         style={[authStyles.registerPasswordInput, { fontSize }]}
         placeholder={placeholder}
-        placeholderTextColor="#A99A90"
+        placeholderTextColor={authColors.placeholderSecondary}
         value={value}
         onChangeText={onChangeText}
         secureTextEntry={!visible}

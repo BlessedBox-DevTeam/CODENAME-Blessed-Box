@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Modal, StyleSheet } from 'react-native';
+import colors from '../baseStyles/colors';
 
 /**
  * LoadingOverlay component
@@ -14,13 +15,13 @@ import { Animated, Modal, StyleSheet } from 'react-native';
  * @param {boolean} [props.visible=false] - Controls whether the overlay is visible.
  * If false, the component returns null.
  * @param {number} [props.size=90] - Size (width & height in pixels) of the spinner.
- * @param {string} [props.color="#d3d3d3"] - Color of the spinner border (excluding the transparent top section).
+ * @param {string} [props.color] - Color of the spinner border (excluding the transparent top section).
  *
  * @example
  * // Show a loading overlay while data is being fetched
- * <LoadingOverlay visible={isLoading} size={60} color="#4CAF50" />
+ * <LoadingOverlay visible={isLoading} size={60} color={colors.green} />
  */
-export default function LoadingOverlay({ visible = false, size = 90, color = '#d3d3d3' }) {
+export default function LoadingOverlay({ visible = false, size = 90, color = colors.spinner }) {
   const [opacity] = useState(() => new Animated.Value(0));
   const [rotate] = useState(() => new Animated.Value(0));
   const spinning = useRef<Animated.CompositeAnimation | null>(null);
@@ -86,7 +87,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: 'rgba(10, 10, 10, 0.35)',
+    backgroundColor: colors.darkOverlay,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,

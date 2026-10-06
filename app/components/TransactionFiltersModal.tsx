@@ -76,7 +76,7 @@ export default function TransactionFiltersModal({
 
         <View style={styles.buttonsContainer}>
           <LinearGradient
-            colors={['rgba(0,0,0,0.15)', 'transparent']}
+            colors={[colors.overlayLight, colors.transparent]}
             style={styles.buttonShadow}
           />
           <View style={styles.buttonsRow}>

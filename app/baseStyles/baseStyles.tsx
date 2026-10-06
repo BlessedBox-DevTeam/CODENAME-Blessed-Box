@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native'; // Hello from front
 import colors from './colors';
+
 const commonStyles = StyleSheet.create({
   card: {
     width: 'auto',
@@ -9,7 +10,7 @@ const commonStyles = StyleSheet.create({
     backgroundColor: colors.white,
     padding: 24,
     // iOS
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
@@ -72,7 +73,7 @@ const commonStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     // iOS
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 4,

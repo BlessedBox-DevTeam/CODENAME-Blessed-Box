@@ -55,9 +55,12 @@ const STATUS_ID_BY_CODE: Record<string, number> = {
 };
 
 const STATUS_STYLE_BY_CODE: Record<string, { color: string; backgroundColor: string }> = {
-  PENDING: { color: '#F08A00', backgroundColor: '#FFF4D7' },
-  [COMPLETED_STATUS_CODE]: { color: colors.green_label, backgroundColor: '#E2F4E6' },
-  [DECLINED_STATUS_CODE]: { color: colors.red_label, backgroundColor: '#FBE3E3' },
+  PENDING: { color: colors.pending, backgroundColor: colors.pendingBackground },
+  [COMPLETED_STATUS_CODE]: {
+    color: colors.green_label,
+    backgroundColor: colors.completedBackground,
+  },
+  [DECLINED_STATUS_CODE]: { color: colors.red_label, backgroundColor: colors.declinedBackground },
 };
 
 function getGenderCode(genderCode: string): GenderCode {
@@ -186,7 +189,7 @@ export default function Index() {
               flexDirection: 'row',
               backgroundColor: colors.white,
               borderBottomWidth: 1,
-              borderBottomColor: '#D4DCE9',
+              borderBottomColor: colors.depositBorder,
             }}>
             {(['information', 'summary'] as const).map((tab) => (
               <TouchableOpacity
@@ -197,12 +200,15 @@ export default function Index() {
                   alignItems: 'center',
                   paddingVertical: 17,
                   borderBottomWidth: 2,
-                  borderBottomColor: activeTab === tab ? colors.dark_blue : 'transparent',
+                  borderBottomColor: activeTab === tab ? colors.dark_blue : colors.transparent,
                 }}>
                 <Text
                   style={[
                     commonStyles.paragraph,
-                    { color: activeTab === tab ? colors.dark_blue : '#58719B', fontSize: 12 },
+                    {
+                      color: activeTab === tab ? colors.dark_blue : colors.depositMutedBlue,
+                      fontSize: 12,
+                    },
                   ]}>
                   {tab === 'information' ? 'Order Info' : 'Box Summary'}
                 </Text>
@@ -273,7 +279,7 @@ export default function Index() {
           <View
             style={{
               flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.4)',
+              backgroundColor: colors.overlay,
               justifyContent: 'center',
               alignItems: 'center',
             }}>

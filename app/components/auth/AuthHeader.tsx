@@ -1,6 +1,8 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React from 'react';
 import { Text, View, useWindowDimensions } from 'react-native';
+import commonStyles from '../../baseStyles/baseStyles';
+import colors from '../../baseStyles/colors';
 import { authColors, authStyles } from '../../baseStyles/authStyles';
 
 export default function AuthHeader() {
@@ -52,21 +54,21 @@ const styles = {
     height: 95,
     top: 55,
     left: 42,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: colors.authCircleLight,
   },
   secondCircle: {
     width: 125,
     height: 125,
     top: 48,
     right: 62,
-    backgroundColor: 'rgba(203,83,38,0.12)',
+    backgroundColor: colors.authCircleAccent,
   },
   thirdCircle: {
     width: 65,
     height: 65,
     top: 120,
     right: 30,
-    backgroundColor: 'rgba(203,83,38,0.12)',
+    backgroundColor: colors.authCircleAccent,
   },
   compactFirstCircle: { width: 75, height: 75, top: 35 },
   compactSecondCircle: { width: 105, height: 105, top: 30 },
@@ -75,20 +77,20 @@ const styles = {
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
     backgroundColor: authColors.white,
-    shadowColor: '#8E4D2D',
+    shadowColor: colors.authHeaderShadow,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.12,
     shadowRadius: 10,
     elevation: 4,
   },
   title: {
-    fontWeight: '900' as const,
+    fontFamily: commonStyles.title.fontFamily,
     letterSpacing: -1,
     color: authColors.text,
   },
   slogan: {
-    fontWeight: '600' as const,
-    color: '#8E6B52',
+    fontFamily: commonStyles.paragraph.fontFamily,
+    color: colors.authMutedBrown,
     textAlign: 'center' as const,
   },
 };

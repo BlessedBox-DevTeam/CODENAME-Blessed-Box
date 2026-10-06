@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import OtpInput from '../components/auth/OtpInput';
+import commonStyles from '../baseStyles/baseStyles';
+import colors from '../baseStyles/colors';
 import {
   deletePendingRegistrationEmail,
   deleteRegistrationDraft,
@@ -136,26 +138,26 @@ export default function VerificationScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F3A36E',
+    backgroundColor: colors.authVerificationHeader,
   },
   container: {
     flex: 1,
-    backgroundColor: '#F3A36E',
+    backgroundColor: colors.authVerificationHeader,
   },
   headerWrap: {
     paddingHorizontal: 18,
     paddingTop: 18,
     paddingBottom: 14,
-    backgroundColor: '#F3A36E',
+    backgroundColor: colors.authVerificationHeader,
   },
   backButton: {
     alignSelf: 'flex-start',
     marginBottom: 22,
   },
   backText: {
-    color: '#fff',
+    color: colors.white,
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
   },
   titleRow: {
     flexDirection: 'row',
@@ -166,32 +168,32 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 18,
-    backgroundColor: '#F7F2EE',
+    backgroundColor: colors.authBadge,
     alignItems: 'center',
     justifyContent: 'center',
   },
   icon: {
     fontSize: 26,
-    color: '#D95727',
-    fontWeight: '900',
+    color: colors.authPrimary,
+    fontFamily: commonStyles.paragraphExtraBold.fontFamily,
   },
   titleBlock: {
     flex: 1,
   },
   title: {
-    color: '#fff',
+    color: colors.white,
     fontSize: 30,
-    fontWeight: '900',
+    fontFamily: commonStyles.title.fontFamily,
     letterSpacing: -0.5,
   },
   subtitle: {
-    color: '#FDE7DA',
+    color: colors.authSubtitle,
     fontSize: 14,
     marginTop: 2,
   },
   body: {
     flex: 1,
-    backgroundColor: '#F6F0EB',
+    backgroundColor: colors.authBody,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingHorizontal: 22,
@@ -199,16 +201,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    color: '#6F5142',
+    color: colors.authLabel,
     fontSize: 18,
-    fontWeight: '500',
+    fontFamily: commonStyles.paragraph.fontFamily,
     textAlign: 'center',
     marginBottom: 4,
   },
   email: {
-    color: '#221710',
+    color: colors.authTextStrong,
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
     marginBottom: 28,
   },
   otpBox: {
@@ -231,32 +233,32 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 58,
     borderRadius: 18,
-    backgroundColor: '#F0E5DD',
+    backgroundColor: colors.authOtpBackground,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: colors.transparent,
     alignItems: 'center',
     justifyContent: 'center',
   },
   digitCellFilled: {
-    borderColor: '#D8C2B1',
+    borderColor: colors.authOtpBorder,
   },
   digitCellActive: {
-    borderColor: '#D95727',
+    borderColor: colors.authPrimary,
   },
   digitText: {
-    color: '#2B211C',
+    color: colors.authOtpText,
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
   },
   submitButton: {
     width: '100%',
-    backgroundColor: '#D95727',
+    backgroundColor: colors.authPrimary,
     borderRadius: 18,
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 24,
-    shadowColor: '#D95727',
+    shadowColor: colors.authPrimary,
     shadowOpacity: 0.2,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 8 },
@@ -266,9 +268,9 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   submitText: {
-    color: '#fff',
+    color: colors.white,
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
   },
   resendButton: {
     flexDirection: 'row',
@@ -278,17 +280,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   resendIcon: {
-    color: '#5F4A3C',
+    color: colors.authResend,
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
   },
   resendText: {
-    color: '#5F4A3C',
+    color: colors.authResend,
     fontSize: 15,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
   },
   footerText: {
-    color: '#6E5648',
+    color: colors.authFooter,
     fontSize: 14,
     marginTop: 24,
     textAlign: 'center',

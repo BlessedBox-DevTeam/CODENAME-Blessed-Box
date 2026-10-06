@@ -155,12 +155,12 @@ export default function Index() {
                   position: 'absolute',
                   top: 20,
                   right: 20,
-                  backgroundColor: 'rgba(0,0,0,0.5)',
+                  backgroundColor: colors.overlayStrong,
                   padding: 10,
                   borderRadius: 25,
                 }}
                 onPress={() => setFacing((prev) => (prev === 'back' ? 'front' : 'back'))}>
-                <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                <Text style={[commonStyles.paragraphBold, { color: colors.white }]}>
                   {facing === 'back' ? 'Front' : 'Rear'}
                 </Text>
               </TouchableOpacity>
