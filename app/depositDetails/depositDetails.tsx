@@ -162,9 +162,9 @@ export default function Index() {
     .reduce((sum, box) => sum + box.quantity, 0);
   const statusStyle =
     STATUS_STYLE_BY_CODE[transactionDetails.statusCode] ?? STATUS_STYLE_BY_CODE.DECLINED;
-  const updateStatus = async (statusCode: number) => {
+  const updateStatus = async (statusId: number) => {
     setIsLoading(true);
-    await editTransactionStatus(transactionId, statusCode);
+    await editTransactionStatus(transactionId, statusId);
     await fetchData();
   };
 
@@ -240,24 +240,43 @@ export default function Index() {
             )}
           </ScrollView>
           {canValidateDeposit && (
-            <View style={{ paddingHorizontal: 16, paddingBottom: 20 }}>
+            <View
+              style={{ flexDirection: 'row', gap: 10, paddingHorizontal: 16, paddingBottom: 16 }}>
               <TouchableOpacity
-                style={commonStyles.buttonNoShadow}
+                style={[
+                  commonStyles.buttonNoShadow,
+                  { flex: 1, minHeight: 44, paddingVertical: 8, paddingHorizontal: 6 },
+                ]}
                 onPress={() => updateStatus(COMPLETED_STATUS_ID)}>
-                <Text style={[commonStyles.header, { color: colors.white }]}>Confirm Deposit</Text>
+                <Text
+                  style={[
+                    commonStyles.paragraphBold,
+                    { color: colors.white, fontSize: 12, textAlign: 'center' },
+                  ]}>
+                  Confirm
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
                   commonStyles.buttonNoShadow,
                   {
+                    flex: 1,
+                    minHeight: 44,
+                    paddingVertical: 8,
+                    paddingHorizontal: 6,
                     backgroundColor: colors.white,
                     borderColor: colors.red_label,
-                    borderWidth: 2,
-                    marginTop: 10,
+                    borderWidth: 1,
                   },
                 ]}
                 onPress={() => setShowWarning(true)}>
-                <Text style={[commonStyles.header, { color: colors.red_label }]}>Decline</Text>
+                <Text
+                  style={[
+                    commonStyles.paragraphBold,
+                    { color: colors.red_label, fontSize: 12, textAlign: 'center' },
+                  ]}>
+                  Decline
+                </Text>
               </TouchableOpacity>
             </View>
           )}

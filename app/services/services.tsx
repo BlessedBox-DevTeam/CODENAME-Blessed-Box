@@ -96,6 +96,6 @@ export const getTransactionDetails = async (transactionId: number | string) => {
   return await api.get(`/api/transactions/transactionDetails`, { params: { transactionId } });
 };
 
-export const editTransactionStatus = async (transactionId: number | string, statusCode: number) => {
-  return await api.post(`/api/transactions/editTransactionStatus`, { transactionId, statusCode });
+export const editTransactionStatus = async (transactionId: number | string, statusId: number) => {
+  return await api.post(`/api/transactions/editTransactionStatus`, { transactionId, statusId });
 };
