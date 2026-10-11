@@ -76,7 +76,7 @@ export default function TransactionFiltersModal({
 
         <View style={styles.buttonsContainer}>
           <LinearGradient
-            colors={['rgba(0,0,0,0.15)', 'transparent']}
+            colors={[colors.overlayLight, colors.transparent]}
             style={styles.buttonShadow}
           />
           <View style={styles.buttonsRow}>
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerSpacer: {
-    width: 25,
+    width: 44,
   },
   mainContainer: {
     paddingHorizontal: 16,

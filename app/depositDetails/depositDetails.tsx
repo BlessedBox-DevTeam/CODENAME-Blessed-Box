@@ -55,9 +55,12 @@ const STATUS_ID_BY_CODE: Record<string, number> = {
 };
 
 const STATUS_STYLE_BY_CODE: Record<string, { color: string; backgroundColor: string }> = {
-  PENDING: { color: '#F08A00', backgroundColor: '#FFF4D7' },
-  [COMPLETED_STATUS_CODE]: { color: colors.green_label, backgroundColor: '#E2F4E6' },
-  [DECLINED_STATUS_CODE]: { color: colors.red_label, backgroundColor: '#FBE3E3' },
+  PENDING: { color: colors.pending, backgroundColor: colors.pendingBackground },
+  [COMPLETED_STATUS_CODE]: {
+    color: colors.green_label,
+    backgroundColor: colors.completedBackground,
+  },
+  [DECLINED_STATUS_CODE]: { color: colors.red_label, backgroundColor: colors.declinedBackground },
 };
 
 function getGenderCode(genderCode: string): GenderCode {
@@ -82,11 +85,10 @@ export default function Index() {
 
   const fetchData = useCallback(async () => {
     try {
-      const [userPermissions, { response }] = await Promise.all([
-        getUserPermissions(),
-        getTransactionDetails(transactionId).then(({ data }) => data),
-      ]);
-      setPermissions(userPermissions);
+      const {
+        data: { response },
+      } = await getTransactionDetails(transactionId);
+      const userPermissions = await getUserPermissions();
       const details = response.transactionDetails;
       setTransactionDetails({
         ...details,
@@ -94,6 +96,7 @@ export default function Index() {
         statusCode: details.statusCode,
         statusId: details.statusId,
       });
+      setPermissions(userPermissions);
       const groupedBoxes = response.boxes.reduce(
         (map: Map<string, BoxSummary>, item: BoxResponse | null) => {
           if (!item) return map;
@@ -159,9 +162,9 @@ export default function Index() {
     .reduce((sum, box) => sum + box.quantity, 0);
   const statusStyle =
     STATUS_STYLE_BY_CODE[transactionDetails.statusCode] ?? STATUS_STYLE_BY_CODE.DECLINED;
-  const updateStatus = async (statusCode: number) => {
+  const updateStatus = async (statusId: number) => {
     setIsLoading(true);
-    await editTransactionStatus(transactionId, statusCode);
+    await editTransactionStatus(transactionId, statusId);
     await fetchData();
   };
 
@@ -186,7 +189,7 @@ export default function Index() {
               flexDirection: 'row',
               backgroundColor: colors.white,
               borderBottomWidth: 1,
-              borderBottomColor: '#D4DCE9',
+              borderBottomColor: colors.depositBorder,
             }}>
             {(['information', 'summary'] as const).map((tab) => (
               <TouchableOpacity
@@ -197,12 +200,15 @@ export default function Index() {
                   alignItems: 'center',
                   paddingVertical: 17,
                   borderBottomWidth: 2,
-                  borderBottomColor: activeTab === tab ? colors.dark_blue : 'transparent',
+                  borderBottomColor: activeTab === tab ? colors.dark_blue : colors.transparent,
                 }}>
                 <Text
                   style={[
                     commonStyles.paragraph,
-                    { color: activeTab === tab ? colors.dark_blue : '#58719B', fontSize: 12 },
+                    {
+                      color: activeTab === tab ? colors.dark_blue : colors.depositMutedBlue,
+                      fontSize: 12,
+                    },
                   ]}>
                   {tab === 'information' ? 'Order Info' : 'Box Summary'}
                 </Text>
@@ -234,24 +240,43 @@ export default function Index() {
             )}
           </ScrollView>
           {canValidateDeposit && (
-            <View style={{ paddingHorizontal: 16, paddingBottom: 20 }}>
+            <View
+              style={{ flexDirection: 'row', gap: 10, paddingHorizontal: 16, paddingBottom: 16 }}>
               <TouchableOpacity
-                style={commonStyles.buttonNoShadow}
+                style={[
+                  commonStyles.buttonNoShadow,
+                  { flex: 1, minHeight: 44, paddingVertical: 8, paddingHorizontal: 6 },
+                ]}
                 onPress={() => updateStatus(COMPLETED_STATUS_ID)}>
-                <Text style={[commonStyles.header, { color: colors.white }]}>Confirm Deposit</Text>
+                <Text
+                  style={[
+                    commonStyles.paragraphBold,
+                    { color: colors.white, fontSize: 12, textAlign: 'center' },
+                  ]}>
+                  Confirm
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
                   commonStyles.buttonNoShadow,
                   {
+                    flex: 1,
+                    minHeight: 44,
+                    paddingVertical: 8,
+                    paddingHorizontal: 6,
                     backgroundColor: colors.white,
                     borderColor: colors.red_label,
-                    borderWidth: 2,
-                    marginTop: 10,
+                    borderWidth: 1,
                   },
                 ]}
                 onPress={() => setShowWarning(true)}>
-                <Text style={[commonStyles.header, { color: colors.red_label }]}>Decline</Text>
+                <Text
+                  style={[
+                    commonStyles.paragraphBold,
+                    { color: colors.red_label, fontSize: 12, textAlign: 'center' },
+                  ]}>
+                  Decline
+                </Text>
               </TouchableOpacity>
             </View>
           )}
@@ -273,7 +298,7 @@ export default function Index() {
           <View
             style={{
               flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.4)',
+              backgroundColor: colors.overlay,
               justifyContent: 'center',
               alignItems: 'center',
             }}>

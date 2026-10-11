@@ -215,7 +215,7 @@ export default function Index() {
           <View
             style={{
               flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.5)',
+              backgroundColor: colors.overlayStrong,
               justifyContent: 'center',
               alignItems: 'center',
             }}>
@@ -223,10 +223,10 @@ export default function Index() {
             <View
               style={{
                 width: '90%',
-                backgroundColor: '#fff',
+                backgroundColor: colors.white,
                 borderRadius: 16,
                 padding: 20,
-                shadowColor: '#000',
+                shadowColor: colors.black,
                 shadowOpacity: 0.25,
                 shadowOffset: { width: 0, height: 4 },
                 shadowRadius: 8,
@@ -248,7 +248,7 @@ export default function Index() {
                 <Text
                   style={{
                     fontSize: 20,
-                    color: '#333',
+                    color: colors.transactionSearchText,
                   }}>
                   ✕
                 </Text>
@@ -310,7 +310,7 @@ export default function Index() {
               paddingHorizontal: 12,
               paddingVertical: 8,
               color: colors.dark_blue,
-              fontFamily: 'OpenSans-SemiBold',
+              fontFamily: commonStyles.paragraph.fontFamily,
               fontSize: 12,
             }}
           />

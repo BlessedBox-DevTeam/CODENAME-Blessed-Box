@@ -108,7 +108,7 @@ export default function Index() {
           <View style={{ flex: 1, alignItems: 'center' }}>
             <Text style={commonStyles.header}>Drop-off Center</Text>
           </View>
-          <View style={{ width: 25 }} />
+          <View style={{ width: 44 }} />
         </View>
 
         {/* SwitchSelector */}
@@ -155,12 +155,12 @@ export default function Index() {
                   position: 'absolute',
                   top: 20,
                   right: 20,
-                  backgroundColor: 'rgba(0,0,0,0.5)',
+                  backgroundColor: colors.overlayStrong,
                   padding: 10,
                   borderRadius: 25,
                 }}
                 onPress={() => setFacing((prev) => (prev === 'back' ? 'front' : 'back'))}>
-                <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                <Text style={[commonStyles.paragraphBold, { color: colors.white }]}>
                   {facing === 'back' ? 'Front' : 'Rear'}
                 </Text>
               </TouchableOpacity>

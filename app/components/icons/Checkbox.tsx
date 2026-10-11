@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
+import colors from '../../baseStyles/colors';
 
 type CheckboxProps = {
   checked: boolean;
@@ -19,7 +20,7 @@ const Checkbox = ({ checked, label = 'Keep me signed in', onChange }: CheckboxPr
           width: 22,
           height: 22,
           borderWidth: 2,
-          borderColor: '#1E3A8A',
+          borderColor: colors.checkboxBlue,
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: 4,
@@ -29,7 +30,7 @@ const Checkbox = ({ checked, label = 'Keep me signed in', onChange }: CheckboxPr
             style={{
               width: 12,
               height: 12,
-              backgroundColor: '#1E3A8A',
+              backgroundColor: colors.checkboxBlue,
             }}
           />
         )}

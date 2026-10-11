@@ -366,7 +366,7 @@ import {
 } from 'react-native';
 
 import { BoxLabelInfo } from '../types/BoxLabelInfo';
-import { UNLABELED_GENDER_ID } from '../helpers/constants';
+import { TWO_TO_FOUR_YEARS_ID, UNLABELED_GENDER_ID } from '../helpers/constants';
 
 /**
  * ============================================================
