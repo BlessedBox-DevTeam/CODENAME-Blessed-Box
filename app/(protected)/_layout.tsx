@@ -59,7 +59,7 @@ export default function ProtectedLayout() {
           <Stack.Screen
             name="home"
             options={{
-              title: 'Blessed Box',
+              title: 'BlessedBox',
               headerTitleStyle: commonStyles.title,
               headerBackVisible: false,
               headerRight: () => (

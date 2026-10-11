@@ -84,12 +84,11 @@ const styles = {
     elevation: 4,
   },
   title: {
-    fontFamily: commonStyles.title.fontFamily,
-    letterSpacing: -1,
+    ...commonStyles.title,
     color: authColors.text,
   },
   slogan: {
-    fontFamily: commonStyles.paragraph.fontFamily,
+    ...commonStyles.paragraph,
     color: colors.authMutedBrown,
     textAlign: 'center' as const,
   },
