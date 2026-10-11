@@ -1,15 +1,18 @@
 import { StyleSheet } from 'react-native';
+import commonStyles from './baseStyles';
+import colors from './colors';
 
 export const authColors = {
-  background: '#FFF8F1',
-  header: '#F3B080',
-  input: '#FBEEDF',
-  text: '#261810',
-  mutedText: '#96745C',
-  inputText: '#5E483A',
-  placeholder: '#A18E82',
-  primary: '#D95727',
-  white: '#FFFFFF',
+  background: colors.authBackground,
+  header: colors.authHeader,
+  input: colors.authInput,
+  text: colors.authText,
+  mutedText: colors.authMutedText,
+  inputText: colors.authInputText,
+  placeholder: colors.authPlaceholder,
+  placeholderSecondary: colors.authPlaceholderSecondary,
+  primary: colors.authPrimary,
+  white: colors.white,
 };
 
 export const authStyles = StyleSheet.create({
@@ -18,7 +21,7 @@ export const authStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-    backgroundColor: '#F3B080',
+    backgroundColor: colors.authHeader,
   },
   loadingContent: {
     alignItems: 'center',
@@ -31,7 +34,7 @@ export const authStyles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 36,
     backgroundColor: authColors.white,
-    shadowColor: '#8E4D2D',
+    shadowColor: colors.authHeaderShadow,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 14,
@@ -40,7 +43,7 @@ export const authStyles = StyleSheet.create({
   loadingBrand: {
     marginTop: 18,
     fontSize: 32,
-    fontWeight: '900',
+    fontFamily: commonStyles.title.fontFamily,
     color: authColors.text,
   },
   loadingIndicator: {
@@ -55,14 +58,14 @@ export const authStyles = StyleSheet.create({
     height: 300,
     top: -110,
     right: -90,
-    backgroundColor: 'rgba(203,83,38,0.16)',
+    backgroundColor: colors.authLargeShape,
   },
   loadingShapeSmall: {
     width: 190,
     height: 190,
     bottom: -65,
     left: -55,
-    backgroundColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: colors.authSmallShape,
   },
   screen: {
     flex: 1,
@@ -85,7 +88,7 @@ export const authStyles = StyleSheet.create({
     paddingBottom: 8,
   },
   label: {
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
     letterSpacing: 0.3,
     color: authColors.mutedText,
   },
@@ -93,6 +96,7 @@ export const authStyles = StyleSheet.create({
     width: '100%',
     backgroundColor: authColors.input,
     color: authColors.inputText,
+    fontFamily: commonStyles.paragraph.fontFamily,
   },
   passwordContainer: {
     width: '100%',
@@ -104,6 +108,7 @@ export const authStyles = StyleSheet.create({
     flex: 1,
     height: '100%',
     color: authColors.inputText,
+    fontFamily: commonStyles.paragraph.fontFamily,
     paddingVertical: 0,
     paddingRight: 5,
   },
@@ -118,7 +123,7 @@ export const authStyles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   forgotPasswordText: {
-    fontWeight: '800',
+    fontFamily: commonStyles.paragraphExtraBold.fontFamily,
     color: authColors.primary,
   },
   submitButton: {
@@ -134,11 +139,12 @@ export const authStyles = StyleSheet.create({
     elevation: 5,
   },
   submitText: {
-    fontWeight: '800',
+    fontFamily: commonStyles.paragraphExtraBold.fontFamily,
     color: authColors.white,
   },
   submitArrow: {
     color: authColors.white,
+    fontFamily: commonStyles.paragraphBold.fontFamily,
     marginLeft: 9,
     marginTop: -2,
   },
@@ -149,10 +155,11 @@ export const authStyles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   registerText: {
+    fontFamily: commonStyles.paragraph.fontFamily,
     color: authColors.mutedText,
   },
   registerAction: {
-    fontWeight: '900',
+    fontFamily: commonStyles.paragraphExtraBold.fontFamily,
     color: authColors.primary,
   },
   modalBackdrop: {
@@ -160,7 +167,7 @@ export const authStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 25,
-    backgroundColor: 'rgba(38, 24, 16, 0.25)',
+    backgroundColor: colors.authModalBackdrop,
   },
   modalContent: {
     width: '100%',
@@ -170,7 +177,7 @@ export const authStyles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 21,
-    fontWeight: '800',
+    fontFamily: commonStyles.paragraphExtraBold.fontFamily,
     color: authColors.text,
     textAlign: 'center',
     marginBottom: 10,
@@ -178,6 +185,7 @@ export const authStyles = StyleSheet.create({
   modalMessage: {
     fontSize: 16,
     lineHeight: 22,
+    fontFamily: commonStyles.paragraph.fontFamily,
     color: authColors.mutedText,
     textAlign: 'center',
     marginBottom: 20,
@@ -191,7 +199,7 @@ export const authStyles = StyleSheet.create({
   },
   modalButtonText: {
     fontSize: 17,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
     color: authColors.white,
   },
   registerScreen: {
@@ -226,7 +234,7 @@ export const authStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 18,
-    backgroundColor: '#EE9568',
+    backgroundColor: colors.authLogo,
   },
   registerLogoCompact: {
     width: 52,
@@ -236,7 +244,7 @@ export const authStyles = StyleSheet.create({
   registerBrandName: {
     marginLeft: 15,
     fontSize: 25,
-    fontWeight: '900',
+    fontFamily: commonStyles.title.fontFamily,
     color: authColors.white,
   },
   registerBrandNameCompact: {
@@ -245,7 +253,7 @@ export const authStyles = StyleSheet.create({
   },
   registerTitle: {
     fontSize: 32,
-    fontWeight: '900',
+    fontFamily: commonStyles.title.fontFamily,
     color: authColors.white,
   },
   registerTitleCompact: {
@@ -254,6 +262,7 @@ export const authStyles = StyleSheet.create({
   registerSubtitle: {
     marginTop: 6,
     fontSize: 16,
+    fontFamily: commonStyles.paragraph.fontFamily,
     color: authColors.white,
   },
   registerSubtitleCompact: {
@@ -265,7 +274,7 @@ export const authStyles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 25,
     paddingVertical: 16,
-    backgroundColor: '#FBE9D8',
+    backgroundColor: colors.authBenefits,
   },
   benefitsCompact: {
     paddingHorizontal: 16,
@@ -283,12 +292,13 @@ export const authStyles = StyleSheet.create({
   benefitCheck: {
     marginRight: 7,
     fontSize: 18,
+    fontFamily: commonStyles.paragraphBold.fontFamily,
     color: authColors.primary,
   },
   benefitText: {
     flex: 1,
     fontSize: 14,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
     lineHeight: 21,
     color: authColors.mutedText,
   },
@@ -313,6 +323,7 @@ export const authStyles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 25,
     fontSize: 20,
+    fontFamily: commonStyles.paragraph.fontFamily,
     backgroundColor: authColors.input,
   },
   registerPassword: {
@@ -328,6 +339,7 @@ export const authStyles = StyleSheet.create({
   registerPasswordInput: {
     flex: 1,
     fontSize: 20,
+    fontFamily: commonStyles.paragraph.fontFamily,
     color: authColors.inputText,
   },
   registerTerms: {
@@ -344,7 +356,7 @@ export const authStyles = StyleSheet.create({
     height: 28,
     marginRight: 14,
     borderWidth: 3,
-    borderColor: '#D9CFC6',
+    borderColor: colors.authBorder,
     borderRadius: 5,
   },
   termsBoxChecked: {
@@ -353,17 +365,18 @@ export const authStyles = StyleSheet.create({
   },
   termsCheck: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
     color: authColors.white,
   },
   termsText: {
     flex: 1,
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
     lineHeight: 23,
     color: authColors.mutedText,
   },
   termsLink: {
+    fontFamily: commonStyles.paragraphBold.fontFamily,
     color: authColors.primary,
   },
   registerButton: {
@@ -371,7 +384,7 @@ export const authStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 18,
-    backgroundColor: '#F4EADF',
+    backgroundColor: colors.authButton,
   },
   registerButtonCompact: {
     minHeight: 46,
@@ -382,8 +395,8 @@ export const authStyles = StyleSheet.create({
   },
   registerButtonText: {
     fontSize: 18,
-    fontWeight: '900',
-    color: '#C7A995',
+    fontFamily: commonStyles.paragraphExtraBold.fontFamily,
+    color: colors.authButtonDisabled,
   },
   registerButtonTextActive: {
     color: authColors.white,
@@ -391,6 +404,7 @@ export const authStyles = StyleSheet.create({
   registerButtonArrow: {
     marginLeft: 10,
     fontSize: 22,
+    fontFamily: commonStyles.paragraphBold.fontFamily,
   },
   loginPrompt: {
     flexDirection: 'row',
@@ -402,10 +416,11 @@ export const authStyles = StyleSheet.create({
     marginTop: 12,
   },
   loginPromptText: {
+    fontFamily: commonStyles.paragraph.fontFamily,
     color: authColors.mutedText,
   },
   loginPromptAction: {
-    fontWeight: '900',
+    fontFamily: commonStyles.paragraphExtraBold.fontFamily,
     color: authColors.primary,
   },
 });

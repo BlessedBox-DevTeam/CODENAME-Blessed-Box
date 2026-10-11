@@ -7,6 +7,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
+import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 
 interface FilterChipProps {
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 12,
     textAlign: 'center',
-    fontFamily: 'OpenSans-SemiBold',
+    fontFamily: commonStyles.paragraph.fontFamily,
   },
   selectedText: {
     color: colors.white,

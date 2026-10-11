@@ -52,7 +52,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({ percentage }) => {
         {/* Gray background circle */}
         <Circle
           stroke={colors.light_gray}
-          fill="transparent"
+          fill={colors.transparent}
           strokeWidth={strokeWidth}
           cx="50"
           cy="50"
@@ -61,7 +61,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({ percentage }) => {
         {/* Progress circle */}
         <Circle
           stroke={colors.dark_green}
-          fill="transparent"
+          fill={colors.transparent}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}

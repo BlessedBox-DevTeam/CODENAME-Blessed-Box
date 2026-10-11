@@ -1,6 +1,7 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React, { JSX } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 import {
   COMPLETED_STATUS_CODE,
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: colors.white,
     // iOS
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    backgroundColor: '#E9EEF9',
+    backgroundColor: colors.tileBackground,
     overflow: 'hidden',
   },
   transactionIcon: {
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
   },
   orderNumber: {
     color: colors.dark_blue,
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
     fontSize: 12,
   },
   statusContainer: {
@@ -113,20 +114,20 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   pendingStatusContainer: {
-    backgroundColor: '#FFF4D7',
+    backgroundColor: colors.pendingBackground,
   },
   completedStatusContainer: {
-    backgroundColor: '#E2F4E6',
+    backgroundColor: colors.completedBackground,
   },
   declinedStatusContainer: {
-    backgroundColor: '#FBE3E3',
+    backgroundColor: colors.declinedBackground,
   },
   status: {
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
     fontSize: 10,
   },
   pendingStatus: {
-    color: '#F08A00',
+    color: colors.pending,
   },
   completedStatus: {
     color: colors.green_label,
@@ -140,15 +141,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    backgroundColor: '#E9EEF9',
+    backgroundColor: colors.tileBackground,
   },
   amount: {
-    fontFamily: 'OpenSans-SemiBold',
+    fontFamily: commonStyles.paragraph.fontFamily,
     fontSize: 16,
     color: colors.dark_blue,
   },
   amountLabel: {
-    fontFamily: 'OpenSans-SemiBold',
+    fontFamily: commonStyles.paragraph.fontFamily,
     fontSize: 8,
     color: colors.dark_gray,
   },

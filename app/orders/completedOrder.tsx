@@ -34,7 +34,7 @@ export default function Index({}) {
             Thank you for your donation. A child will be blessed because of your gift.
           </Text>
           <Text style={[commonStyles.title, { fontSize: 20, textAlign: 'center' }]}>
-            Blessed Box
+            BlessedBox
           </Text>
           <TouchableOpacity
             style={[commonStyles.buttonNoShadow]}

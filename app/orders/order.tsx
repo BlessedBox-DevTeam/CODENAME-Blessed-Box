@@ -177,7 +177,7 @@ export default function Index() {
           <View style={{ flex: 1, alignItems: 'center' }}>
             <Text style={commonStyles.header}>Enter Order</Text>
           </View>
-          <View style={{ width: 25 }} />
+          <View style={{ width: 44 }} />
         </View>
 
         {/* Modal for unlabeled boxes */}
@@ -189,7 +189,7 @@ export default function Index() {
           <View
             style={{
               flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.4)',
+              backgroundColor: colors.overlay,
               justifyContent: 'center',
               alignItems: 'center',
             }}>
@@ -358,7 +358,7 @@ export default function Index() {
               justifyContent: 'center',
               alignItems: 'center',
               opacity: boxLabels.length >= 6 ? 0.4 : 1,
-              shadowColor: '#000',
+              shadowColor: colors.black,
               shadowOffset: { width: 0, height: 3 },
               shadowOpacity: 0.22,
               shadowRadius: 3,

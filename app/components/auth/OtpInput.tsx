@@ -1,6 +1,8 @@
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useRef } from 'react';
 import { InteractionManager, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import commonStyles from '../../baseStyles/baseStyles';
+import colors from '../../baseStyles/colors';
 
 type OtpInputProps = {
   value: string;
@@ -91,21 +93,21 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 58,
     borderRadius: 18,
-    backgroundColor: '#F0E5DD',
+    backgroundColor: colors.authOtpBackground,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: colors.transparent,
     alignItems: 'center',
     justifyContent: 'center',
   },
   digitCellFilled: {
-    borderColor: '#D8C2B1',
+    borderColor: colors.authOtpBorder,
   },
   digitCellActive: {
-    borderColor: '#D95727',
+    borderColor: colors.authPrimary,
   },
   digitText: {
-    color: '#2B211C',
+    color: colors.authOtpText,
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
   },
 });

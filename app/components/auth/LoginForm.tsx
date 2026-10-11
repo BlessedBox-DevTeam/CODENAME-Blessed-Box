@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import commonStyles from '../../baseStyles/baseStyles';
 import { validateLoginInputs } from '../../helpers/authValidation';
 import { authColors, authStyles } from '../../baseStyles/authStyles';
 import { forgotPassword } from '@/app/services/services';
@@ -174,7 +175,7 @@ export default function LoginForm({ onSubmit, onInvalid, onRegister }: LoginForm
 const styles = {
   welcome: {
     lineHeight: 38,
-    fontWeight: '900' as const,
+    fontFamily: commonStyles.title.fontFamily,
     letterSpacing: -0.8,
     color: authColors.text,
     marginBottom: 5,

@@ -1,12 +1,13 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
+import colors from '../../baseStyles/colors';
 
 interface AlertProps {
   width?: number;
   height?: number;
   color?: string;
 }
-export default function Alert({ width = 40, height = 40, color = '#EB1C24', ...props }: AlertProps) {
+export default function Alert({ width = 40, height = 40, color = colors.red, ...props }: AlertProps) {
   return (
     <Svg width={width} height={height} viewBox="0 0 40 40" fill="none" {...props}>
       <Path
