@@ -28,7 +28,7 @@ export default function Index({}) {
             style={{ width: 80, height: 80, resizeMode: 'contain' }}
           />
           <Text style={[commonStyles.header, { textAlign: 'center', fontSize: 22 }]}>
-            Order #{transactionId} {'\n'}has been received
+            Drop-Off #{transactionId} {'\n'}has been received
           </Text>
           <Text style={[commonStyles.paragraph, { textAlign: 'center' }]}>
             Thank you for your donation. A child will be blessed because of your gift.

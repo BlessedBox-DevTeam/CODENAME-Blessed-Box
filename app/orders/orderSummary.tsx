@@ -127,7 +127,7 @@ export default function Index() {
               commonStyles.paragraphBold,
               { color: colors.dark_blue },
             ]}>{`${boxLabel.quantity}x`}</Text>
-          <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>Blessed Box</Text>
+          <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>BlessedBox</Text>
         </View>
 
         {/* Details Container */}
