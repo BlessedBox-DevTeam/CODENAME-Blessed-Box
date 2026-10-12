@@ -45,8 +45,8 @@ export default function Index() {
       if (quantity <= 0) return;
 
       if (genderId === UNLABELED_GENDER_ID) {
-        payload.boxLabels.Unlabeled ??= { 'No age': 0 };
-        payload.boxLabels.Unlabeled['No age'] += quantity;
+        payload.boxLabels.Unlabeled ??= { quantity: 0 };
+        payload.boxLabels.Unlabeled.quantity += quantity;
         return;
       }
 

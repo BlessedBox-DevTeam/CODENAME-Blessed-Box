@@ -11,7 +11,7 @@ export type BoxLabelType = {
 export type NewTransactionBoxLabels = Partial<
   Record<'Male' | 'Female', Partial<Record<'2-4' | '5-9' | '10-14', number>>>
 > & {
-  Unlabeled?: { 'No age': number };
+  Unlabeled?: { quantity: number };
 };
 
 export type NewTransactionPayload = {
