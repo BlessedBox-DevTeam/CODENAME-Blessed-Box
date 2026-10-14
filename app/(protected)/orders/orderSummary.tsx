@@ -2,20 +2,20 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import colors from '../baseStyles/colors';
-import commonStyles from '../baseStyles/baseStyles';
-import { BoxLabelInfo, NewTransactionPayload } from '../types/BoxLabelInfo';
-import GenderInitial from '../components/GenderInitial';
-import BackArrow from '../components/icons/BackArrow';
-import Church from '../components/icons/Church';
-import LoadingOverlay from '../components/LoadingSpinner';
+import colors from '../../baseStyles/colors';
+import commonStyles from '../../baseStyles/baseStyles';
+import { BoxLabelInfo, NewTransactionPayload } from '../../types/BoxLabelInfo';
+import GenderInitial from '../../components/GenderInitial';
+import BackArrow from '../../components/icons/BackArrow';
+import Church from '../../components/icons/Church';
+import LoadingOverlay from '../../components/LoadingSpinner';
 import {
   BOX_AGE_MAP,
   FEMALE_GENDER_ID,
   MALE_GENDER_ID,
   UNLABELED_GENDER_ID,
-} from '../helpers/constants';
-import { newTransaction } from '../services/services';
+} from '../../helpers/constants';
+import { newTransaction } from '../../services/services';
 
 /**
  * Order Summary Screen

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import colors from '../baseStyles/colors';
+import colors from '../../baseStyles/colors';
 import {
   FEMALE_GENDER_ID,
   FIVE_TO_NINE_YEARS_ID,
@@ -20,12 +20,12 @@ import {
   TEN_TO_FOURTEEN_YEARS_ID,
   TWO_TO_FOUR_YEARS_ID,
   UNLABELED_GENDER_ID,
-} from '../helpers/constants';
-import { BoxLabelInfo } from '../types/BoxLabelInfo';
-import AgeHeaders from '../components/order/AgeHeaders';
-import CategoryRow from '../components/order/CategoryRow';
-import OrderSummaryCard from '../components/order/OrderSummaryCard';
-import SelectedCategoryController from '../components/order/SelectedCategoryController';
+} from '../../helpers/constants';
+import { BoxLabelInfo } from '../../types/BoxLabelInfo';
+import AgeHeaders from '../../components/order/AgeHeaders';
+import CategoryRow from '../../components/order/CategoryRow';
+import OrderSummaryCard from '../../components/order/OrderSummaryCard';
+import SelectedCategoryController from '../../components/order/SelectedCategoryController';
 import {
   AgeIndex,
   BoxKey,
@@ -33,7 +33,7 @@ import {
   GENDERS,
   Gender,
   INITIAL_BOX_VALUES,
-} from '../components/order/orderTypes';
+} from '../../components/order/orderTypes';
 
 const AGE_IDS = [TWO_TO_FOUR_YEARS_ID, FIVE_TO_NINE_YEARS_ID, TEN_TO_FOURTEEN_YEARS_ID] as const;
 

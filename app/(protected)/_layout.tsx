@@ -18,7 +18,10 @@ import { disconnectSocket, initSocket } from '../socketService';
 export default function ProtectedLayout() {
   const router = useRouter();
   const pathname = usePathname();
-  const isOrderDetail = pathname === '/depositDetails';
+  const hideBottomTabs =
+    pathname === '/depositDetails' ||
+    pathname === '/orders/order' ||
+    pathname === '/orders/orderSummary';
 
   const isTabActive = (path: string) => pathname === path;
 
@@ -100,7 +103,7 @@ export default function ProtectedLayout() {
 
       {/* Bottom Tab Manual */}
 
-      {!isOrderDetail && (
+      {!hideBottomTabs && (
         <SafeAreaView
           style={{
             flexDirection: 'row',
@@ -167,12 +170,28 @@ export default function ProtectedLayout() {
               flex: 1,
               alignItems: 'center',
               justifyContent: 'center',
+              backgroundColor: isTabActive('/qrCode/qrCode')
+                ? colors.tabHighlight
+                : colors.transparent,
               borderRadius: 12,
               paddingVertical: 4,
               marginHorizontal: 4,
             }}>
-            <QRCode width={24} height={24} />
-            <Text style={[commonStyles.paragraph, { fontSize: 10 }]}>QR</Text>
+            <QRCode
+              width={24}
+              height={24}
+              color={isTabActive('/qrCode/qrCode') ? colors.dark_blue : colors.dark_gray}
+            />
+            <Text
+              style={[
+                commonStyles.paragraph,
+                {
+                  fontSize: 10,
+                  color: isTabActive('/qrCode/qrCode') ? colors.dark_blue : colors.dark_gray,
+                },
+              ]}>
+              QR
+            </Text>
           </Pressable>
 
           {/* DepositHistory */}

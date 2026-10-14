@@ -2,8 +2,8 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import commonStyles from '../baseStyles/baseStyles';
-import colors from '../baseStyles/colors';
+import commonStyles from '../../baseStyles/baseStyles';
+import colors from '../../baseStyles/colors';
 
 export default function Index({}) {
   const router = useRouter();
@@ -24,7 +24,7 @@ export default function Index({}) {
             { height: 'auto', gap: 16, justifyContent: 'center', alignItems: 'center' },
           ]}>
           <Image
-            source={require('../../assets/images/BB-icon.png')}
+            source={require('../../../assets/images/BB-icon.png')}
             style={{ width: 80, height: 80, resizeMode: 'contain' }}
           />
           <Text style={[commonStyles.header, { textAlign: 'center', fontSize: 22 }]}>

@@ -299,7 +299,7 @@ export default function Index() {
             value={transactionNumber}
             onChangeText={handleTransactionNumberChange}
             onSubmitEditing={handleTransactionSearch}
-            placeholder="Search order number"
+            placeholder="Search drop-off #"
             placeholderTextColor={colors.gray}
             keyboardType="numeric"
             returnKeyType="search"
@@ -358,7 +358,9 @@ export default function Index() {
                 }}
               />
               <Text style={[commonStyles.paragraph, { color: colors.dark_blue }]}>
-                {`${section.data.length} ${section.data.length === 1 ? 'order' : 'orders'}`}
+                {`${section.data.length} ${
+                  section.data.length === 1 ? 'drop-off' : 'drop-offs'
+                }`}
               </Text>
             </View>
           )}
@@ -373,7 +375,9 @@ export default function Index() {
           contentContainerStyle={{ gap: 16, padding: 18 }}
           ListEmptyComponent={() => (
             <View style={{ alignItems: 'center', marginTop: 50 }}>
-              <Text style={[commonStyles.paragraph, { color: colors.gray }]}>No Orders Yet.</Text>
+              <Text style={[commonStyles.paragraph, { color: colors.gray }]}>
+                No Drop-offs Yet.
+              </Text>
             </View>
           )}
         />

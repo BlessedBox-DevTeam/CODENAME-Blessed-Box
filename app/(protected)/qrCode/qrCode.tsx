@@ -13,11 +13,11 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import SwitchSelector from 'react-native-switch-selector';
-import commonStyles from '../baseStyles/baseStyles';
-import colors from '../baseStyles/colors';
-import BackArrow from '../components/icons/BackArrow';
-import LoadingOverlay from '../components/LoadingSpinner';
-import { isBackupKey, scanQRCode } from '../services/services';
+import commonStyles from '../../baseStyles/baseStyles';
+import colors from '../../baseStyles/colors';
+import BackArrow from '../../components/icons/BackArrow';
+import LoadingOverlay from '../../components/LoadingSpinner';
+import { isBackupKey, scanQRCode } from '../../services/services';
 
 export default function Index() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -64,7 +64,6 @@ export default function Index() {
       setScanned(true);
       const codeValue = data;
       const { response, message } = (await scanQRCode(codeValue)).data;
-      console.log(response);
       setIsLoading(false);
       if (response) {
         router.push('/orders/order');
@@ -183,7 +182,7 @@ export default function Index() {
                     paddingBottom: 10,
                   }}>
                   <Image
-                    source={require('../../assets/images/test-qr.png')}
+                    source={require('../../../assets/images/test-qr.png')}
                     style={{ width: 125, height: 125, resizeMode: 'contain' }}
                   />
                   <Text style={[commonStyles.paragraph, { alignSelf: 'center', letterSpacing: 4 }]}>

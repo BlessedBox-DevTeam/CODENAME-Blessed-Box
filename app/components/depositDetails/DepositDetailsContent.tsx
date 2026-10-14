@@ -53,7 +53,7 @@ export function DepositHeader({
     <View style={styles.headerArea}>
       <View style={styles.headerRow}>
         <BackArrow onPress={onBack} label="Back" color={colors.white} />
-        <Text style={styles.headerTitle}>Order Detail</Text>
+        <Text style={styles.headerTitle}>Drop-off Detail</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -62,7 +62,7 @@ export function DepositHeader({
           <MaterialCommunityIcons name="gift" size={25} color={colors.dark_green} />
         </View>
         <View style={styles.orderIdentity}>
-          <Text style={styles.orderLabel}>Order #</Text>
+          <Text style={styles.orderLabel}>Drop-off #</Text>
           <Text style={styles.orderNumber}>{transaction.transactionNumber}</Text>
         </View>
         <View style={[styles.statusPill, { backgroundColor: statusBackgroundColor }]}>
@@ -119,7 +119,7 @@ export function DepositInfo({ transaction, icons }: DepositInfoProps) {
       icon: icons.date,
     },
     {
-      label: 'Order #',
+      label: 'Drop-off #',
       value: transaction.transactionNumber,
       icon: icons.order,
     },

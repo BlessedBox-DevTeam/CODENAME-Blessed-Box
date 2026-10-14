@@ -23,7 +23,7 @@ const statuses: { label: string; value: StatusFilter }[] = [
   { label: 'All', value: 'ALL' },
   { label: 'Pending', value: 'PENDING' },
   { label: 'Completed', value: 'COMPLETED' },
-  { label: 'Cancelled', value: 'DECLINED' },
+  { label: 'Declined', value: 'DECLINED' },
 ];
 
 export default function TransactionFiltersModal({
