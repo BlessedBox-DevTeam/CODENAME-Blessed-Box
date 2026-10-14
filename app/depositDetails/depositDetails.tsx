@@ -45,7 +45,7 @@ type TransactionDetails = {
 
 type BoxSummary = { ageCode: string; genderCode: GenderCode; quantity: number };
 type BoxResponse = {
-  ageCode: string;
+  ageCode: string | null;
   genderCode: string;
 };
 
@@ -73,7 +73,7 @@ export default function Index() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'information' | 'summary'>('information');
   const [isLoading, setIsLoading] = useState(true);
-  const [showWarning, setShowWarning] = useState(false);
+  const [confirmationStatus, setConfirmationStatus] = useState<number | null>(null);
   const [transactionDetails, setTransactionDetails] = useState<TransactionDetails | null>(null);
   const [boxes, setBoxes] = useState<BoxSummary[]>([]);
   const [permissions, setPermissions] = useState<UserPermission[]>([]);
@@ -101,13 +101,14 @@ export default function Index() {
         (map: Map<string, BoxSummary>, item: BoxResponse | null) => {
           if (!item) return map;
           const genderCode = getGenderCode(item.genderCode);
-          const key = `${item.ageCode}-${genderCode}`;
+          const ageCode = item.ageCode ?? 'UNLABELED';
+          const key = `${ageCode}-${genderCode}`;
           const current = map.get(key);
           map.set(
             key,
             current
               ? { ...current, quantity: current.quantity + 1 }
-              : { ageCode: item.ageCode, genderCode, quantity: 1 }
+              : { ageCode, genderCode, quantity: 1 }
           );
           return map;
         },
@@ -210,7 +211,7 @@ export default function Index() {
                       fontSize: 12,
                     },
                   ]}>
-                  {tab === 'information' ? 'Order Info' : 'Box Summary'}
+                  {tab === 'information' ? 'Drop-off Info' : 'Box Summary'}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -247,7 +248,7 @@ export default function Index() {
                   commonStyles.buttonNoShadow,
                   { flex: 1, minHeight: 44, paddingVertical: 8, paddingHorizontal: 6 },
                 ]}
-                onPress={() => updateStatus(COMPLETED_STATUS_ID)}>
+                onPress={() => setConfirmationStatus(COMPLETED_STATUS_ID)}>
                 <Text
                   style={[
                     commonStyles.paragraphBold,
@@ -269,7 +270,7 @@ export default function Index() {
                     borderWidth: 1,
                   },
                 ]}
-                onPress={() => setShowWarning(true)}>
+                onPress={() => setConfirmationStatus(DECLINED_STATUS_ID)}>
                 <Text
                   style={[
                     commonStyles.paragraphBold,
@@ -291,10 +292,10 @@ export default function Index() {
           )}
         </View>
         <Modal
-          visible={showWarning}
+          visible={confirmationStatus !== null}
           transparent
           animationType="fade"
-          onRequestClose={() => setShowWarning(false)}>
+          onRequestClose={() => setConfirmationStatus(null)}>
           <View
             style={{
               flex: 1,
@@ -311,7 +312,9 @@ export default function Index() {
                 padding: 32,
               }}>
               <Text style={[commonStyles.paragraph, { marginBottom: 32, textAlign: 'center' }]}>
-                Are you sure you want to decline this deposit?
+                {confirmationStatus === COMPLETED_STATUS_ID
+                  ? 'Are you sure you want to confirm this drop-off?'
+                  : 'Are you sure you want to decline this drop-off?'}
               </Text>
               <View style={{ flexDirection: 'row', gap: 32 }}>
                 <TouchableOpacity
@@ -324,19 +327,29 @@ export default function Index() {
                       flex: 1,
                     },
                   ]}
-                  onPress={() => setShowWarning(false)}>
+                  onPress={() => setConfirmationStatus(null)}>
                   <Text style={[commonStyles.header, { color: colors.dark_gray }]}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
                     commonStyles.buttonNoShadow,
-                    { backgroundColor: colors.red_label, flex: 1 },
+                    {
+                      backgroundColor:
+                        confirmationStatus === COMPLETED_STATUS_ID
+                          ? colors.green_label
+                          : colors.red_label,
+                      flex: 1,
+                    },
                   ]}
                   onPress={() => {
-                    setShowWarning(false);
-                    updateStatus(DECLINED_STATUS_ID);
+                    if (confirmationStatus === null) return;
+                    const statusId = confirmationStatus;
+                    setConfirmationStatus(null);
+                    updateStatus(statusId);
                   }}>
-                  <Text style={[commonStyles.header, { color: colors.white }]}>Decline</Text>
+                  <Text style={[commonStyles.header, { color: colors.white }]}>
+                    {confirmationStatus === COMPLETED_STATUS_ID ? 'Confirm' : 'Decline'}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>

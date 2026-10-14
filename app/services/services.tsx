@@ -1,4 +1,5 @@
 import { getRefreshToken } from '../helpers/helpers';
+import { NewTransactionPayload } from '../types/BoxLabelInfo';
 import api from './api';
 import publicApi from './publicApi';
 
@@ -74,6 +75,10 @@ export const getUserBoxes = async () => {
  */
 export const getRecollectionCenterBoxesCount = async () => {
   return await api.get(`/api/boxes/countRCBoxes`);
+};
+
+export const newTransaction = async (payload: NewTransactionPayload) => {
+  return await api.post(`/api/transactions/newTransaction`, payload);
 };
 /**
  *
