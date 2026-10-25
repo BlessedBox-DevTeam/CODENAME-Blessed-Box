@@ -89,6 +89,10 @@ export const scanQRCode = async (codeValue: string) => {
   return await api.post(`/api/qrCodes/isQRCode`, { accessCode: codeValue });
 };
 
+export const getManualAccessCode = async () => {
+  return await api.get<{ accessCode: string }>(`/api/qrCodes/manualAccessCode`);
+};
+
 export const isBackupKey = async (keyValue: string) => {
   return await api.post(`/api/backupKeys/isKey`, { keyValue });
 };
