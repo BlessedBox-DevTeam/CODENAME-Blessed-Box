@@ -30,6 +30,9 @@ export const DECLINED_STATUS_CODE = 'DECLINED';
 // ROLE TYPES IDS
 export const EDIT_TRANSACTION__PERMISSION = 'EDIT_TRANSACTION_DETAILS' as const;
 
+// ROLE TYPES CODES
+export const MANAGER_ROLE_CODE = 'MANAGER';
+
 // BOX AGE MAP
 export const BOX_AGE_MAP: { [key: number]: string } = {
   [TWO_TO_FOUR_YEARS_ID]: '2-4',

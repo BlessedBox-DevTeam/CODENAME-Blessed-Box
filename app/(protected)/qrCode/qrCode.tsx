@@ -1,7 +1,10 @@
 import { Camera, CameraView } from 'expo-camera';
-import { router, Stack } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { router, Stack, useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -17,7 +20,9 @@ import commonStyles from '../../baseStyles/baseStyles';
 import colors from '../../baseStyles/colors';
 import BackArrow from '../../components/icons/BackArrow';
 import LoadingOverlay from '../../components/LoadingSpinner';
-import { isBackupKey, scanQRCode } from '../../services/services';
+import { MANAGER_ROLE_CODE } from '../../helpers/constants';
+import { getUserFromToken } from '../../helpers/helpers';
+import { getManualAccessCode, isBackupKey, scanQRCode } from '../../services/services';
 
 export default function Index() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -29,6 +34,71 @@ export default function Index() {
   const [code, setCode] = useState('');
   const inputRef = useRef<TextInput>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isManager, setIsManager] = useState(false);
+  const [manualAccessCode, setManualAccessCode] = useState<string | null>(null);
+  const [isAccessCodeLoading, setIsAccessCodeLoading] = useState(false);
+  const focusSessionRef = useRef(0);
+  const accessCodeRequestRef = useRef(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      const focusSession = ++focusSessionRef.current;
+      setManualAccessCode(null);
+      setIsManager(false);
+
+      void getUserFromToken().then((user) => {
+        if (focusSessionRef.current === focusSession) {
+          setIsManager(Boolean(user?.roles?.includes(MANAGER_ROLE_CODE)));
+        }
+      });
+
+      return () => {
+        focusSessionRef.current += 1;
+        accessCodeRequestRef.current += 1;
+        setManualAccessCode(null);
+        setIsAccessCodeLoading(false);
+        setIsManager(false);
+      };
+    }, [])
+  );
+
+  const handleGetManualAccessCode = async () => {
+    const focusSession = focusSessionRef.current;
+    const requestId = ++accessCodeRequestRef.current;
+    setManualAccessCode(null);
+    setIsAccessCodeLoading(true);
+
+    try {
+      const { data } = await getManualAccessCode();
+      const accessCode = data.accessCode;
+
+      if (typeof accessCode !== 'string' || !accessCode.trim()) {
+        throw new Error('The server did not return a valid access code.');
+      }
+
+      if (
+        focusSessionRef.current === focusSession &&
+        accessCodeRequestRef.current === requestId
+      ) {
+        setManualAccessCode(accessCode);
+      }
+    } catch (error) {
+      console.error('Error retrieving the recollection center access code:', error);
+      if (
+        focusSessionRef.current === focusSession &&
+        accessCodeRequestRef.current === requestId
+      ) {
+        Alert.alert('Unable to get access code', 'Please try again later.');
+      }
+    } finally {
+      if (
+        focusSessionRef.current === focusSession &&
+        accessCodeRequestRef.current === requestId
+      ) {
+        setIsAccessCodeLoading(false);
+      }
+    }
+  };
 
   useEffect(() => {
     if (isScanTabActive && hasPermission === null) {
@@ -82,14 +152,6 @@ export default function Index() {
     return router.back();
   };
 
-  if (hasPermission === null) {
-    return <Text>Solicitando permisos...</Text>;
-  }
-
-  if (hasPermission === false) {
-    return <Text>No se tienen permisos para usar la cámara.</Text>;
-  }
-
   return (
     <SafeAreaProvider>
       <Stack.Screen options={{ headerShown: false }} />
@@ -105,7 +167,27 @@ export default function Index() {
           }}>
           <BackArrow onPress={handleBackPress} />
           <View style={{ flex: 1, alignItems: 'center' }}>
-            <Text style={commonStyles.header}>Drop-off Center</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Text style={commonStyles.header}>Drop-off Center</Text>
+              {isManager && (
+                <TouchableOpacity
+                  onPress={handleGetManualAccessCode}
+                  disabled={isAccessCodeLoading}
+                  accessibilityRole="button"
+                  accessibilityLabel="Get recollection center access code">
+                  {isAccessCodeLoading ? (
+                    <ActivityIndicator size="small" color={colors.dark_blue} />
+                  ) : (
+                    <Ionicons name="key-outline" size={20} color={colors.dark_blue} />
+                  )}
+                </TouchableOpacity>
+              )}
+            </View>
+            {manualAccessCode !== null && (
+              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
+                Access code: {manualAccessCode}
+              </Text>
+            )}
           </View>
           <View style={{ width: 44 }} />
         </View>
@@ -142,28 +224,38 @@ export default function Index() {
         {/* Body */}
         <View style={{ flex: 1 }}>
           {isScanTabActive ? (
-            <View style={{ flex: 1 }}>
-              <CameraView
-                style={{ flex: 1 }}
-                facing={facing}
-                onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-                barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
-              />
-              <TouchableOpacity
-                style={{
-                  position: 'absolute',
-                  top: 20,
-                  right: 20,
-                  backgroundColor: colors.overlayStrong,
-                  padding: 10,
-                  borderRadius: 25,
-                }}
-                onPress={() => setFacing((prev) => (prev === 'back' ? 'front' : 'back'))}>
-                <Text style={[commonStyles.paragraphBold, { color: colors.white }]}>
-                  {facing === 'back' ? 'Front' : 'Rear'}
+            hasPermission === true ? (
+              <View style={{ flex: 1 }}>
+                <CameraView
+                  style={{ flex: 1 }}
+                  facing={facing}
+                  onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+                  barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+                />
+                <TouchableOpacity
+                  style={{
+                    position: 'absolute',
+                    top: 20,
+                    right: 20,
+                    backgroundColor: colors.overlayStrong,
+                    padding: 10,
+                    borderRadius: 25,
+                  }}
+                  onPress={() => setFacing((prev) => (prev === 'back' ? 'front' : 'back'))}>
+                  <Text style={[commonStyles.paragraphBold, { color: colors.white }]}>
+                    {facing === 'back' ? 'Front' : 'Rear'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={commonStyles.paragraph}>
+                  {hasPermission === null
+                    ? 'Solicitando permisos...'
+                    : 'No se tienen permisos para usar la cámara.'}
                 </Text>
-              </TouchableOpacity>
-            </View>
+              </View>
+            )
           ) : (
             <View style={{ flex: 1, padding: 20 }}>
               <View
