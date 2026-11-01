@@ -48,7 +48,7 @@ export default function Index() {
 
       void getUserFromToken().then((user) => {
         if (focusSessionRef.current === focusSession) {
-          setIsManager(Boolean(user?.roles?.includes(MANAGER_ROLE_CODE)));
+          setIsManager(Boolean(user?.roles?.some((role) => role?.code === MANAGER_ROLE_CODE)));
         }
       });
 
@@ -76,25 +76,16 @@ export default function Index() {
         throw new Error('The server did not return a valid access code.');
       }
 
-      if (
-        focusSessionRef.current === focusSession &&
-        accessCodeRequestRef.current === requestId
-      ) {
+      if (focusSessionRef.current === focusSession && accessCodeRequestRef.current === requestId) {
         setManualAccessCode(accessCode);
       }
     } catch (error) {
       console.error('Error retrieving the recollection center access code:', error);
-      if (
-        focusSessionRef.current === focusSession &&
-        accessCodeRequestRef.current === requestId
-      ) {
+      if (focusSessionRef.current === focusSession && accessCodeRequestRef.current === requestId) {
         Alert.alert('Unable to get access code', 'Please try again later.');
       }
     } finally {
-      if (
-        focusSessionRef.current === focusSession &&
-        accessCodeRequestRef.current === requestId
-      ) {
+      if (focusSessionRef.current === focusSession && accessCodeRequestRef.current === requestId) {
         setIsAccessCodeLoading(false);
       }
     }
