@@ -3,7 +3,6 @@ import React, { useMemo, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,7 +10,14 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import OtpInput from '../components/auth/OtpInput';
-import { deletePendingRegistrationEmail, getPendingRegistrationEmail } from '../helpers/helpers';
+import BackArrow from '../components/icons/BackArrow';
+import commonStyles from '../baseStyles/baseStyles';
+import colors from '../baseStyles/colors';
+import {
+  deletePendingRegistrationEmail,
+  deleteRegistrationDraft,
+  getPendingRegistrationEmail,
+} from '../helpers/helpers';
 import { resendOTP, verifyOTP } from '../services/services';
 
 const OTP_LENGTH = 6;
@@ -47,6 +53,7 @@ export default function VerificationScreen() {
       const response = await verifyOTP(finalEmail, otp);
       if (response.data?.success) {
         await deletePendingRegistrationEmail();
+        await deleteRegistrationDraft();
         router.replace('/login');
         return;
       }
@@ -79,9 +86,12 @@ export default function VerificationScreen() {
           style={styles.container}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           <View style={styles.headerWrap}>
-            <Pressable onPress={() => router.back()} style={styles.backButton}>
-              <Text style={styles.backText}>← Back</Text>
-            </Pressable>
+            <BackArrow
+              onPress={() => router.back()}
+              label="Back"
+              color={colors.text.inverse}
+              style={{ marginBottom: 22 }}
+            />
 
             <View style={styles.titleRow}>
               <View style={styles.iconBadge}>
@@ -109,7 +119,7 @@ export default function VerificationScreen() {
                 (isLoading || otp.length !== OTP_LENGTH) && styles.submitButtonDisabled,
               ]}>
               <Text style={styles.submitText}>
-                {isLoading ? 'Verifying...' : 'Enter the remaining 6 digits'}
+                {isLoading ? 'Verifying...' : 'Enter the 6-digit code'}
               </Text>
             </TouchableOpacity>
 
@@ -119,7 +129,7 @@ export default function VerificationScreen() {
             </TouchableOpacity>
 
             <Text style={styles.footerText}>
-              ¿Didn't receive the email? Check your spam folder.
+              ¿Didn&apos;t receive the email? Check your spam folder.
             </Text>
           </View>
         </KeyboardAvoidingView>
@@ -131,26 +141,17 @@ export default function VerificationScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F3A36E',
+    backgroundColor: colors.auth.primary,
   },
   container: {
     flex: 1,
-    backgroundColor: '#F3A36E',
+    backgroundColor: colors.auth.primary,
   },
   headerWrap: {
-    paddingHorizontal: 18,
-    paddingTop: 18,
-    paddingBottom: 14,
-    backgroundColor: '#F3A36E',
-  },
-  backButton: {
-    alignSelf: 'flex-start',
-    marginBottom: 22,
-  },
-  backText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '700',
+    paddingHorizontal: 30,
+    paddingTop: 20,
+    paddingBottom: 22,
+    backgroundColor: colors.auth.primary,
   },
   titleRow: {
     flexDirection: 'row',
@@ -161,32 +162,32 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 18,
-    backgroundColor: '#F7F2EE',
+    backgroundColor: colors.surface.card,
     alignItems: 'center',
     justifyContent: 'center',
   },
   icon: {
     fontSize: 26,
-    color: '#D95727',
-    fontWeight: '900',
+    color: colors.auth.primary,
+    fontFamily: commonStyles.paragraphExtraBold.fontFamily,
   },
   titleBlock: {
     flex: 1,
   },
   title: {
-    color: '#fff',
+    color: colors.text.inverse,
     fontSize: 30,
-    fontWeight: '900',
+    fontFamily: commonStyles.title.fontFamily,
     letterSpacing: -0.5,
   },
   subtitle: {
-    color: '#FDE7DA',
+    color: colors.text.inverse,
     fontSize: 14,
     marginTop: 2,
   },
   body: {
     flex: 1,
-    backgroundColor: '#F6F0EB',
+    backgroundColor: colors.surface.card,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingHorizontal: 22,
@@ -194,16 +195,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    color: '#6F5142',
+    color: colors.auth.mutedText,
     fontSize: 18,
-    fontWeight: '500',
+    fontFamily: commonStyles.paragraph.fontFamily,
     textAlign: 'center',
     marginBottom: 4,
   },
   email: {
-    color: '#221710',
+    color: colors.auth.text,
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
     marginBottom: 28,
   },
   otpBox: {
@@ -226,32 +227,32 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 58,
     borderRadius: 18,
-    backgroundColor: '#F0E5DD',
+    backgroundColor: colors.auth.otpBackground,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: colors.transparent,
     alignItems: 'center',
     justifyContent: 'center',
   },
   digitCellFilled: {
-    borderColor: '#D8C2B1',
+    borderColor: colors.auth.otpBorder,
   },
   digitCellActive: {
-    borderColor: '#D95727',
+    borderColor: colors.auth.primary,
   },
   digitText: {
-    color: '#2B211C',
+    color: colors.auth.inputText,
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
   },
   submitButton: {
     width: '100%',
-    backgroundColor: '#D95727',
+    backgroundColor: colors.auth.primary,
     borderRadius: 18,
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 24,
-    shadowColor: '#D95727',
+    shadowColor: colors.auth.primary,
     shadowOpacity: 0.2,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 8 },
@@ -261,9 +262,9 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   submitText: {
-    color: '#fff',
+    color: colors.text.inverse,
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
   },
   resendButton: {
     flexDirection: 'row',
@@ -273,17 +274,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   resendIcon: {
-    color: '#5F4A3C',
+    color: colors.auth.resend,
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
   },
   resendText: {
-    color: '#5F4A3C',
+    color: colors.auth.resend,
     fontSize: 15,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
   },
   footerText: {
-    color: '#6E5648',
+    color: colors.auth.footer,
     fontSize: 14,
     marginTop: 24,
     textAlign: 'center',

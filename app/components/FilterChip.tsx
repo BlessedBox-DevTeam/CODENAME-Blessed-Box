@@ -1,11 +1,31 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  GestureResponderEvent,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
+import commonStyles from '../baseStyles/baseStyles';
 import colors from '../baseStyles/colors';
 
-export default function FilterChip({ label, selected, onPress }) {
+interface FilterChipProps {
+  label: string;
+  selected: boolean;
+  onPress: (event: GestureResponderEvent) => void;
+  chipStyle?: StyleProp<ViewStyle>;
+}
+
+export default function FilterChip({ label, selected, onPress, chipStyle }: FilterChipProps) {
   return (
-    <TouchableOpacity style={[styles.chip, selected ? styles.selectedChip : styles.unselectedChip]} onPress={onPress} activeOpacity={0.7}>
-      <Text style={[styles.text, selected ? styles.selectedText : styles.unselectedText]}>{label}</Text>
+    <TouchableOpacity
+      style={[styles.chip, selected ? styles.selectedChip : styles.unselectedChip, chipStyle]}
+      onPress={onPress}
+      activeOpacity={0.7}>
+      <Text style={[styles.text, selected ? styles.selectedText : styles.unselectedText]}>
+        {label}
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -23,22 +43,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectedChip: {
-    backgroundColor: colors.dark_blue,
-    borderColor: colors.dark_blue,
+    backgroundColor: colors.brand.primary,
+    borderColor: colors.brand.primary,
   },
   unselectedChip: {
-    backgroundColor: colors.white,
-    borderColor: colors.white,
+    backgroundColor: colors.surface.card,
+    borderColor: colors.surface.neutral,
   },
   text: {
     fontSize: 12,
     textAlign: 'center',
-    fontFamily: 'OpenSans-SemiBold',
+    fontFamily: commonStyles.paragraph.fontFamily,
   },
   selectedText: {
-    color: colors.white,
+    color: colors.text.inverse,
   },
   unselectedText: {
-    color: colors.dark_blue,
+    color: colors.text.secondary,
   },
 });

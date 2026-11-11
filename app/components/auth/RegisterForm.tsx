@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ScrollView,
   Text,
@@ -9,6 +9,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { authColors, authStyles } from '../../baseStyles/authStyles';
+import { getRegistrationDraft, saveRegistrationDraft } from '../../helpers/helpers';
 
 type RegisterFormProps = {
   onBackToLogin: () => void;
@@ -26,11 +27,49 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [focusedInput, setFocusedInput] = useState<'firstName' | 'lastName' | 'email' | null>(
+    null
+  );
+  const draftHydrated = useRef(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    getRegistrationDraft().then((draft) => {
+      if (isMounted && draft) {
+        setFirstName(draft.firstName);
+        setLastName(draft.lastName);
+        setEmail(draft.email);
+        setPassword(draft.password);
+        setConfirmation(draft.confirmation);
+        setTermsAccepted(draft.termsAccepted);
+      }
+      draftHydrated.current = true;
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!draftHydrated.current) return;
+
+    saveRegistrationDraft({
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmation,
+      termsAccepted,
+    });
+  }, [confirmation, email, firstName, lastName, password, termsAccepted]);
+
   const compact = height < 760;
   const veryCompact = height < 680;
   const horizontalPadding = width < 360 ? 22 : 30;
-  const inputFontSize = veryCompact ? 15 : 17;
   const labelFontSize = veryCompact ? 13 : compact ? 14 : 15;
+  const inputFontSize = labelFontSize + 2;
   const inputHeight = veryCompact ? 48 : compact ? 52 : 55;
   const inputRadius = veryCompact ? 17 : 20;
   const inputHorizontalPadding = veryCompact ? 17 : 20;
@@ -68,6 +107,7 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
             <TextInput
               style={[
                 authStyles.registerInput,
+                focusedInput === 'firstName' && authStyles.registerInputFocused,
                 {
                   height: inputHeight,
                   borderRadius: inputRadius,
@@ -76,10 +116,12 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
                   fontSize: inputFontSize,
                 },
               ]}
-              placeholder="Maria"
-              placeholderTextColor="#A99A90"
+              placeholder="Jane"
+              placeholderTextColor={authColors.placeholderSecondary}
               value={firstName}
               onChangeText={setFirstName}
+              onFocus={() => setFocusedInput('firstName')}
+              onBlur={() => setFocusedInput(null)}
               autoCapitalize="words"
             />
           </RegisterField>
@@ -90,6 +132,7 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
             <TextInput
               style={[
                 authStyles.registerInput,
+                focusedInput === 'lastName' && authStyles.registerInputFocused,
                 {
                   height: inputHeight,
                   borderRadius: inputRadius,
@@ -98,10 +141,12 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
                   fontSize: inputFontSize,
                 },
               ]}
-              placeholder="Gonzalez"
-              placeholderTextColor="#A99A90"
+              placeholder="Doe"
+              placeholderTextColor={authColors.placeholderSecondary}
               value={lastName}
               onChangeText={setLastName}
+              onFocus={() => setFocusedInput('lastName')}
+              onBlur={() => setFocusedInput(null)}
               autoCapitalize="words"
             />
           </RegisterField>
@@ -112,6 +157,7 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
         <TextInput
           style={[
             authStyles.registerInput,
+            focusedInput === 'email' && authStyles.registerInputFocused,
             {
               height: inputHeight,
               borderRadius: inputRadius,
@@ -121,12 +167,14 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
             },
           ]}
           placeholder="you@email.com"
-          placeholderTextColor="#A99A90"
+          placeholderTextColor={authColors.placeholderSecondary}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
+          onFocus={() => setFocusedInput('email')}
+          onBlur={() => setFocusedInput(null)}
         />
       </RegisterField>
 
@@ -262,10 +310,13 @@ function PasswordInput({
   inputHorizontalPadding: number;
   onFocus?: () => void;
 }) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <View
       style={[
         authStyles.registerPassword,
+        focused && authStyles.registerPasswordFocused,
         {
           height: inputHeight,
           borderRadius: inputRadius,
@@ -277,12 +328,16 @@ function PasswordInput({
       <TextInput
         style={[authStyles.registerPasswordInput, { fontSize }]}
         placeholder={placeholder}
-        placeholderTextColor="#A99A90"
+        placeholderTextColor={authColors.placeholderSecondary}
         value={value}
         onChangeText={onChangeText}
         secureTextEntry={!visible}
         autoCapitalize="none"
-        onFocus={onFocus}
+        onFocus={() => {
+          setFocused(true);
+          onFocus?.();
+        }}
+        onBlur={() => setFocused(false)}
       />
       <TouchableOpacity
         activeOpacity={0.65}

@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Modal, StyleSheet } from 'react-native';
+import colors from '../baseStyles/colors';
 
 /**
  * LoadingOverlay component
@@ -14,15 +15,15 @@ import { Animated, StyleSheet } from 'react-native';
  * @param {boolean} [props.visible=false] - Controls whether the overlay is visible.
  * If false, the component returns null.
  * @param {number} [props.size=90] - Size (width & height in pixels) of the spinner.
- * @param {string} [props.color="#d3d3d3"] - Color of the spinner border (excluding the transparent top section).
+ * @param {string} [props.color] - Color of the spinner border (excluding the transparent top section).
  *
  * @example
  * // Show a loading overlay while data is being fetched
- * <LoadingOverlay visible={isLoading} size={60} color="#4CAF50" />
+ * <LoadingOverlay visible={isLoading} size={60} color={colors.brand.primary} />
  */
-export default function LoadingOverlay({ visible = false, size = 90, color = '#d3d3d3' }) {
-  const opacity = useRef(new Animated.Value(0)).current;
-  const rotate = useRef(new Animated.Value(0)).current;
+export default function LoadingOverlay({ visible = false, size = 90, color = colors.surface.neutral }) {
+  const [opacity] = useState(() => new Animated.Value(0));
+  const [rotate] = useState(() => new Animated.Value(0));
   const spinning = useRef<Animated.CompositeAnimation | null>(null);
 
   // Fade in/out and spin behavior
@@ -60,27 +61,33 @@ export default function LoadingOverlay({ visible = false, size = 90, color = '#d
   if (!visible) return null;
 
   return (
-    <Animated.View style={[styles.overlay, { opacity }]}>
-      <Animated.View
-        style={[
-          styles.spinner,
-          {
-            width: size,
-            height: size,
-            borderColor: color,
-            borderTopColor: 'transparent',
-            transform: [{ rotate: spin }],
-          },
-        ]}
-      />
-    </Animated.View>
+    <Modal visible={visible} transparent statusBarTranslucent animationType="none">
+      <Animated.View style={[styles.overlay, { opacity }]}>
+        <Animated.View
+          style={[
+            styles.spinner,
+            {
+              width: size,
+              height: size,
+              borderColor: color,
+              borderTopColor: 'transparent',
+              transform: [{ rotate: spin }],
+            },
+          ]}
+        />
+      </Animated.View>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10, 10, 10, 0.35)',
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    backgroundColor: colors.effects.darkOverlay,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,

@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import commonStyles from '../../baseStyles/baseStyles';
 import { validateLoginInputs } from '../../helpers/authValidation';
 import { authColors, authStyles } from '../../baseStyles/authStyles';
 import { forgotPassword } from '@/app/services/services';
@@ -16,6 +17,7 @@ export default function LoginForm({ onSubmit, onInvalid, onRegister }: LoginForm
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [focusedInput, setFocusedInput] = useState<'email' | 'password' | null>(null);
 
   const compact = height < 750;
   const veryCompact = height < 680;
@@ -33,7 +35,7 @@ export default function LoginForm({ onSubmit, onInvalid, onRegister }: LoginForm
     }
   };
   const handleForgotPassword = async () => {
-    const { success } = (await forgotPassword(email)).data;
+    // const { success } = (await forgotPassword(email)).data;
   };
 
   return (
@@ -46,7 +48,7 @@ export default function LoginForm({ onSubmit, onInvalid, onRegister }: LoginForm
         },
       ]}>
       <Text style={[styles.welcome, { fontSize: veryCompact ? 27 : compact ? 30 : 34 }]}>
-        Welcome back!
+        Welcome back
       </Text>
       <Text
         style={[
@@ -69,6 +71,7 @@ export default function LoginForm({ onSubmit, onInvalid, onRegister }: LoginForm
       <TextInput
         style={[
           authStyles.input,
+          focusedInput === 'email' && authStyles.inputFocused,
           {
             height: inputHeight,
             borderRadius: veryCompact ? 17 : 20,
@@ -84,6 +87,8 @@ export default function LoginForm({ onSubmit, onInvalid, onRegister }: LoginForm
         autoCorrect={false}
         value={email}
         onChangeText={setEmail}
+        onFocus={() => setFocusedInput('email')}
+        onBlur={() => setFocusedInput(null)}
       />
 
       <Text
@@ -96,6 +101,7 @@ export default function LoginForm({ onSubmit, onInvalid, onRegister }: LoginForm
       <View
         style={[
           authStyles.passwordContainer,
+          focusedInput === 'password' && authStyles.inputFocused,
           {
             height: inputHeight,
             borderRadius: veryCompact ? 17 : 20,
@@ -113,6 +119,8 @@ export default function LoginForm({ onSubmit, onInvalid, onRegister }: LoginForm
           autoCapitalize="none"
           autoCorrect={false}
           secureTextEntry={!showPassword}
+          onFocus={() => setFocusedInput('password')}
+          onBlur={() => setFocusedInput(null)}
         />
         <TouchableOpacity
           activeOpacity={0.65}
@@ -174,7 +182,7 @@ export default function LoginForm({ onSubmit, onInvalid, onRegister }: LoginForm
 const styles = {
   welcome: {
     lineHeight: 38,
-    fontWeight: '900' as const,
+    fontFamily: commonStyles.title.fontFamily,
     letterSpacing: -0.8,
     color: authColors.text,
     marginBottom: 5,

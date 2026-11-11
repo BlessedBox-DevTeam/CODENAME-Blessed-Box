@@ -1,12 +1,10 @@
-import { io } from 'socket.io-client';
 import Constants from 'expo-constants';
+import { io, Socket } from 'socket.io-client';
 import { getAccessToken } from './helpers/helpers';
-import { useEffect } from 'react';
 
 const extra = Constants.expoConfig?.extra;
 const API_URL = extra?.URL || 'https://blessedbox.org';
-const API_PORT = extra?.PORT;
-let socket = null;
+let socket: Socket | null = null;
 
 export const initSocket = async () => {
   if (socket && socket.connected) return socket;
@@ -22,18 +20,9 @@ export const initSocket = async () => {
     reconnectionDelay: 2000,
   });
 
-  socket.on('connect', () => console.log('✅ Socket connected:', socket.id));
+  socket.on('connect', () => console.log('✅ Socket connected:', socket?.id));
   socket.on('disconnect', (reason) => console.log('❌ Socket disconnected:', reason));
   socket.on('connect_error', (err) => console.log('⚠️ Socket error:', err.message));
-  socket.on('transaction:new', (data) => {
-    console.log('Nueva transacción:', data);
-    // actualizar lista o mostrar notificación
-  });
-  socket.on('transaction:statusUpdated', (data) => {
-    console.log('Transacción modificada:', data);
-    // actualizar lista o mostrar notificación
-  });
-
   return socket;
 };
 

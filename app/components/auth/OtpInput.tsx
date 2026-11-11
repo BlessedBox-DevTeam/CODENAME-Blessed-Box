@@ -1,5 +1,8 @@
-import React, { useRef } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useRef } from 'react';
+import { InteractionManager, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import commonStyles from '../../baseStyles/baseStyles';
+import colors from '../../baseStyles/colors';
 
 type OtpInputProps = {
   value: string;
@@ -16,13 +19,30 @@ export default function OtpInput({
 }: OtpInputProps) {
   const inputRef = useRef<TextInput>(null);
 
+  const focusInput = useCallback(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const task = InteractionManager.runAfterInteractions(focusInput);
+
+      return () => task.cancel();
+    }, [focusInput])
+  );
+
   const handleChangeText = (text: string) => {
     const cleaned = text.replace(/\D/g, '').slice(0, length);
     onChangeText(cleaned);
   };
 
+  const handlePress = () => {
+    inputRef.current?.blur();
+    requestAnimationFrame(focusInput);
+  };
+
   return (
-    <Pressable onPress={() => inputRef.current?.focus()} style={styles.container}>
+    <Pressable onPress={handlePress} style={styles.container}>
       <TextInput
         ref={inputRef}
         value={value}
@@ -56,6 +76,11 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     alignItems: 'center',
+    padding: 12,
+    borderRadius: 22,
+    backgroundColor: colors.surface.card,
+    borderWidth: 1,
+    borderColor: colors.auth.input,
   },
   hiddenInput: {
     position: 'absolute',
@@ -73,21 +98,22 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 58,
     borderRadius: 18,
-    backgroundColor: '#F0E5DD',
+    backgroundColor: colors.surface.card,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: colors.auth.input,
     alignItems: 'center',
     justifyContent: 'center',
   },
   digitCellFilled: {
-    borderColor: '#D8C2B1',
+    backgroundColor: colors.auth.benefits,
+    borderColor: colors.auth.primary,
   },
   digitCellActive: {
-    borderColor: '#D95727',
+    borderColor: colors.auth.primary,
   },
   digitText: {
-    color: '#2B211C',
+    color: colors.auth.inputText,
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: commonStyles.paragraphBold.fontFamily,
   },
 });

@@ -2,9 +2,10 @@ import { Stack, useRouter } from 'expo-router';
 import { jwtDecode } from 'jwt-decode';
 import React, { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
+import colors from '../baseStyles/colors';
 import AppLoadingScreen from '../components/auth/AppLoadingScreen';
-import { getAccessToken, getRefreshToken, saveAccessToken } from '../helpers/helpers';
-import { refreshTokens } from '../services/services';
+import { getAccessToken } from '../helpers/helpers';
+import { refreshAccessToken } from '../services/api';
 
 export default function LoginLayout() {
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -19,7 +20,6 @@ export default function LoginLayout() {
         setCheckingAuth(false);
       }
       const accessToken = await getAccessToken();
-      const refreshToken = await getRefreshToken();
       if (accessToken) {
         try {
           const decoded: any = jwtDecode(accessToken);
@@ -29,21 +29,17 @@ export default function LoginLayout() {
           authenticated = false;
         }
       }
-      if (!authenticated && refreshToken) {
+      if (!authenticated) {
         try {
-          const response = await refreshTokens(refreshToken);
-          const data = response.data;
-          if (data.success) {
-            await saveAccessToken(data.accessToken);
-            authenticated = true;
-          }
+          await refreshAccessToken();
+          authenticated = true;
         } catch {
           authenticated = false;
         }
       }
 
       if (authenticated) {
-        router.replace('../home');
+        router.replace('/home');
       } else {
         setCheckingAuth(false);
       }
@@ -60,7 +56,7 @@ export default function LoginLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: '#FFF8F1' },
+        contentStyle: { backgroundColor: colors.auth.background },
       }}>
       <Stack.Screen
         name="login"

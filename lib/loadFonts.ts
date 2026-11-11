@@ -9,7 +9,7 @@ export async function loadFonts() {
       'OpenSans-ExtraBold': require('../assets/fonts/OpenSans-ExtraBold.ttf'),
       'OpenSans-SemiBoldItalic': require('../assets/fonts/OpenSans-SemiBoldItalic.ttf'),
       'OpenSans-SemiBold': require('../assets/fonts/OpenSans-SemiBold.ttf'),
-      'PlayfairDisplay-Black': require('../assets/fonts/PlayfairDisplay-Black.ttf'),
+      'Nunito-Bold': require('../assets/fonts/Nunito-Bold.ttf'),
     });
     console.log('Fonts cargadas ✅');
   } catch (error) {

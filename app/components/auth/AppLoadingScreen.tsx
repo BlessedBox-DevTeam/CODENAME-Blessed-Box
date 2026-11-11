@@ -1,7 +1,7 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { authColors, authStyles } from '../../baseStyles/authStyles';
+import GiftBoxIcon from '../icons/GiftBoxIcon';
 
 export default function AppLoadingScreen() {
   return (
@@ -11,7 +11,7 @@ export default function AppLoadingScreen() {
 
       <View style={authStyles.loadingContent}>
         <View style={authStyles.loadingLogo}>
-          <MaterialCommunityIcons name="gift" size={54} color={authColors.primary} />
+          <GiftBoxIcon size={54} />
         </View>
         <Text style={authStyles.loadingBrand}>BlessedBox</Text>
         <ActivityIndicator

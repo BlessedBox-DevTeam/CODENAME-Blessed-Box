@@ -1,7 +1,7 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React from 'react';
 import { Text, View, useWindowDimensions } from 'react-native';
-import { authColors, authStyles } from '../../baseStyles/authStyles';
+import { authStyles } from '../../baseStyles/authStyles';
+import GiftBoxIcon from '../icons/GiftBoxIcon';
 
 export default function RegisterHeader() {
   const { height } = useWindowDimensions();
@@ -20,11 +20,7 @@ export default function RegisterHeader() {
         ]}>
         <View style={[authStyles.registerBrand, compact && authStyles.registerBrandCompact]}>
           <View style={[authStyles.registerLogo, compact && authStyles.registerLogoCompact]}>
-            <MaterialCommunityIcons
-              name="gift"
-              size={veryCompact ? 24 : compact ? 28 : 32}
-              color={authColors.primary}
-            />
+            <GiftBoxIcon size={veryCompact ? 24 : compact ? 28 : 32} />
           </View>
           <Text
             style={[authStyles.registerBrandName, compact && authStyles.registerBrandNameCompact]}>

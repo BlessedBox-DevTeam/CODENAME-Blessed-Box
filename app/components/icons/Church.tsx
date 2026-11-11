@@ -7,7 +7,7 @@ interface ChurchProps {
   height?: number;
   color?: string;
 }
-export default function Church({ width = 40, height = 41, color = colors.dark_blue, ...props }: ChurchProps) {
+export default function Church({ width = 40, height = 41, color = colors.brand.dark, ...props }: ChurchProps) {
   return (
     <Svg width={width} height={height} viewBox="0 0 40 41" fill="none" {...props}>
       <Path d="M32.6943 27.1133V39.1013V39.141H40V31.3361L32.6943 27.1133Z" fill={color} />
