@@ -7,7 +7,7 @@ interface UserAvatarProps {
   height?: number;
   color?: string;
 }
-export default function UserAvatar({ width = 40, height = 40, color = colors.dark_blue, ...props }: UserAvatarProps) {
+export default function UserAvatar({ width = 40, height = 40, color = colors.brand.dark, ...props }: UserAvatarProps) {
   return (
     <Svg width={width} height={height} viewBox="0 0 40 40" fill="none" {...props}>
       <Path

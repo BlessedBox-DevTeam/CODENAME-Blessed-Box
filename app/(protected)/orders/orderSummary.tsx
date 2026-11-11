@@ -116,7 +116,7 @@ export default function Index() {
           flexDirection: 'row',
           alignItems: 'center',
           paddingVertical: 10,
-          borderColor: colors.light_gray,
+          borderColor: colors.surface.neutral,
           borderBottomWidth: index === parsedBoxLabels.length - 1 ? 0 : 1,
           overflow: 'hidden',
         }}>
@@ -125,15 +125,17 @@ export default function Index() {
           <Text
             style={[
               commonStyles.paragraphBold,
-              { color: colors.dark_blue },
+              { color: colors.text.primary },
             ]}>{`${boxLabel.quantity}x`}</Text>
-          <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>BlessedBox</Text>
+          <Text style={[commonStyles.paragraphBold, { color: colors.text.primary }]}>
+            BlessedBox
+          </Text>
         </View>
 
         {/* Details Container */}
         <View style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center' }}>
           {boxLabel.genderId === UNLABELED_GENDER_ID ? (
-            <Text style={[commonStyles.paragraphItalic, { color: colors.dark_gray }]}>
+            <Text style={[commonStyles.paragraphItalic, { color: colors.text.primary }]}>
               Unlabeled
             </Text>
           ) : (
@@ -144,13 +146,17 @@ export default function Index() {
                   borderRadius: 5,
                   width: 'auto',
                   maxWidth: 60,
-                  backgroundColor: colors.light_gray,
+                  backgroundColor: colors.surface.control,
                   alignItems: 'center',
                   justifyContent: 'center',
                   flex: 1,
                   padding: 2,
                 }}>
-                <Text style={[commonStyles.paragraph, { letterSpacing: 2 }]}>
+                <Text
+                  style={[
+                    commonStyles.paragraph,
+                    { color: colors.text.primary, letterSpacing: 2 },
+                  ]}>
                   {BOX_AGE_MAP[boxLabel.boxAgeId]}
                 </Text>
               </View>
@@ -164,7 +170,7 @@ export default function Index() {
   return (
     <SafeAreaProvider>
       <Stack.Screen options={{ headerShown: false }} />
-      <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
+      <SafeAreaView style={{ backgroundColor: colors.surface.app, flex: 1 }}>
         <LoadingOverlay visible={isLoading} />
         {/* Header */}
         <View
@@ -173,9 +179,11 @@ export default function Index() {
             alignItems: 'center',
             padding: 20,
           }}>
-          <BackArrow onPress={handleBackPress} />
+          <BackArrow onPress={handleBackPress} color={colors.text.primary} />
           <View style={{ flex: 1, alignItems: 'center' }}>
-            <Text style={commonStyles.header}>Drop-off Summary</Text>
+            <Text style={[commonStyles.header, { color: colors.text.primary }]}>
+              Drop-off Summary
+            </Text>
           </View>
           {/* Empty Spacer */}
           <View style={{ width: 44 }} />
@@ -193,12 +201,12 @@ export default function Index() {
                 gap: 10,
                 borderBottomWidth: 1,
                 paddingBottom: 10,
-                borderColor: colors.light_gray,
+                borderColor: colors.surface.neutral,
               }}>
-              <Church width={30} height={30}></Church>
+              <Church width={30} height={30} color={colors.text.primary} />
               <View style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                <Text style={commonStyles.header}>Church</Text>
-                <Text style={[commonStyles.paragraph, { color: colors.dark_blue }]}>
+                <Text style={[commonStyles.header, { color: colors.text.primary }]}>Church</Text>
+                <Text style={[commonStyles.paragraph, { color: colors.text.primary }]}>
                   Iglesia Cristiana Bethlehem
                 </Text>
               </View>
@@ -211,7 +219,7 @@ export default function Index() {
           {/* Confirm Order Button */}
           <View style={{ marginTop: 'auto' }}>
             <TouchableOpacity style={[commonStyles.button]} onPress={handleConfirmOrder}>
-              <Text style={[commonStyles.header, { color: colors.white }]}>Confirm</Text>
+              <Text style={[commonStyles.header, { color: colors.text.inverse }]}>Confirm</Text>
             </TouchableOpacity>
           </View>
         </View>

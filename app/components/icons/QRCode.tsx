@@ -2,7 +2,7 @@ import * as React from 'react';
 import Svg, { Path, Rect } from 'react-native-svg';
 import colors from '../../baseStyles/colors';
 
-const QRCode = ({ width = 24, height = 24, color = colors.dark_blue, ...props }) => (
+const QRCode = ({ width = 24, height = 24, color = colors.brand.dark, ...props }) => (
   <Svg width={width} height={height} viewBox="0 0 268.81 269.65" {...props}>
     <Path
       fill={color}

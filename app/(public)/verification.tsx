@@ -89,7 +89,7 @@ export default function VerificationScreen() {
             <BackArrow
               onPress={() => router.back()}
               label="Back"
-              color={colors.white}
+              color={colors.text.inverse}
               style={{ marginBottom: 22 }}
             />
 
@@ -119,7 +119,7 @@ export default function VerificationScreen() {
                 (isLoading || otp.length !== OTP_LENGTH) && styles.submitButtonDisabled,
               ]}>
               <Text style={styles.submitText}>
-                {isLoading ? 'Verifying...' : 'Enter the remaining 6 digits'}
+                {isLoading ? 'Verifying...' : 'Enter the 6-digit code'}
               </Text>
             </TouchableOpacity>
 
@@ -141,17 +141,17 @@ export default function VerificationScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.authVerificationHeader,
+    backgroundColor: colors.auth.primary,
   },
   container: {
     flex: 1,
-    backgroundColor: colors.authVerificationHeader,
+    backgroundColor: colors.auth.primary,
   },
   headerWrap: {
-    paddingHorizontal: 18,
-    paddingTop: 18,
-    paddingBottom: 14,
-    backgroundColor: colors.authVerificationHeader,
+    paddingHorizontal: 30,
+    paddingTop: 20,
+    paddingBottom: 22,
+    backgroundColor: colors.auth.primary,
   },
   titleRow: {
     flexDirection: 'row',
@@ -162,32 +162,32 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 18,
-    backgroundColor: colors.authBadge,
+    backgroundColor: colors.surface.card,
     alignItems: 'center',
     justifyContent: 'center',
   },
   icon: {
     fontSize: 26,
-    color: colors.authPrimary,
+    color: colors.auth.primary,
     fontFamily: commonStyles.paragraphExtraBold.fontFamily,
   },
   titleBlock: {
     flex: 1,
   },
   title: {
-    color: colors.white,
+    color: colors.text.inverse,
     fontSize: 30,
     fontFamily: commonStyles.title.fontFamily,
     letterSpacing: -0.5,
   },
   subtitle: {
-    color: colors.authSubtitle,
+    color: colors.text.inverse,
     fontSize: 14,
     marginTop: 2,
   },
   body: {
     flex: 1,
-    backgroundColor: colors.authBody,
+    backgroundColor: colors.surface.card,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingHorizontal: 22,
@@ -195,14 +195,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    color: colors.authLabel,
+    color: colors.auth.mutedText,
     fontSize: 18,
     fontFamily: commonStyles.paragraph.fontFamily,
     textAlign: 'center',
     marginBottom: 4,
   },
   email: {
-    color: colors.authTextStrong,
+    color: colors.auth.text,
     fontSize: 18,
     fontFamily: commonStyles.paragraphBold.fontFamily,
     marginBottom: 28,
@@ -227,32 +227,32 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 58,
     borderRadius: 18,
-    backgroundColor: colors.authOtpBackground,
+    backgroundColor: colors.auth.otpBackground,
     borderWidth: 2,
     borderColor: colors.transparent,
     alignItems: 'center',
     justifyContent: 'center',
   },
   digitCellFilled: {
-    borderColor: colors.authOtpBorder,
+    borderColor: colors.auth.otpBorder,
   },
   digitCellActive: {
-    borderColor: colors.authPrimary,
+    borderColor: colors.auth.primary,
   },
   digitText: {
-    color: colors.authOtpText,
+    color: colors.auth.inputText,
     fontSize: 28,
     fontFamily: commonStyles.paragraphBold.fontFamily,
   },
   submitButton: {
     width: '100%',
-    backgroundColor: colors.authPrimary,
+    backgroundColor: colors.auth.primary,
     borderRadius: 18,
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 24,
-    shadowColor: colors.authPrimary,
+    shadowColor: colors.auth.primary,
     shadowOpacity: 0.2,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 8 },
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   submitText: {
-    color: colors.white,
+    color: colors.text.inverse,
     fontSize: 16,
     fontFamily: commonStyles.paragraphBold.fontFamily,
   },
@@ -274,17 +274,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   resendIcon: {
-    color: colors.authResend,
+    color: colors.auth.resend,
     fontSize: 18,
     fontFamily: commonStyles.paragraphBold.fontFamily,
   },
   resendText: {
-    color: colors.authResend,
+    color: colors.auth.resend,
     fontSize: 15,
     fontFamily: commonStyles.paragraphBold.fontFamily,
   },
   footerText: {
-    color: colors.authFooter,
+    color: colors.auth.footer,
     fontSize: 14,
     marginTop: 24,
     textAlign: 'center',

@@ -7,7 +7,7 @@ interface MailProps {
   height?: number;
   color?: string;
 }
-export default function Mail({ width = 40, height = 40, color = colors.dark_blue, ...props }: MailProps) {
+export default function Mail({ width = 40, height = 40, color = colors.brand.dark, ...props }: MailProps) {
   return (
     <Svg width={width} height={height} viewBox="0 0 40 40" fill="none" {...props}>
       <Path

@@ -31,52 +31,59 @@ interface CircularProgressProps {
  * @returns {JSX.Element} React component.
  */
 const CircularProgress: React.FC<CircularProgressProps> = ({ percentage }) => {
-  /** Radius of the circle */
-  const radius = 50;
-
-  /** Width of the circle stroke */
-  const strokeWidth = 10;
-
-  /** Normalized radius to keep stroke inside the circle */
+  const radius = 38;
+  const strokeWidth = 6;
   const normalizedRadius = radius - strokeWidth / 2;
-
-  /** Circumference of the circle (used for dasharray) */
   const circumference = 2 * Math.PI * normalizedRadius;
-
-  /** Offset of the stroke to represent the percentage filled */
-  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+  const progress = Math.min(Math.max(percentage, 0), 100);
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+  const displayPercentage = Math.round(percentage);
 
   return (
-    <View style={commonStyles.container}>
-      <Svg height="100" width="100">
-        {/* Gray background circle */}
+    <View style={{ width: 76, height: 76, alignItems: 'center', justifyContent: 'center' }}>
+      <Svg height="76" width="76">
         <Circle
-          stroke={colors.light_gray}
+          stroke={colors.dashboard.goal.progressTrack}
           fill={colors.transparent}
           strokeWidth={strokeWidth}
-          cx="50"
-          cy="50"
+          cx="38"
+          cy="38"
           r={normalizedRadius}
         />
-        {/* Progress circle */}
         <Circle
-          stroke={colors.dark_green}
+          stroke={colors.dashboard.goal.progress}
           fill={colors.transparent}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
-          cx="50"
-          cy="50"
+          cx="38"
+          cy="38"
           r={normalizedRadius}
           rotation="-90"
-          origin="50, 50"
+          origin="38, 38"
         />
       </Svg>
 
-      {/* Center text */}
-      <View style={commonStyles.textContainer}>
-        <Text style={commonStyles.header}>{`${percentage}%`}</Text>
+      <View
+        style={{
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text
+          style={[
+            commonStyles.header,
+            {
+              color: colors.dashboard.goal.text,
+              fontSize: displayPercentage >= 100 ? 15 : 18,
+              textAlign: 'center',
+            },
+          ]}>
+          {`${displayPercentage}%`}
+        </Text>
       </View>
     </View>
   );

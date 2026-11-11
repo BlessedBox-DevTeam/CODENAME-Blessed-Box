@@ -39,9 +39,9 @@ export default function TransactionFiltersModal({
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
           <View style={styles.header}>
-            <BackArrow onPress={onClose} />
+            <BackArrow onPress={onClose} color={colors.text.primary} />
             <View style={styles.headerTitle}>
-              <Text style={commonStyles.header}>Filters</Text>
+              <Text style={[commonStyles.header, { color: colors.text.primary }]}>Filters</Text>
             </View>
             <View style={styles.headerSpacer} />
           </View>
@@ -76,7 +76,7 @@ export default function TransactionFiltersModal({
 
         <View style={styles.buttonsContainer}>
           <LinearGradient
-            colors={[colors.overlayLight, colors.transparent]}
+            colors={[colors.effects.overlayLight, colors.transparent]}
             style={styles.buttonShadow}
           />
           <View style={styles.buttonsRow}>
@@ -96,10 +96,11 @@ export default function TransactionFiltersModal({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: colors.surface.app,
   },
   content: {
     flex: 1,
-    backgroundColor: colors.backgroundColor,
+    backgroundColor: colors.surface.app,
   },
   header: {
     flexDirection: 'row',
@@ -124,11 +125,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomWidth: 2,
-    borderBottomColor: colors.dark_gray,
+    borderBottomColor: colors.text.secondary,
   },
   detailLabel: {
     ...commonStyles.paragraphBold,
-    color: colors.dark_blue,
+    color: colors.text.secondary,
   },
   detailValue: {
     ...commonStyles.paragraph,
@@ -136,6 +137,7 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     ...commonStyles.paragraph,
+    color: colors.text.primary,
     fontSize: 12,
   },
   statusContainer: {
@@ -169,7 +171,7 @@ const styles = StyleSheet.create({
   },
   buttonsRow: {
     flexDirection: 'row',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface.app,
     padding: 20,
     width: '100%',
     gap: 12,
@@ -177,21 +179,21 @@ const styles = StyleSheet.create({
   resetButton: {
     ...commonStyles.buttonNoShadow,
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface.card,
     borderWidth: 2,
-    borderColor: colors.dark_blue,
+    borderColor: colors.brand.primary,
   },
   applyButton: {
     ...commonStyles.buttonNoShadow,
     flex: 1,
-    backgroundColor: colors.dark_blue,
+    backgroundColor: colors.brand.primary,
   },
   resetButtonText: {
     ...commonStyles.header,
-    color: colors.dark_blue,
+    color: colors.brand.primary,
   },
   applyButtonText: {
     ...commonStyles.header,
-    color: colors.white,
+    color: colors.text.inverse,
   },
 });

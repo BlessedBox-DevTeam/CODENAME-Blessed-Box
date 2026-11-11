@@ -41,9 +41,9 @@ export default function AdjustmentButton({
         disabled && label !== '−' && styles.disabled,
       ]}>
       {isPlus ? (
-        <Feather name="plus" size={17} color={colors.orderText} />
+        <Feather name="plus" size={17} color={colors.order.actionText} />
       ) : label === '−' ? (
-        <Feather name="minus" size={17} color={colors.orderTextReset} />
+        <Feather name="minus" size={17} color={colors.order.textReset} />
       ) : (
         <Text style={[styles.label, { color: textColor }]}>{label}</Text>
       )}
@@ -56,15 +56,15 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 32,
     borderRadius: 12,
-    backgroundColor: colors.orderUnlabeledAmount,
+    backgroundColor: colors.order.unlabeledAmount,
     borderWidth: 1,
-    borderColor: colors.orderUnlabeledAmountBorder,
+    borderColor: colors.order.unlabeledAmountBorder,
     alignItems: 'center',
     justifyContent: 'center',
   },
   minusButton: {
-    backgroundColor: colors.orderMinusBackground,
-    borderColor: colors.orderMinusBackground,
+    backgroundColor: colors.order.minusBackground,
+    borderColor: colors.order.minusBackground,
   },
   disabled: {
     opacity: 0.45,

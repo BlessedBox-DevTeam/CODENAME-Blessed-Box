@@ -86,7 +86,7 @@ export const groupByDate = (transactions: any[], dateProp: string) => {
 interface TokenPayload {
   userId: number;
   email: string;
-  roles: string[];
+  roles: { code: string }[];
   permissions?: UserPermission[];
   exp: number;
 }

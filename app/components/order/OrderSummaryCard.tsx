@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import colors from '../../baseStyles/colors';
 import CategoryIcon from './CategoryIcon';
 import { GENDERS, Gender } from './orderTypes';
+import GiftBoxIcon from '../icons/GiftBoxIcon';
 
 type OrderSummaryCardProps = {
   total: number;
@@ -24,7 +25,18 @@ export default function OrderSummaryCard({ total, totals, compact }: OrderSummar
         <View style={styles.counts}>
           {GENDERS.filter(({ key }) => totals[key] > 0).map(({ key }) => (
             <View key={key} style={styles.count}>
-              <CategoryIcon gender={key} color={colors.orderText} size={compact ? 14 : 16} />
+              {key === 'unlabeled' ? (
+                <GiftBoxIcon
+                  size={compact ? 14 : 16}
+                  monochromeColor={colors.order.actionText}
+                />
+              ) : (
+                <CategoryIcon
+                  gender={key}
+                  color={colors.order.actionText}
+                  size={compact ? 14 : 16}
+                />
+              )}
               <Text style={[styles.countText, compact && styles.countTextCompact]}>
                 {totals[key]}
               </Text>
@@ -40,7 +52,7 @@ const styles = StyleSheet.create({
   card: {
     minHeight: 76,
     borderRadius: 22,
-    backgroundColor: colors.orderSummary,
+    backgroundColor: colors.order.summary,
     paddingHorizontal: 24,
     paddingVertical: 14,
     flexDirection: 'row',
@@ -53,7 +65,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   caption: {
-    color: colors.orderSummaryCaption,
+    color: colors.order.summaryCaption,
     fontSize: 14,
     fontWeight: '700',
     letterSpacing: 1.2,
@@ -62,7 +74,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   total: {
-    color: colors.orderText,
+    color: colors.order.actionText,
     fontSize: 40,
     lineHeight: 45,
     fontWeight: '700',
@@ -82,7 +94,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   countText: {
-    color: colors.orderText,
+    color: colors.order.actionText,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -90,7 +102,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   empty: {
-    color: colors.orderSummaryEmpty,
+    color: colors.order.summaryEmpty,
     fontSize: 14,
   },
 });
