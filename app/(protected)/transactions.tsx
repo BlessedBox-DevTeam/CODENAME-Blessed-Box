@@ -18,7 +18,7 @@ import {
   SOCKET_EVENT_TRANSACTION_UPDATED,
 } from '../helpers/constants';
 import { formatTransactionDate, groupByDate, sortByDateProp } from '../helpers/helpers';
-import { getRecollectionCenterTransactions } from '../services/services';
+import { getRecollectionCenterTransactions, getUserTransactions } from '../services/services';
 import { getSocket } from '../socketService';
 import { TransactionTileInfo } from '../types/TransactionTileInfo';
 
@@ -36,6 +36,9 @@ const getStatusCodes = (status: StatusFilter | null): StatusCode[] => {
 export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
+  const [transactionSource, setTransactionSource] = useState<'recollectionCenter' | 'user' | null>(
+    null
+  );
   const [sections, setSections] = useState<TransactionSection[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [modal, setModal] = useState(false);
@@ -90,14 +93,25 @@ export default function Index() {
   const fetchTransactions = async () => {
     try {
       setIsLoading(true);
-      const {
-        data: { response },
-      } = await getRecollectionCenterTransactions({
+      const params = {
         page: queryParams.page,
         selectedDay: selectedDay,
         transactionNumber: queryParams.transactionNumber,
         filters: JSON.stringify(queryParams.filters),
-      });
+      };
+      let response: { totalCount: number; transactions: Transaction[] };
+      if (transactionSource === 'user') {
+        ({ data: { response } } = await getUserTransactions(params));
+      } else {
+        const recollectionCenterResponse = await getRecollectionCenterTransactions(params);
+        if (recollectionCenterResponse.status === 403) {
+          setTransactionSource('user');
+          ({ data: { response } } = await getUserTransactions(params));
+        } else {
+          setTransactionSource('recollectionCenter');
+          response = recollectionCenterResponse.data.response;
+        }
+      }
       setTotalCount(response.totalCount);
       const updatedTransactions =
         queryParams.page === 1
@@ -134,8 +148,9 @@ export default function Index() {
     if (!socket) return;
 
     const handleNewTransaction = (newTransaction: Transaction) => {
+      if (transactionSource !== 'recollectionCenter') return;
       console.log('Nueva transacción recibida:', newTransaction);
-      setTotalCount(totalCount + 1);
+      setTotalCount((count) => count + 1);
       setAllTransactions((prev) => {
         const updated = [newTransaction, ...prev];
         const sorted = sortByDateProp(updated, 'createdDate');
@@ -152,7 +167,7 @@ export default function Index() {
     return () => {
       socket.off(SOCKET_EVENT_NEW_TRANSACTION, handleNewTransaction);
     };
-  }, [todayStr]);
+  }, [todayStr, transactionSource]);
 
   useEffect(() => {
     const socket = getSocket();
