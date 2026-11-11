@@ -14,11 +14,11 @@ interface GenderInitialProps {
 const GenderInitial = ({ genderCode }: GenderInitialProps): JSX.Element => {
   return (
     <View style={[styles.genderContainer]}>
-      <View style={[styles.maleContainer, styles.defaultContainer, { backgroundColor: genderCode === MALE_GENDER_ID ? colors.green_label : colors.light_gray }]}>
-        <Text style={[commonStyles.paragraphBold, { textAlign: 'center', color: genderCode === MALE_GENDER_ID ? colors.white : colors.dark_gray }]}>{'M'}</Text>
+      <View style={[styles.maleContainer, styles.defaultContainer, { backgroundColor: genderCode === MALE_GENDER_ID ? colors.brand.primary : colors.surface.control }]}>
+        <Text style={[commonStyles.paragraphBold, { textAlign: 'center', color: genderCode === MALE_GENDER_ID ? colors.surface.card : colors.text.secondary }]}>{'M'}</Text>
       </View>
-      <View style={[styles.femaleContainer, styles.defaultContainer, { backgroundColor: genderCode === FEMALE_GENDER_ID ? colors.red_label : colors.light_gray }]}>
-        <Text style={[commonStyles.paragraphBold, { textAlign: 'center', color: genderCode === FEMALE_GENDER_ID ? colors.white : colors.dark_gray }]}>{'F'}</Text>
+      <View style={[styles.femaleContainer, styles.defaultContainer, { backgroundColor: genderCode === FEMALE_GENDER_ID ? colors.status.danger : colors.surface.control }]}>
+        <Text style={[commonStyles.paragraphBold, { textAlign: 'center', color: genderCode === FEMALE_GENDER_ID ? colors.surface.card : colors.text.secondary }]}>{'F'}</Text>
       </View>
     </View>
   );
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 5,
-    backgroundColor: colors.light_gray,
+    backgroundColor: colors.surface.control,
   },
   defaultContainer: {
     padding: 2,

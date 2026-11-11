@@ -3,16 +3,8 @@ import commonStyles from './baseStyles';
 import colors from './colors';
 
 export const authColors = {
-  background: colors.authBackground,
-  header: colors.authHeader,
-  input: colors.authInput,
-  text: colors.authText,
-  mutedText: colors.authMutedText,
-  inputText: colors.authInputText,
-  placeholder: colors.authPlaceholder,
-  placeholderSecondary: colors.authPlaceholderSecondary,
-  primary: colors.authPrimary,
-  white: colors.white,
+  ...colors.auth,
+  white: colors.surface.card,
 };
 
 export const authStyles = StyleSheet.create({
@@ -21,7 +13,7 @@ export const authStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-    backgroundColor: colors.authHeader,
+    backgroundColor: authColors.header,
   },
   loadingContent: {
     alignItems: 'center',
@@ -34,7 +26,7 @@ export const authStyles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 36,
     backgroundColor: authColors.white,
-    shadowColor: colors.authHeaderShadow,
+    shadowColor: authColors.headerShadow,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 14,
@@ -58,18 +50,18 @@ export const authStyles = StyleSheet.create({
     height: 300,
     top: -110,
     right: -90,
-    backgroundColor: colors.authLargeShape,
+    backgroundColor: authColors.largeShape,
   },
   loadingShapeSmall: {
     width: 190,
     height: 190,
     bottom: -65,
     left: -55,
-    backgroundColor: colors.authSmallShape,
+    backgroundColor: authColors.smallShape,
   },
   screen: {
     flex: 1,
-    backgroundColor: authColors.background,
+    backgroundColor: authColors.header,
   },
   keyboard: {
     flex: 1,
@@ -86,9 +78,12 @@ export const authStyles = StyleSheet.create({
   form: {
     flex: 1,
     paddingBottom: 8,
+    backgroundColor: authColors.white,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
   },
   label: {
-    fontFamily: commonStyles.paragraphBold.fontFamily,
+    fontFamily: commonStyles.paragraph.fontFamily,
     letterSpacing: 0.3,
     color: authColors.mutedText,
   },
@@ -97,12 +92,20 @@ export const authStyles = StyleSheet.create({
     backgroundColor: authColors.input,
     color: authColors.inputText,
     fontFamily: commonStyles.paragraph.fontFamily,
+    borderWidth: 1.5,
+    borderColor: colors.transparent,
+  },
+  inputFocused: {
+    backgroundColor: authColors.white,
+    borderColor: authColors.primary,
   },
   passwordContainer: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: authColors.input,
+    borderWidth: 1.5,
+    borderColor: colors.transparent,
   },
   passwordInput: {
     flex: 1,
@@ -123,7 +126,7 @@ export const authStyles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   forgotPasswordText: {
-    fontFamily: commonStyles.paragraphExtraBold.fontFamily,
+    fontFamily: commonStyles.paragraphBold.fontFamily,
     color: authColors.primary,
   },
   submitButton: {
@@ -159,7 +162,7 @@ export const authStyles = StyleSheet.create({
     color: authColors.mutedText,
   },
   registerAction: {
-    fontFamily: commonStyles.paragraphExtraBold.fontFamily,
+    fontFamily: commonStyles.paragraphBold.fontFamily,
     color: authColors.primary,
   },
   modalBackdrop: {
@@ -167,7 +170,7 @@ export const authStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 25,
-    backgroundColor: colors.authModalBackdrop,
+    backgroundColor: authColors.modalBackdrop,
   },
   modalContent: {
     width: '100%',
@@ -178,7 +181,7 @@ export const authStyles = StyleSheet.create({
   modalTitle: {
     fontSize: 21,
     fontFamily: commonStyles.paragraphExtraBold.fontFamily,
-    color: authColors.text,
+    color: colors.status.danger,
     textAlign: 'center',
     marginBottom: 10,
   },
@@ -204,7 +207,7 @@ export const authStyles = StyleSheet.create({
   },
   registerScreen: {
     flex: 1,
-    backgroundColor: authColors.background,
+    backgroundColor: authColors.white,
   },
   registerHeader: {
     paddingHorizontal: 30,
@@ -234,7 +237,7 @@ export const authStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 18,
-    backgroundColor: colors.authLogo,
+    backgroundColor: authColors.logo,
   },
   registerLogoCompact: {
     width: 52,
@@ -274,7 +277,7 @@ export const authStyles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 25,
     paddingVertical: 16,
-    backgroundColor: colors.authBenefits,
+    backgroundColor: authColors.benefits,
   },
   benefitsCompact: {
     paddingHorizontal: 16,
@@ -325,6 +328,12 @@ export const authStyles = StyleSheet.create({
     fontSize: 20,
     fontFamily: commonStyles.paragraph.fontFamily,
     backgroundColor: authColors.input,
+    borderWidth: 1.5,
+    borderColor: colors.transparent,
+  },
+  registerInputFocused: {
+    backgroundColor: authColors.white,
+    borderColor: authColors.primary,
   },
   registerPassword: {
     flexDirection: 'row',
@@ -335,6 +344,12 @@ export const authStyles = StyleSheet.create({
     paddingRight: 14,
     borderRadius: 25,
     backgroundColor: authColors.input,
+    borderWidth: 1.5,
+    borderColor: colors.transparent,
+  },
+  registerPasswordFocused: {
+    backgroundColor: authColors.white,
+    borderColor: authColors.primary,
   },
   registerPasswordInput: {
     flex: 1,
@@ -354,10 +369,13 @@ export const authStyles = StyleSheet.create({
   termsBox: {
     width: 28,
     height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
     marginRight: 14,
     borderWidth: 3,
-    borderColor: colors.authBorder,
-    borderRadius: 5,
+    borderColor: authColors.border,
+    borderRadius: 14,
   },
   termsBoxChecked: {
     borderColor: authColors.primary,
@@ -365,8 +383,10 @@ export const authStyles = StyleSheet.create({
   },
   termsCheck: {
     fontSize: 18,
+    lineHeight: 20,
     fontFamily: commonStyles.paragraphBold.fontFamily,
     color: authColors.white,
+    textAlign: 'center',
   },
   termsText: {
     flex: 1,
@@ -384,7 +404,7 @@ export const authStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 18,
-    backgroundColor: colors.authButton,
+    backgroundColor: authColors.button,
   },
   registerButtonCompact: {
     minHeight: 46,
@@ -396,7 +416,7 @@ export const authStyles = StyleSheet.create({
   registerButtonText: {
     fontSize: 18,
     fontFamily: commonStyles.paragraphExtraBold.fontFamily,
-    color: colors.authButtonDisabled,
+    color: authColors.buttonDisabled,
   },
   registerButtonTextActive: {
     color: authColors.white,

@@ -55,12 +55,12 @@ const STATUS_ID_BY_CODE: Record<string, number> = {
 };
 
 const STATUS_STYLE_BY_CODE: Record<string, { color: string; backgroundColor: string }> = {
-  PENDING: { color: colors.pending, backgroundColor: colors.pendingBackground },
+  PENDING: { color: colors.status.pending, backgroundColor: colors.status.pendingBackground },
   [COMPLETED_STATUS_CODE]: {
-    color: colors.green_label,
-    backgroundColor: colors.completedBackground,
+    color: colors.brand.primary,
+    backgroundColor: colors.status.completedBackground,
   },
-  [DECLINED_STATUS_CODE]: { color: colors.red_label, backgroundColor: colors.declinedBackground },
+  [DECLINED_STATUS_CODE]: { color: colors.status.danger, backgroundColor: colors.status.declinedBackground },
 };
 
 function getGenderCode(genderCode: string): GenderCode {
@@ -171,7 +171,7 @@ export default function Index() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.backgroundColor }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.app }}>
         <Stack.Screen options={{ headerShown: false }} />
         <DepositHeader
           transaction={transactionDetails}
@@ -181,16 +181,15 @@ export default function Index() {
           unlabeled={unlabeled}
           statusLabel={transactionDetails.statusCode}
           statusColor={statusStyle.color}
-          statusBackgroundColor={statusStyle.backgroundColor}
           onBack={() => router.replace('/(protected)/transactions')}
         />
         <View style={{ flex: 1 }}>
           <View
             style={{
               flexDirection: 'row',
-              backgroundColor: colors.white,
+              backgroundColor: colors.surface.card,
               borderBottomWidth: 1,
-              borderBottomColor: colors.depositBorder,
+              borderBottomColor: colors.deposit.border,
             }}>
             {(['information', 'summary'] as const).map((tab) => (
               <TouchableOpacity
@@ -201,13 +200,13 @@ export default function Index() {
                   alignItems: 'center',
                   paddingVertical: 17,
                   borderBottomWidth: 2,
-                  borderBottomColor: activeTab === tab ? colors.dark_blue : colors.transparent,
+                  borderBottomColor: activeTab === tab ? colors.brand.dark : colors.transparent,
                 }}>
                 <Text
                   style={[
                     commonStyles.paragraph,
                     {
-                      color: activeTab === tab ? colors.dark_blue : colors.depositMutedBlue,
+                      color: activeTab === tab ? colors.brand.dark : colors.deposit.mutedBlue,
                       fontSize: 12,
                     },
                   ]}>
@@ -229,10 +228,10 @@ export default function Index() {
                     <MaterialCommunityIcons
                       name="calendar-outline"
                       size={18}
-                      color={colors.dark_blue}
+                      color={colors.brand.dark}
                     />
                   ),
-                  order: <Text style={{ color: colors.dark_blue, fontSize: 17 }}>#</Text>,
+                  order: <Text style={{ color: colors.brand.dark, fontSize: 17 }}>#</Text>,
                   church: <Church width={18} height={18} />,
                 }}
               />
@@ -252,7 +251,7 @@ export default function Index() {
                 <Text
                   style={[
                     commonStyles.paragraphBold,
-                    { color: colors.white, fontSize: 12, textAlign: 'center' },
+                    { color: colors.text.inverse, fontSize: 12, textAlign: 'center' },
                   ]}>
                   Confirm
                 </Text>
@@ -265,8 +264,8 @@ export default function Index() {
                     minHeight: 44,
                     paddingVertical: 8,
                     paddingHorizontal: 6,
-                    backgroundColor: colors.white,
-                    borderColor: colors.red_label,
+                    backgroundColor: colors.surface.card,
+                    borderColor: colors.status.danger,
                     borderWidth: 1,
                   },
                 ]}
@@ -274,7 +273,7 @@ export default function Index() {
                 <Text
                   style={[
                     commonStyles.paragraphBold,
-                    { color: colors.red_label, fontSize: 12, textAlign: 'center' },
+                    { color: colors.status.danger, fontSize: 12, textAlign: 'center' },
                   ]}>
                   Decline
                 </Text>
@@ -285,7 +284,7 @@ export default function Index() {
             <Text
               style={[
                 commonStyles.paragraphItalic,
-                { color: colors.dark_gray, textAlign: 'center', padding: 16 },
+                { color: colors.text.secondary, textAlign: 'center', padding: 16 },
               ]}>
               You do not have permissions to validate this deposit.
             </Text>
@@ -299,7 +298,7 @@ export default function Index() {
           <View
             style={{
               flex: 1,
-              backgroundColor: colors.overlay,
+              backgroundColor: colors.effects.overlay,
               justifyContent: 'center',
               alignItems: 'center',
             }}>
@@ -308,7 +307,7 @@ export default function Index() {
                 width: '90%',
                 maxWidth: 400,
                 borderRadius: 10,
-                backgroundColor: colors.white,
+                backgroundColor: colors.surface.card,
                 padding: 32,
               }}>
               <Text style={[commonStyles.paragraph, { marginBottom: 32, textAlign: 'center' }]}>
@@ -321,14 +320,14 @@ export default function Index() {
                   style={[
                     commonStyles.buttonNoShadow,
                     {
-                      backgroundColor: colors.white,
-                      borderColor: colors.dark_gray,
+                      backgroundColor: colors.surface.card,
+                      borderColor: colors.text.secondary,
                       borderWidth: 2,
                       flex: 1,
                     },
                   ]}
                   onPress={() => setConfirmationStatus(null)}>
-                  <Text style={[commonStyles.header, { color: colors.dark_gray }]}>Cancel</Text>
+                  <Text style={[commonStyles.header, { color: colors.text.secondary }]}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
@@ -336,8 +335,8 @@ export default function Index() {
                     {
                       backgroundColor:
                         confirmationStatus === COMPLETED_STATUS_ID
-                          ? colors.green_label
-                          : colors.red_label,
+                          ? colors.brand.primary
+                          : colors.status.danger,
                       flex: 1,
                     },
                   ]}
@@ -347,7 +346,7 @@ export default function Index() {
                     setConfirmationStatus(null);
                     updateStatus(statusId);
                   }}>
-                  <Text style={[commonStyles.header, { color: colors.white }]}>
+                  <Text style={[commonStyles.header, { color: colors.text.inverse }]}>
                     {confirmationStatus === COMPLETED_STATUS_ID ? 'Confirm' : 'Decline'}
                   </Text>
                 </TouchableOpacity>

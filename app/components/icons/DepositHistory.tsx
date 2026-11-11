@@ -2,7 +2,7 @@ import React from 'react';
 import Svg, { Path } from 'react-native-svg';
 import colors from '../../baseStyles/colors';
 
-const DepositHistory = ({ width = 288, height = 288, color = colors.dark_blue }) => {
+const DepositHistory = ({ width = 288, height = 288, color = colors.brand.dark }) => {
   return (
     <Svg width={width} height={height} viewBox="0 0 288 288" fill="none">
       <Path

@@ -33,7 +33,12 @@ export default function SelectedCategoryController({
   }
 
   return (
-    <View style={[styles.controller, compact && styles.controllerCompact]}>
+    <View
+      style={[
+        styles.controller,
+        compact && styles.controllerCompact,
+        { borderColor: config.border, borderWidth: 1.5 },
+      ]}>
       <View style={styles.heading}>
         <CategoryIcon gender={config.key} color={config.color} size={18} />
         <Text numberOfLines={1} style={[styles.title, { color: config.color }]}>
@@ -51,7 +56,7 @@ export default function SelectedCategoryController({
           <Feather
             name="rotate-ccw"
             size={12}
-            color={value === 0 ? colors.orderTextResetDisabled : colors.orderTextReset}
+            color={value === 0 ? colors.order.textResetDisabled : colors.order.textReset}
           />
           <Text style={[styles.resetText, value === 0 && styles.resetTextDisabled]}>Reset</Text>
         </TouchableOpacity>
@@ -80,9 +85,9 @@ const styles = StyleSheet.create({
   controller: {
     minHeight: 90,
     borderRadius: 18,
-    backgroundColor: colors.orderSurface,
+    backgroundColor: colors.order.surface,
     borderWidth: 1,
-    borderColor: colors.orderBorder,
+    borderColor: colors.order.border,
     padding: 11,
     justifyContent: 'space-between',
   },
@@ -94,7 +99,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   controllerHint: {
-    color: colors.orderTextHint,
+    color: colors.order.textHint,
     fontSize: 14,
     textAlign: 'center',
   },
@@ -118,12 +123,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 3,
   },
   resetText: {
-    color: colors.orderTextReset,
+    color: colors.order.textReset,
     fontSize: 11,
     fontWeight: '600',
   },
   resetTextDisabled: {
-    color: colors.orderTextResetDisabled,
+    color: colors.order.textResetDisabled,
   },
   actions: {
     flexDirection: 'row',
@@ -132,7 +137,7 @@ const styles = StyleSheet.create({
   },
   value: {
     width: 26,
-    color: colors.orderText,
+    color: colors.order.text,
     fontSize: 19,
     fontWeight: '700',
     textAlign: 'center',

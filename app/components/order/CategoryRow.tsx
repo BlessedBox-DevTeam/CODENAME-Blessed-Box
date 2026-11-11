@@ -35,8 +35,9 @@ export default function CategoryRow({
           styles.label,
           {
             height: cellHeight,
-            borderColor: config.dimBorder,
+            borderColor: config.border,
             borderRadius: compact ? 15 : 20,
+            backgroundColor: config.backgroundColor,
           },
         ]}>
         <CategoryIcon gender={config.key} color={config.color} size={compact ? 22 : 28} />
@@ -78,10 +79,10 @@ export default function CategoryRow({
                 justifyContent: noAge ? 'space-between' : 'center',
                 paddingHorizontal: noAge ? 16 : 0,
                 borderColor: value === 0 && !selected ? config.dimBorder : config.border,
-                backgroundColor: selected ? config.selectedBackground : colors.orderSurface,
+                backgroundColor: selected ? config.selectedBackground : colors.order.surface,
                 shadowColor: config.border,
-                shadowOpacity: selected ? 0.45 : 0,
-                elevation: selected ? 5 : 0,
+                shadowOpacity: selected ? 0.2 : 0,
+                elevation: selected ? 2 : 0,
               },
             ]}>
             {noAge ? (
@@ -127,7 +128,6 @@ const styles = StyleSheet.create({
   label: {
     flex: 1,
     borderWidth: 1,
-    backgroundColor: colors.orderSurface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     fontSize: 29,
   },
   hint: {
-    color: colors.orderTextMuted,
+    color: colors.order.textMuted,
     fontSize: 9,
     marginTop: -2,
   },

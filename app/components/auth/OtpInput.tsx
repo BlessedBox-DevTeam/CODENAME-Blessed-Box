@@ -76,6 +76,11 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     alignItems: 'center',
+    padding: 12,
+    borderRadius: 22,
+    backgroundColor: colors.surface.card,
+    borderWidth: 1,
+    borderColor: colors.auth.input,
   },
   hiddenInput: {
     position: 'absolute',
@@ -93,20 +98,21 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 58,
     borderRadius: 18,
-    backgroundColor: colors.authOtpBackground,
+    backgroundColor: colors.surface.card,
     borderWidth: 2,
-    borderColor: colors.transparent,
+    borderColor: colors.auth.input,
     alignItems: 'center',
     justifyContent: 'center',
   },
   digitCellFilled: {
-    borderColor: colors.authOtpBorder,
+    backgroundColor: colors.auth.benefits,
+    borderColor: colors.auth.primary,
   },
   digitCellActive: {
-    borderColor: colors.authPrimary,
+    borderColor: colors.auth.primary,
   },
   digitText: {
-    color: colors.authOtpText,
+    color: colors.auth.inputText,
     fontSize: 28,
     fontFamily: commonStyles.paragraphBold.fontFamily,
   },

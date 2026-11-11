@@ -13,7 +13,7 @@ export default function Index({}) {
       <Stack.Screen options={{ headerShown: false }} />
       <SafeAreaView
         style={{
-          backgroundColor: colors.backgroundColor,
+          backgroundColor: colors.surface.app,
           flex: 1,
           padding: 16,
           justifyContent: 'center',
@@ -41,7 +41,7 @@ export default function Index({}) {
             onPress={() => {
               router.replace('/(protected)/home');
             }}>
-            <Text style={[commonStyles.header, { color: colors.white }]}>Return Home</Text>
+            <Text style={[commonStyles.header, { color: colors.text.inverse }]}>Return Home</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>

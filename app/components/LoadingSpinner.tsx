@@ -19,9 +19,9 @@ import colors from '../baseStyles/colors';
  *
  * @example
  * // Show a loading overlay while data is being fetched
- * <LoadingOverlay visible={isLoading} size={60} color={colors.green} />
+ * <LoadingOverlay visible={isLoading} size={60} color={colors.brand.primary} />
  */
-export default function LoadingOverlay({ visible = false, size = 90, color = colors.spinner }) {
+export default function LoadingOverlay({ visible = false, size = 90, color = colors.surface.neutral }) {
   const [opacity] = useState(() => new Animated.Value(0));
   const [rotate] = useState(() => new Animated.Value(0));
   const spinning = useRef<Animated.CompositeAnimation | null>(null);
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: colors.darkOverlay,
+    backgroundColor: colors.effects.darkOverlay,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,

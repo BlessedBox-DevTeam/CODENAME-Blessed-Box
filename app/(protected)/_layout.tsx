@@ -21,7 +21,8 @@ export default function ProtectedLayout() {
   const hideBottomTabs =
     pathname === '/depositDetails' ||
     pathname === '/orders/order' ||
-    pathname === '/orders/orderSummary';
+    pathname === '/orders/orderSummary' ||
+    pathname === '/orders/completedOrder';
 
   const isTabActive = (path: string) => pathname === path;
 
@@ -63,6 +64,7 @@ export default function ProtectedLayout() {
             name="home"
             options={{
               title: 'BlessedBox',
+              headerStyle: { backgroundColor: colors.surface.card },
               headerTitleStyle: commonStyles.title,
               headerBackVisible: false,
               headerRight: () => (
@@ -73,7 +75,7 @@ export default function ProtectedLayout() {
                       { text: 'Salir', onPress: () => exit() },
                     ]);
                   }}>
-                  <SignOut height={30} width={30}></SignOut>
+                  <SignOut height={30} width={30} color={colors.text.secondary} />
                 </Pressable>
               ),
             }}
@@ -82,7 +84,8 @@ export default function ProtectedLayout() {
           <Stack.Screen
             name="transactions"
             options={{
-              title: 'History',
+              title: 'Drop-offs',
+              headerStyle: { backgroundColor: colors.surface.card },
               headerTitleStyle: commonStyles.title,
               headerBackVisible: false,
               headerRight: () => (
@@ -93,7 +96,7 @@ export default function ProtectedLayout() {
                       { text: 'Salir', onPress: () => exit() },
                     ]);
                   }}>
-                  <SignOut height={30} width={30}></SignOut>
+                  <SignOut height={30} width={30} color={colors.text.secondary} />
                 </Pressable>
               ),
             }}
@@ -109,13 +112,13 @@ export default function ProtectedLayout() {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-around',
-            backgroundColor: colors.white,
+            backgroundColor: colors.surface.card,
             position: 'relative',
             paddingTop: 0,
             paddingBottom: 0,
           }}>
           <LinearGradient
-            colors={[colors.overlayLight, colors.transparent]}
+            colors={[colors.effects.overlayLight, colors.transparent]}
             style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, zIndex: 10 }}
           />
 
@@ -126,7 +129,7 @@ export default function ProtectedLayout() {
               flex: 1,
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: isTabActive('/home') ? colors.tabHighlight : colors.transparent,
+              backgroundColor: isTabActive('/home') ? colors.brand.subtle : colors.transparent,
               borderRadius: 12,
               paddingVertical: 4,
               marginHorizontal: 4,
@@ -134,12 +137,15 @@ export default function ProtectedLayout() {
             <Home
               width={24}
               height={24}
-              color={isTabActive('/home') ? colors.dark_blue : colors.dark_gray}
+              stroke={isTabActive('/home') ? colors.brand.primary : colors.text.secondary}
             />
             <Text
               style={[
                 commonStyles.paragraph,
-                { fontSize: 10, color: isTabActive('/home') ? colors.dark_blue : colors.dark_gray },
+                {
+                  fontSize: 10,
+                  color: isTabActive('/home') ? colors.brand.primary : colors.text.secondary,
+                },
               ]}>
               Home
             </Text>
@@ -157,8 +163,8 @@ export default function ProtectedLayout() {
               paddingVertical: 2,
               marginHorizontal: 4,
             }}>
-            <Newspaper width={24} height={24} color={colors.dark_gray} />
-            <Text style={[commonStyles.paragraph, { fontSize: 10, color: colors.dark_gray }]}>
+            <Newspaper width={24} height={24} color={colors.text.secondary} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10, color: colors.text.secondary }]}>
               News
             </Text>
           </Pressable>
@@ -171,7 +177,7 @@ export default function ProtectedLayout() {
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: isTabActive('/qrCode/qrCode')
-                ? colors.tabHighlight
+                ? colors.brand.subtle
                 : colors.transparent,
               borderRadius: 12,
               paddingVertical: 4,
@@ -180,14 +186,18 @@ export default function ProtectedLayout() {
             <QRCode
               width={24}
               height={24}
-              color={isTabActive('/qrCode/qrCode') ? colors.dark_blue : colors.dark_gray}
+              color={
+                isTabActive('/qrCode/qrCode') ? colors.brand.primary : colors.text.secondary
+              }
             />
             <Text
               style={[
                 commonStyles.paragraph,
                 {
                   fontSize: 10,
-                  color: isTabActive('/qrCode/qrCode') ? colors.dark_blue : colors.dark_gray,
+                  color: isTabActive('/qrCode/qrCode')
+                    ? colors.brand.primary
+                    : colors.text.secondary,
                 },
               ]}>
               QR
@@ -202,7 +212,7 @@ export default function ProtectedLayout() {
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: isTabActive('/transactions')
-                ? colors.tabHighlight
+                ? colors.brand.subtle
                 : colors.transparent,
               borderRadius: 12,
               paddingVertical: 4,
@@ -211,17 +221,21 @@ export default function ProtectedLayout() {
             <DepositHistory
               width={24}
               height={24}
-              color={isTabActive('/transactions') ? colors.dark_blue : colors.dark_gray}
+              color={
+                isTabActive('/transactions') ? colors.brand.primary : colors.text.secondary
+              }
             />
             <Text
               style={[
                 commonStyles.paragraph,
                 {
                   fontSize: 10,
-                  color: isTabActive('/transactions') ? colors.dark_blue : colors.dark_gray,
+                  color: isTabActive('/transactions')
+                    ? colors.brand.primary
+                    : colors.text.secondary,
                 },
               ]}>
-              History
+              Drop-offs
             </Text>
           </Pressable>
 
@@ -237,8 +251,8 @@ export default function ProtectedLayout() {
               paddingVertical: 2,
               marginHorizontal: 4,
             }}>
-            <Church width={24} height={24} color={colors.dark_gray} />
-            <Text style={[commonStyles.paragraph, { fontSize: 10, color: colors.dark_gray }]}>
+            <Church width={24} height={24} color={colors.text.secondary} />
+            <Text style={[commonStyles.paragraph, { fontSize: 10, color: colors.text.secondary }]}>
               Centers
             </Text>
           </Pressable>

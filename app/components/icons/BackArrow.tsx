@@ -16,7 +16,7 @@ interface BackArrowProps {
 export default function BackArrow({
   width = 24,
   height = 24,
-  color = colors.dark_blue,
+  color = colors.brand.dark,
   label,
   onPress,
   style,

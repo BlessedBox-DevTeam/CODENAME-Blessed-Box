@@ -98,7 +98,14 @@ export const isBackupKey = async (keyValue: string) => {
 };
 
 export const getRecollectionCenterTransactions = async (params: object) => {
-  return await api.get(`/api/transactions/recollectionCenterTransactions`, { params });
+  return await api.get(`/api/transactions/recollectionCenterTransactions`, {
+    params,
+    validateStatus: (status) => (status >= 200 && status < 300) || status === 403,
+  });
+};
+
+export const getUserTransactions = async (params: object) => {
+  return await api.get(`/api/transactions/userTransactions`, { params });
 };
 
 export const getTransactionDetails = async (transactionId: number | string) => {

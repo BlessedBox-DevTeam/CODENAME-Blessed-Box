@@ -7,7 +7,7 @@ interface AlertProps {
   height?: number;
   color?: string;
 }
-export default function Alert({ width = 40, height = 40, color = colors.red, ...props }: AlertProps) {
+export default function Alert({ width = 40, height = 40, color = colors.status.danger, ...props }: AlertProps) {
   return (
     <Svg width={width} height={height} viewBox="0 0 40 40" fill="none" {...props}>
       <Path

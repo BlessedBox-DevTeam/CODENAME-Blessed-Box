@@ -12,7 +12,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import commonStyles from '../../baseStyles/baseStyles';
 import colors from '../../baseStyles/colors';
+import BackArrow from '../../components/icons/BackArrow';
 import {
   FEMALE_GENDER_ID,
   FIVE_TO_NINE_YEARS_ID,
@@ -43,7 +45,6 @@ export default function OrderScreen() {
   const small = height < 780;
   const horizontalPadding = width < 380 ? 16 : 24;
   const headerHeight = compact ? 58 : small ? 66 : 74;
-  const headerButtonSize = compact ? 40 : small ? 44 : 48;
   const gap = 8;
   const cellSize = (width - horizontalPadding * 2 - gap * 3) / 4;
   const cellHeight = Math.min(cellSize, compact ? 68 : 100);
@@ -141,30 +142,18 @@ export default function OrderScreen() {
       <Stack.Screen options={{ headerShown: false }} />
       <SafeAreaView style={styles.safeArea}>
         <View style={[styles.header, { height: headerHeight, paddingHorizontal: horizontalPadding }]}>
-          <TouchableOpacity
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-            onPress={() => router.back()}
-            style={[
-              styles.headerButton,
-              { width: headerButtonSize, height: headerButtonSize, borderRadius: headerButtonSize / 2 },
-            ]}>
-            <Feather name="chevron-left" size={compact ? 22 : 26} color={colors.orderText} />
-          </TouchableOpacity>
+          <BackArrow onPress={() => router.back()} color={colors.text.primary} />
 
-          <Text style={[styles.headerTitle, { fontSize: compact ? 18 : small ? 20 : 22 }]}>
-            Enter Order
-          </Text>
+          <View style={styles.headerTitle}>
+            <Text style={[commonStyles.header, { color: colors.text.primary }]}>Enter Order</Text>
+          </View>
 
           <TouchableOpacity
             accessibilityRole="button"
             accessibilityLabel="Reset all categories"
             onPress={resetAllBoxes}
-            style={[
-              styles.headerButton,
-              { width: headerButtonSize, height: headerButtonSize, borderRadius: headerButtonSize / 2 },
-            ]}>
-            <Feather name="rotate-ccw" size={compact ? 18 : 20} color={colors.orderTextReset} />
+            style={styles.headerButton}>
+            <Feather name="rotate-ccw" size={compact ? 18 : 20} color={colors.text.primary} />
           </TouchableOpacity>
         </View>
 
@@ -232,26 +221,25 @@ export default function OrderScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.orderBackground,
+    backgroundColor: colors.order.background,
   },
   safeArea: {
     flex: 1,
-    backgroundColor: colors.orderBackground,
+    backgroundColor: colors.order.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   headerButton: {
-    backgroundColor: colors.orderSurfaceRaised,
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerTitle: {
     flex: 1,
-    color: colors.orderText,
-    fontWeight: '700',
-    textAlign: 'center',
+    alignItems: 'center',
   },
   content: {
     flex: 1,
@@ -260,8 +248,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   continueButton: {
-    backgroundColor: colors.orderContinue,
-    shadowColor: colors.orderContinue,
+    backgroundColor: colors.order.continue,
+    shadowColor: colors.order.continue,
     shadowOpacity: 0.45,
     shadowRadius: 18,
     shadowOffset: { width: 0, height: 6 },
@@ -272,24 +260,24 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   continueButtonDisabled: {
-    backgroundColor: colors.orderSurfaceSelectedDisabled,
+    backgroundColor: colors.order.surfaceSelectedDisabled,
     shadowOpacity: 0,
     elevation: 0,
   },
   continueText: {
-    color: colors.orderText,
+    color: colors.order.actionText,
     fontSize: 18,
     fontWeight: '800',
   },
   continueTextDisabled: {
-    color: colors.orderTextDisabled,
+    color: colors.order.textDisabled,
   },
   totalBadge: {
     minWidth: 32,
     height: 32,
     paddingHorizontal: 7,
     borderRadius: 16,
-    backgroundColor: colors.orderBadge,
+    backgroundColor: colors.order.badge,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -299,7 +287,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
   totalBadgeText: {
-    color: colors.orderText,
+    color: colors.order.actionText,
     fontSize: 16,
     fontWeight: '800',
   },

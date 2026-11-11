@@ -43,12 +43,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectedChip: {
-    backgroundColor: colors.dark_blue,
-    borderColor: colors.dark_blue,
+    backgroundColor: colors.brand.primary,
+    borderColor: colors.brand.primary,
   },
   unselectedChip: {
-    backgroundColor: colors.white,
-    borderColor: colors.white,
+    backgroundColor: colors.surface.card,
+    borderColor: colors.surface.neutral,
   },
   text: {
     fontSize: 12,
@@ -56,9 +56,9 @@ const styles = StyleSheet.create({
     fontFamily: commonStyles.paragraph.fontFamily,
   },
   selectedText: {
-    color: colors.white,
+    color: colors.text.inverse,
   },
   unselectedText: {
-    color: colors.dark_blue,
+    color: colors.text.secondary,
   },
 });

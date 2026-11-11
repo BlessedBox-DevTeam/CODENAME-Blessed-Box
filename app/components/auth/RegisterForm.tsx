@@ -27,6 +27,9 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [focusedInput, setFocusedInput] = useState<'firstName' | 'lastName' | 'email' | null>(
+    null
+  );
   const draftHydrated = useRef(false);
 
   useEffect(() => {
@@ -65,8 +68,8 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
   const compact = height < 760;
   const veryCompact = height < 680;
   const horizontalPadding = width < 360 ? 22 : 30;
-  const inputFontSize = veryCompact ? 15 : 17;
   const labelFontSize = veryCompact ? 13 : compact ? 14 : 15;
+  const inputFontSize = labelFontSize + 2;
   const inputHeight = veryCompact ? 48 : compact ? 52 : 55;
   const inputRadius = veryCompact ? 17 : 20;
   const inputHorizontalPadding = veryCompact ? 17 : 20;
@@ -104,6 +107,7 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
             <TextInput
               style={[
                 authStyles.registerInput,
+                focusedInput === 'firstName' && authStyles.registerInputFocused,
                 {
                   height: inputHeight,
                   borderRadius: inputRadius,
@@ -112,10 +116,12 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
                   fontSize: inputFontSize,
                 },
               ]}
-              placeholder="Maria"
+              placeholder="Jane"
               placeholderTextColor={authColors.placeholderSecondary}
               value={firstName}
               onChangeText={setFirstName}
+              onFocus={() => setFocusedInput('firstName')}
+              onBlur={() => setFocusedInput(null)}
               autoCapitalize="words"
             />
           </RegisterField>
@@ -126,6 +132,7 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
             <TextInput
               style={[
                 authStyles.registerInput,
+                focusedInput === 'lastName' && authStyles.registerInputFocused,
                 {
                   height: inputHeight,
                   borderRadius: inputRadius,
@@ -134,10 +141,12 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
                   fontSize: inputFontSize,
                 },
               ]}
-              placeholder="Gonzalez"
+              placeholder="Doe"
               placeholderTextColor={authColors.placeholderSecondary}
               value={lastName}
               onChangeText={setLastName}
+              onFocus={() => setFocusedInput('lastName')}
+              onBlur={() => setFocusedInput(null)}
               autoCapitalize="words"
             />
           </RegisterField>
@@ -148,6 +157,7 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
         <TextInput
           style={[
             authStyles.registerInput,
+            focusedInput === 'email' && authStyles.registerInputFocused,
             {
               height: inputHeight,
               borderRadius: inputRadius,
@@ -163,6 +173,8 @@ export default function RegisterForm({ onBackToLogin, onCreateAccount }: Registe
           keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
+          onFocus={() => setFocusedInput('email')}
+          onBlur={() => setFocusedInput(null)}
         />
       </RegisterField>
 
@@ -298,10 +310,13 @@ function PasswordInput({
   inputHorizontalPadding: number;
   onFocus?: () => void;
 }) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <View
       style={[
         authStyles.registerPassword,
+        focused && authStyles.registerPasswordFocused,
         {
           height: inputHeight,
           borderRadius: inputRadius,
@@ -318,7 +333,11 @@ function PasswordInput({
         onChangeText={onChangeText}
         secureTextEntry={!visible}
         autoCapitalize="none"
-        onFocus={onFocus}
+        onFocus={() => {
+          setFocused(true);
+          onFocus?.();
+        }}
+        onBlur={() => setFocused(false)}
       />
       <TouchableOpacity
         activeOpacity={0.65}

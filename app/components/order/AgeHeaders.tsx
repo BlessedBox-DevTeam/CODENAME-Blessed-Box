@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    color: colors.orderTextSubtle,
+    color: colors.order.textSubtle,
     fontSize: 14,
     fontWeight: '700',
   },
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   unit: {
-    color: colors.orderTextSubtleDark,
+    color: colors.order.textSubtleDark,
     fontSize: 11,
     marginTop: 2,
   },

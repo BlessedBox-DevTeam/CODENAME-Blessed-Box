@@ -18,7 +18,7 @@ import {
   SOCKET_EVENT_TRANSACTION_UPDATED,
 } from '../helpers/constants';
 import { formatTransactionDate, groupByDate, sortByDateProp } from '../helpers/helpers';
-import { getRecollectionCenterTransactions } from '../services/services';
+import { getRecollectionCenterTransactions, getUserTransactions } from '../services/services';
 import { getSocket } from '../socketService';
 import { TransactionTileInfo } from '../types/TransactionTileInfo';
 
@@ -36,6 +36,9 @@ const getStatusCodes = (status: StatusFilter | null): StatusCode[] => {
 export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
+  const [transactionSource, setTransactionSource] = useState<'recollectionCenter' | 'user' | null>(
+    null
+  );
   const [sections, setSections] = useState<TransactionSection[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [modal, setModal] = useState(false);
@@ -90,14 +93,25 @@ export default function Index() {
   const fetchTransactions = async () => {
     try {
       setIsLoading(true);
-      const {
-        data: { response },
-      } = await getRecollectionCenterTransactions({
+      const params = {
         page: queryParams.page,
         selectedDay: selectedDay,
         transactionNumber: queryParams.transactionNumber,
         filters: JSON.stringify(queryParams.filters),
-      });
+      };
+      let response: { totalCount: number; transactions: Transaction[] };
+      if (transactionSource === 'user') {
+        ({ data: { response } } = await getUserTransactions(params));
+      } else {
+        const recollectionCenterResponse = await getRecollectionCenterTransactions(params);
+        if (recollectionCenterResponse.status === 403) {
+          setTransactionSource('user');
+          ({ data: { response } } = await getUserTransactions(params));
+        } else {
+          setTransactionSource('recollectionCenter');
+          response = recollectionCenterResponse.data.response;
+        }
+      }
       setTotalCount(response.totalCount);
       const updatedTransactions =
         queryParams.page === 1
@@ -134,8 +148,9 @@ export default function Index() {
     if (!socket) return;
 
     const handleNewTransaction = (newTransaction: Transaction) => {
+      if (transactionSource !== 'recollectionCenter') return;
       console.log('Nueva transacción recibida:', newTransaction);
-      setTotalCount(totalCount + 1);
+      setTotalCount((count) => count + 1);
       setAllTransactions((prev) => {
         const updated = [newTransaction, ...prev];
         const sorted = sortByDateProp(updated, 'createdDate');
@@ -152,7 +167,7 @@ export default function Index() {
     return () => {
       socket.off(SOCKET_EVENT_NEW_TRANSACTION, handleNewTransaction);
     };
-  }, [todayStr]);
+  }, [todayStr, transactionSource]);
 
   useEffect(() => {
     const socket = getSocket();
@@ -196,7 +211,7 @@ export default function Index() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.backgroundColor }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.app }}>
         <TransactionFiltersModal
           visible={modal}
           selectedStatus={selectedStatus}
@@ -215,7 +230,7 @@ export default function Index() {
           <View
             style={{
               flex: 1,
-              backgroundColor: colors.overlayStrong,
+              backgroundColor: colors.effects.overlayStrong,
               justifyContent: 'center',
               alignItems: 'center',
             }}>
@@ -223,10 +238,10 @@ export default function Index() {
             <View
               style={{
                 width: '90%',
-                backgroundColor: colors.white,
+                backgroundColor: colors.surface.card,
                 borderRadius: 16,
                 padding: 20,
-                shadowColor: colors.black,
+                shadowColor: colors.text.primary,
                 shadowOpacity: 0.25,
                 shadowOffset: { width: 0, height: 4 },
                 shadowRadius: 8,
@@ -248,7 +263,7 @@ export default function Index() {
                 <Text
                   style={{
                     fontSize: 20,
-                    color: colors.transactionSearchText,
+                    color: colors.transactions.searchText,
                   }}>
                   ✕
                 </Text>
@@ -261,10 +276,10 @@ export default function Index() {
                   alignSelf: 'flex-end',
                   padding: 8,
                   opacity: selectedDay ? 1 : 0,
-                  backgroundColor: colors.light_gray,
+                  backgroundColor: colors.surface.control,
                   borderRadius: 8,
                 }}>
-                <Text style={{ color: colors.dark_blue }}>Clear Date</Text>
+                <Text style={{ color: colors.brand.primary }}>Clear Date</Text>
               </TouchableOpacity>
 
               {/* Calendario */}
@@ -275,9 +290,18 @@ export default function Index() {
                 }}
                 markedDates={
                   selectedDay
-                    ? { [selectedDay]: { selected: true, selectedColor: colors.green } }
+                    ? { [selectedDay]: { selected: true, selectedColor: colors.brand.primary } }
                     : {}
                 }
+                theme={{
+                  calendarBackground: colors.surface.card,
+                  dayTextColor: colors.text.primary,
+                  textDisabledColor: colors.text.secondary,
+                  monthTextColor: colors.text.primary,
+                  textSectionTitleColor: colors.text.secondary,
+                  todayTextColor: colors.brand.dark,
+                  arrowColor: colors.brand.primary,
+                }}
                 style={{
                   marginTop: 20,
                 }}
@@ -293,23 +317,25 @@ export default function Index() {
             paddingTop: 16,
             paddingHorizontal: 16,
             gap: 6,
-            backgroundColor: colors.backgroundColor,
+            backgroundColor: colors.surface.app,
           }}>
           <TextInput
             value={transactionNumber}
             onChangeText={handleTransactionNumberChange}
             onSubmitEditing={handleTransactionSearch}
             placeholder="Search drop-off #"
-            placeholderTextColor={colors.gray}
+            placeholderTextColor={colors.text.secondary}
             keyboardType="numeric"
             returnKeyType="search"
             style={{
-              backgroundColor: colors.white,
+              backgroundColor: colors.surface.card,
               borderRadius: 10,
+              borderWidth: 0.75,
+              borderColor: colors.effects.greenBorder,
               flex: 1,
               paddingHorizontal: 12,
               paddingVertical: 8,
-              color: colors.dark_blue,
+              color: colors.text.primary,
               fontFamily: commonStyles.paragraph.fontFamily,
               fontSize: 12,
             }}
@@ -321,12 +347,22 @@ export default function Index() {
               justifyContent: 'flex-end',
               gap: 12,
             }}>
-            <Filter size={20} onPress={handleFilterModal}></Filter>
-            <CalendarIcon size={20} onPress={() => setCalendarModal(true)}></CalendarIcon>
+            <Filter
+              size={20}
+              active={queryParams.filters.statusCodes.length > 0}
+              color={colors.text.secondary}
+              onPress={handleFilterModal}
+            />
+            <CalendarIcon
+              size={20}
+              active={Boolean(selectedDay)}
+              color={colors.text.secondary}
+              onPress={() => setCalendarModal(true)}
+            />
           </View>
         </View>
         <SectionList
-          style={{ backgroundColor: colors.backgroundColor }}
+          style={{ backgroundColor: colors.surface.app }}
           sections={sections}
           keyExtractor={(item) => item.transactionId.toString()}
           renderItem={({ item }) => (
@@ -347,20 +383,30 @@ export default function Index() {
                 alignItems: 'center',
                 gap: 8,
               }}>
-              <Text style={[commonStyles.paragraph, { color: colors.dark_blue }]}>
+              <View
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: 4,
+                  backgroundColor: colors.accent.gold,
+                }}
+              />
+              <Text style={[commonStyles.paragraphBold, { color: colors.text.primary }]}>
                 {section.title}
               </Text>
               <View
                 style={{
                   flex: 1,
-                  height: 1,
-                  backgroundColor: colors.light_gray,
+                  height: 1.5,
+                  backgroundColor: colors.effects.greenBorderDim,
                 }}
               />
-              <Text style={[commonStyles.paragraph, { color: colors.dark_blue }]}>
-                {`${section.data.length} ${
-                  section.data.length === 1 ? 'drop-off' : 'drop-offs'
-                }`}
+              <Text
+                style={[
+                  commonStyles.paragraph,
+                  { color: colors.text.secondary, fontSize: 11 },
+                ]}>
+                {`${section.data.length} ${section.data.length === 1 ? 'drop-off' : 'drop-offs'}`}
               </Text>
             </View>
           )}
@@ -375,7 +421,7 @@ export default function Index() {
           contentContainerStyle={{ gap: 16, padding: 18 }}
           ListEmptyComponent={() => (
             <View style={{ alignItems: 'center', marginTop: 50 }}>
-              <Text style={[commonStyles.paragraph, { color: colors.gray }]}>
+              <Text style={[commonStyles.paragraph, { color: colors.text.secondary }]}>
                 No Drop-offs Yet.
               </Text>
             </View>

@@ -1,4 +1,3 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React, { JSX } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import commonStyles from '../baseStyles/baseStyles';
@@ -9,6 +8,7 @@ import {
   PENDING_STATUS_CODE,
 } from '../helpers/constants';
 import { TransactionTileInfo } from '../types/TransactionTileInfo';
+import GiftBoxIcon from './icons/GiftBoxIcon';
 
 interface TransactionTileProps {
   transaction: TransactionTileInfo;
@@ -34,15 +34,13 @@ const MAP_STATUS_CODE_COLOR: Record<
 };
 
 const TransactionTile = ({ transaction, pressCallback }: TransactionTileProps): JSX.Element => {
-  const { transactionId, statusCode, statusDescription, boxCount } = transaction;
+  const { transactionId, transactionNumber, statusCode, statusDescription, boxCount } = transaction;
   const status = MAP_STATUS_CODE_COLOR[String(statusCode).toUpperCase()] ?? {
     variant: 'declined' as const,
     statusDescription: statusDescription || 'Unknown',
   };
   const statusContainerStyle = styles[`${status.variant}StatusContainer`];
   const statusTextStyle = styles[`${status.variant}Status`];
-  const orderNumber = `BBX-${new Date().getFullYear()}-${String(transactionId).padStart(6, '0')}`;
-
   return (
     <Pressable
       onPress={() => {
@@ -50,10 +48,10 @@ const TransactionTile = ({ transaction, pressCallback }: TransactionTileProps): 
       }}
       style={styles.tileContainer}>
       <View style={styles.iconContainer}>
-        <MaterialCommunityIcons name="gift" size={24} color={styles.transactionIcon.color} />
+        <GiftBoxIcon size={24} />
       </View>
       <View style={styles.informationContainer}>
-        <Text style={styles.orderNumber}>{orderNumber}</Text>
+        <Text style={styles.orderNumber}>{transactionNumber}</Text>
         <View style={[styles.statusContainer, statusContainerStyle]}>
           <Text style={[styles.status, statusTextStyle]}>
             {statusDescription || status.statusDescription}
@@ -77,14 +75,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     borderRadius: 10,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface.card,
+    borderWidth: 0.75,
+    borderColor: colors.effects.greenBorder,
     // iOS
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowColor: colors.text.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
     // Android
-    elevation: 4,
+    elevation: 2,
   },
   iconContainer: {
     width: 38,
@@ -92,18 +92,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    backgroundColor: colors.tileBackground,
     overflow: 'hidden',
-  },
-  transactionIcon: {
-    color: colors.dark_green,
   },
   informationContainer: {
     flex: 1,
     gap: 5,
   },
   orderNumber: {
-    color: colors.dark_blue,
+    color: colors.text.primary,
     fontFamily: commonStyles.paragraphBold.fontFamily,
     fontSize: 12,
   },
@@ -114,26 +110,26 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   pendingStatusContainer: {
-    backgroundColor: colors.pendingBackground,
+    backgroundColor: colors.status.pendingBackground,
   },
   completedStatusContainer: {
-    backgroundColor: colors.completedBackground,
+    backgroundColor: colors.status.completedBackground,
   },
   declinedStatusContainer: {
-    backgroundColor: colors.declinedBackground,
+    backgroundColor: colors.status.declinedBackground,
   },
   status: {
     fontFamily: commonStyles.paragraphBold.fontFamily,
     fontSize: 10,
   },
   pendingStatus: {
-    color: colors.pending,
+    color: colors.status.pending,
   },
   completedStatus: {
-    color: colors.green_label,
+    color: colors.brand.primary,
   },
   declinedStatus: {
-    color: colors.red_label,
+    color: colors.status.danger,
   },
   amountContainer: {
     width: 45,
@@ -141,17 +137,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    backgroundColor: colors.tileBackground,
+    backgroundColor: colors.transactions.tileAmountBackground,
   },
   amount: {
     fontFamily: commonStyles.paragraph.fontFamily,
     fontSize: 16,
-    color: colors.dark_blue,
+    color: colors.dashboard.contribution.maleText,
   },
   amountLabel: {
     fontFamily: commonStyles.paragraph.fontFamily,
     fontSize: 8,
-    color: colors.dark_gray,
+    color: colors.text.secondary,
   },
 });
 

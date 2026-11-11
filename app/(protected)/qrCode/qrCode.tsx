@@ -8,6 +8,7 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -33,6 +34,7 @@ export default function Index() {
   const [isScanTabActive, setIsScanTabActive] = useState(true);
   const [code, setCode] = useState('');
   const inputRef = useRef<TextInput>(null);
+  const manualFormScrollRef = useRef<ScrollView>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isManager, setIsManager] = useState(false);
   const [manualAccessCode, setManualAccessCode] = useState<string | null>(null);
@@ -146,7 +148,7 @@ export default function Index() {
   return (
     <SafeAreaProvider>
       <Stack.Screen options={{ headerShown: false }} />
-      <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
+      <SafeAreaView style={{ backgroundColor: colors.auth.header, flex: 1 }}>
         <LoadingOverlay visible={isLoading} />
         {/* Header */}
         <View
@@ -156,10 +158,12 @@ export default function Index() {
             padding: 20,
             paddingBottom: 0,
           }}>
-          <BackArrow onPress={handleBackPress} />
+          <BackArrow onPress={handleBackPress} color={colors.text.primary} />
           <View style={{ flex: 1, alignItems: 'center' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Text style={commonStyles.header}>Drop-off Center</Text>
+              <Text style={[commonStyles.header, { color: colors.text.primary }]}>
+                Drop-off Center
+              </Text>
               {isManager && (
                 <TouchableOpacity
                   onPress={handleGetManualAccessCode}
@@ -167,15 +171,15 @@ export default function Index() {
                   accessibilityRole="button"
                   accessibilityLabel="Get recollection center access code">
                   {isAccessCodeLoading ? (
-                    <ActivityIndicator size="small" color={colors.dark_blue} />
+                    <ActivityIndicator size="small" color={colors.brand.dark} />
                   ) : (
-                    <Ionicons name="key-outline" size={20} color={colors.dark_blue} />
+                    <Ionicons name="key-outline" size={20} color={colors.brand.dark} />
                   )}
                 </TouchableOpacity>
               )}
             </View>
             {manualAccessCode !== null && (
-              <Text style={[commonStyles.paragraphBold, { color: colors.dark_blue }]}>
+              <Text style={[commonStyles.paragraphBold, { color: colors.brand.dark }]}>
                 Access code: {manualAccessCode}
               </Text>
             )}
@@ -192,10 +196,10 @@ export default function Index() {
             ]}
             initial={0}
             onPress={handleQRCodeMethod}
-            textColor={colors.dark_gray}
-            selectedColor={colors.white}
-            buttonColor={colors.dark_blue}
-            borderColor={colors.dark_blue}
+            textColor={colors.text.secondary}
+            selectedColor={colors.surface.card}
+            buttonColor={colors.brand.dark}
+            borderColor={colors.brand.dark}
             buttonMargin={4}
             style={{
               width: '100%',
@@ -228,12 +232,12 @@ export default function Index() {
                     position: 'absolute',
                     top: 20,
                     right: 20,
-                    backgroundColor: colors.overlayStrong,
+                    backgroundColor: colors.effects.overlayStrong,
                     padding: 10,
                     borderRadius: 25,
                   }}
                   onPress={() => setFacing((prev) => (prev === 'back' ? 'front' : 'back'))}>
-                  <Text style={[commonStyles.paragraphBold, { color: colors.white }]}>
+                  <Text style={[commonStyles.paragraphBold, { color: colors.text.inverse }]}>
                     {facing === 'back' ? 'Front' : 'Rear'}
                   </Text>
                 </TouchableOpacity>
@@ -248,106 +252,118 @@ export default function Index() {
               </View>
             )
           ) : (
-            <View style={{ flex: 1, padding: 20 }}>
-              <View
-                style={[
-                  commonStyles.card,
-                  {
-                    gap: 16,
-                  },
-                ]}>
-                <View
-                  style={{
-                    borderBottomWidth: 1,
-                    width: '100%',
-                    alignItems: 'center',
-                    borderColor: colors.gray,
-                    paddingBottom: 10,
-                  }}>
-                  <Image
-                    source={require('../../../assets/images/test-qr.png')}
-                    style={{ width: 125, height: 125, resizeMode: 'contain' }}
-                  />
-                  <Text style={[commonStyles.paragraph, { alignSelf: 'center', letterSpacing: 4 }]}>
-                    123ABC
-                  </Text>
-                </View>
-
-                <Text
-                  style={[
-                    commonStyles.paragraphBold,
-                    { color: colors.dark_blue, alignSelf: 'center' },
-                  ]}>
-                  Trouble Scanning the QR Code?
-                </Text>
-
-                <KeyboardAvoidingView
-                  style={{ gap: 5 }}
-                  keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-                  behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-                  <Text style={commonStyles.paragraph}>Enter Drop-off Code</Text>
-                  <TouchableWithoutFeedback onPress={() => inputRef.current?.focus()}>
+            <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+              <ScrollView
+                ref={manualFormScrollRef}
+                style={{ flex: 1 }}
+                contentContainerStyle={{ flexGrow: 1, padding: 20 }}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}>
+                  <View
+                    style={[
+                      commonStyles.card,
+                      {
+                        gap: 16,
+                      },
+                    ]}>
                     <View
                       style={{
-                        backgroundColor: colors.white,
-                        borderWidth: 2,
-                        borderRadius: 10,
-                        borderColor: colors.gray,
-                        position: 'relative',
-                        padding: 10,
+                        borderBottomWidth: 1,
+                        width: '100%',
+                        alignItems: 'center',
+                        borderColor: colors.effects.gray,
+                        paddingBottom: 10,
                       }}>
-                      <TextInput
-                        ref={inputRef}
-                        value={code}
-                        onChangeText={handleChangeText}
-                        keyboardType="default"
-                        maxLength={6}
-                        style={{
-                          position: 'absolute',
-                          opacity: 0,
-                          width: '100%',
-                        }}
-                        autoFocus={false}
+                      <Image
+                        source={require('../../../assets/images/test-qr.png')}
+                        style={{ width: 125, height: 125, resizeMode: 'contain' }}
                       />
-                      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 2 }}>
-                        {[...Array(6)].map((_, i) => (
-                          <View key={i} style={{ width: 30, alignItems: 'center', padding: 5 }}>
-                            <Text style={commonStyles.header}>{code[i] || ''}</Text>
-                            <View
-                              style={{
-                                height: 2,
-                                width: '100%',
-                                backgroundColor: colors.dark_blue,
-                              }}
-                            />
-                          </View>
-                        ))}
-                      </View>
+                      <Text
+                        style={[
+                          commonStyles.paragraph,
+                          { alignSelf: 'center', letterSpacing: 4 },
+                        ]}>
+                        123ABC
+                      </Text>
                     </View>
-                  </TouchableWithoutFeedback>
-                </KeyboardAvoidingView>
-              </View>
-              <TouchableOpacity
-                style={[commonStyles.button, { marginTop: 'auto' }]}
-                onPress={async () => {
-                  const showAlert = (message: string) => {
-                    alert(message);
-                  };
-                  if (code.length < 6) {
-                    return showAlert('Please enter a valid 6-character code.');
-                  }
-                  setIsLoading(true);
-                  const { response, message } = (await isBackupKey(code)).data;
-                  setIsLoading(false);
-                  if (response) {
-                    router.push('/orders/order');
-                  } else {
-                    showAlert(message);
-                  }
-                }}>
-                <Text style={[commonStyles.header, { color: colors.white }]}>Confirm</Text>
-              </TouchableOpacity>
-            </View>
+
+                    <Text
+                      style={[
+                        commonStyles.paragraphBold,
+                        { color: colors.brand.dark, alignSelf: 'center' },
+                      ]}>
+                      Trouble Scanning the QR Code?
+                    </Text>
+
+                    <View style={{ gap: 5 }}>
+                      <Text style={commonStyles.paragraph}>Enter Drop-off Code</Text>
+                      <TouchableWithoutFeedback onPress={() => inputRef.current?.focus()}>
+                        <View
+                          style={{
+                            backgroundColor: colors.surface.card,
+                            borderWidth: 2,
+                            borderRadius: 10,
+                            borderColor: colors.effects.gray,
+                            position: 'relative',
+                            padding: 10,
+                          }}>
+                          <TextInput
+                            ref={inputRef}
+                            value={code}
+                            onChangeText={handleChangeText}
+                            keyboardType="default"
+                            maxLength={6}
+                            style={{
+                              position: 'absolute',
+                              opacity: 0,
+                              width: '100%',
+                            }}
+                            onFocus={() => manualFormScrollRef.current?.scrollToEnd({ animated: true })}
+                            autoFocus={false}
+                          />
+                          <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 2 }}>
+                            {[...Array(6)].map((_, i) => (
+                              <View key={i} style={{ width: 30, alignItems: 'center', padding: 5 }}>
+                                <Text style={commonStyles.header}>{code[i] || ''}</Text>
+                                <View
+                                  style={{
+                                    height: 2,
+                                    width: '100%',
+                                    backgroundColor: colors.brand.dark,
+                                  }}
+                                />
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+                      </TouchableWithoutFeedback>
+                    </View>
+                  </View>
+                <TouchableOpacity
+                  style={[commonStyles.button, { marginTop: 'auto' }]}
+                  onPress={async () => {
+                    const showAlert = (message: string) => {
+                      alert(message);
+                    };
+                    if (code.length < 6) {
+                      return showAlert('Please enter a valid 6-character code.');
+                    }
+                    setIsLoading(true);
+                    const { response, message } = (await isBackupKey(code)).data;
+                    setIsLoading(false);
+                    if (response) {
+                      router.push('/orders/order');
+                    } else {
+                      showAlert(message);
+                    }
+                  }}>
+                  <Text style={[commonStyles.header, { color: colors.text.inverse }]}>Confirm</Text>
+                </TouchableOpacity>
+              </ScrollView>
+            </KeyboardAvoidingView>
           )}
         </View>
       </SafeAreaView>
